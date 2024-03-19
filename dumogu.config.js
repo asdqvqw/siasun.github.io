@@ -19,8 +19,8 @@ let configProd = {
     name:'新松 - 后台管理',
     title:'新松机器人',
     baseApiURL:'/api',
-    routeBasePath:'/',
-    biuldBasePath:'/',
+    routeBasePath:'./',
+    biuldBasePath:'./',
 };
 
 let config = isProd ? configProd : configDev;
