@@ -101,5 +101,6 @@ export default defineConfig(({
                 },
             }
         },
+        publicPath: './', // 添加 publicPath
     };
 });
