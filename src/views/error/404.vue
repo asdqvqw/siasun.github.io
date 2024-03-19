@@ -111,8 +111,8 @@ export default defineComponent({
                 font-size: 16px;
             }
             >.countdown {
-                font-size: 12px;
-                color: #ccc;
+                font-size: 20px;
+                color: #635a5a;
             }
         }
     }

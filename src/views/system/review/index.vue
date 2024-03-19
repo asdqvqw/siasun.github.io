@@ -907,7 +907,7 @@ gltfLoader.load(
 );
 
 gltfLoader.load(
-  './huojia.draco.draco.glb',
+  'https://asdqvqw.github.io/whwtest.github.io/huojia.draco.draco.glb',
   (gltf) => {
     car = gltf.scene;
     // 设置模型的位置、缩放等属性
