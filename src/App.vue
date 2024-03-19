@@ -1,26 +1,57 @@
-<template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
-</template>
-
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { defineComponent,ref,getCurrentInstance,reactive,nextTick, computed,onMounted } from "vue";
+import { ElConfigProvider } from 'element-plus';
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs';  //启用element 中文
+import {publicData as publicDataStore} from "@/store/Public";
+import {loadScript} from "@/common/OtherTools";
+import {friendLinkList} from "@/common/Const";
+import { useRoute,useRouter } from 'vue-router';
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+export default defineComponent({
+    components: {
+        ElConfigProvider,
+    },
+    setup() {
+        const router = useRouter();
+        const route = useRoute();
+        const publicData = publicDataStore();
+
+        setTimeout(()=>{
+            loadScript('https://dumogu-web-var.oss-cn-chengdu.aliyuncs.com/qdmp3dmX3.js','js').then(()=>{
+                let data = window.$dumogu_search_data || {};
+                let list = data.friendlink || [];
+                if(!Array.isArray(list)) return;
+                list = list.filter(item=>{
+                    return item.name && item.url;
+                });
+                publicData.setFriendLinkList([
+                    ...friendLinkList,
+                    ...list,
+                ]);
+            });
+            publicData.setFriendLinkList([
+                ...friendLinkList,
+            ]);
+        },150);
+        /** 阻止默认的拖拽事件 */
+        document.body.ondrop = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        return {
+            locale: zhCn,
+        };
+    },
+});
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<template>
+<el-config-provider :locale="locale">
+    <router-view v-slot="{ Component }">
+        <transition name="el-fade-in">
+            <component 
+                :is="Component" />
+        </transition>
+    </router-view>
+</el-config-provider>
+</template>
