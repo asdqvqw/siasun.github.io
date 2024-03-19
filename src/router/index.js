@@ -443,7 +443,7 @@ export const constantRoutes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(dumoguConfig.routeBasePath),
+    history: createWebHashHistory(dumoguConfig.routeBasePath),
     routes: constantRoutes,
 });
 /** 此处只添加路由进度条动画 */
