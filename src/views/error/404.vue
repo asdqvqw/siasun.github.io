@@ -4,12 +4,27 @@
  */
 import { defineComponent,ref,getCurrentInstance,reactive,toRef, computed,onMounted,watch } from "vue";
 import svg404 from "@/assets/img-list/404.svg";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     setup(){
+        const router = useRouter();
         const dataContainer = reactive({
             svg404:svg404,
         });
+
+        // 倒计时跳转回首页
+        const redirectToHome = () => {
+            setTimeout(() => {
+                router.push('/main/index');
+            }, 2000); // 两秒后跳转
+        }
+
+        // 执行自动跳转
+        onMounted(() => {
+            redirectToHome();
+        });
+
         return {
             dataContainer,
         };
@@ -35,6 +50,7 @@ export default defineComponent({
                 to="/main/index">
                 返回首页
             </router-link>
+            <div class="countdown">页面将在2秒后自动跳转...</div>
         </div>
     </div>
 </div>
@@ -94,8 +110,11 @@ export default defineComponent({
                 align-items: center;
                 font-size: 16px;
             }
+            >.countdown {
+                font-size: 12px;
+                color: #ccc;
+            }
         }
     }
 }
 </style>
-
