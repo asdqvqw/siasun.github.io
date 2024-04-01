@@ -140,6 +140,14 @@ export const constantRoutes = [
                 },
             },
             {
+                path: 'errorlist/index',
+                component: () => import('@/views/eg_list/errorlist/index.vue'),
+                name: 'errorlist',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
                 path: 'task/index',
                 component: () => import('@/views/agv_ctrl/task/index.vue'),
                 name: 'task',
@@ -167,6 +175,14 @@ export const constantRoutes = [
                 path: 'review/components/bbb_Aqw',
                 component: () => import('@/views/system/review/components/bbb_Aqw.vue'),
                 name: 'bbb_Aqw',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'whwtest/testfour/components/bbb_Aqw',
+                component: () => import('@/views/system/whwtest/testfour/components/bbb_Aqw.vue'),
+                name: 'bbb_Aqwa',
                 meta: { 
                     isMenu:true,
                 },

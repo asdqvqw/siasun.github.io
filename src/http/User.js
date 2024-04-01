@@ -37,52 +37,52 @@ const allApi = {
         fixed: true,
         iconName: "svg:all-fill.svg",
       },
-      // {
-      //   title: "test",
-      //   iconName: "svg:laptop-check.svg",
-      //   content: "可删",
-      //   childs: [
-      //     // {
-      //     //   name: "whwtestread",
-      //     //   title: "测试",
-      //     //   isCache: true,
-      //     //   content: "",
-      //     //   iconName: "svg:laptop-check.svg",
-      //     //   showTagIcon: true,
-      //     // },
-      //     {
-      //       name: "whwtestone",
-      //       title: "one",
-      //       isCache: true,
-      //       content: "",
-      //       iconName: "svg:laptop-check.svg",
-      //       showTagIcon: true,
-      //     },
-      //     {
-      //       name: "whwtesttwo",
-      //       title: "two",
-      //       isCache: true,
-      //       content: "",
-      //       iconName: "svg:laptop-check.svg",
-      //       showTagIcon: true,
-      //     },
-      //     {
-      //       name: "whwtestfour",
-      //       title: "four",
-      //       isCache: true,
-      //       content: "",
-      //       iconName: "svg:laptop-check.svg",
-      //       showTagIcon: true,
-      //     },
+      {
+        title: "test",
+        iconName: "svg:laptop-check.svg",
+        content: "可删",
+        childs: [
+          // {
+          //   name: "whwtestread",
+          //   title: "测试",
+          //   isCache: true,
+          //   content: "",
+          //   iconName: "svg:laptop-check.svg",
+          //   showTagIcon: true,
+          // },
+          {
+            name: "whwtestone",
+            title: "one",
+            isCache: true,
+            content: "",
+            iconName: "svg:laptop-check.svg",
+            showTagIcon: true,
+          },
+          {
+            name: "whwtesttwo",
+            title: "two",
+            isCache: true,
+            content: "",
+            iconName: "svg:laptop-check.svg",
+            showTagIcon: true,
+          },
+          {
+            name: "whwtestfour",
+            title: "four",
+            isCache: true,
+            content: "",
+            iconName: "svg:laptop-check.svg",
+            showTagIcon: true,
+          },
 
-      //     {
-      //       name: "bbb_Aqw",
-      //       title: "统计",
-      //       isCache: true,
-      //       hidden: true,
-      //     },
-      //   ],
-      // },
+          {
+            name: "bbb_Aqw",
+            title: "统计",
+            isCache: true,
+            hidden: true,
+          },
+        ],
+      },
       {
         name: "new-tag-page",
         title: "新标签页",
@@ -237,6 +237,24 @@ const allApi = {
         title: "平台文档",
         iconName: "svg:aligncenter-fill.svg",
         childs: [
+          // {
+          //   name: "errorlist",
+          //   title: "故障列表提交",
+          //   isCache: true,
+          //   content: "",
+          //   iconName: "svg:user-group-fill.svg",
+          //   showTagIcon: true,
+          // },
+          {
+            path: `/main/iframe/shuoming?src=${encodeURIComponent(
+              "https://asdqvqw.github.io/whwtest.github.io/"
+            )}`,
+            title: "说明",
+            content: "",
+            iconName: "svg:laptop-check.svg",
+            showTagIcon: true,
+            isCache: true,
+          },
           {
             title: "VUE3文档(外联)",
             iconName: "svg:friendship.svg",
@@ -253,16 +271,8 @@ const allApi = {
             showTagIcon: true,
             isCache: true,
           },
-          {
-            path: `/main/iframe/shuoming?src=${encodeURIComponent(
-              "https://asdqvqw.github.io/whwtest.github.io/"
-            )}`,
-            title: "说明",
-            content: "",
-            iconName: "svg:laptop-check.svg",
-            showTagIcon: true,
-            isCache: true,
-          },
+
+
         ],
       },
       // {

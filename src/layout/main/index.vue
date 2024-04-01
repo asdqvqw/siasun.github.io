@@ -486,7 +486,7 @@ export default defineComponent({
                     class="logo"
                     :src="dataContainer.img.img_1" fit="cover" /> -->
                 <div class="name">
-                    新松机器人
+                    <img src="@/assets/logo.png" style="width: 20%; height: 20%;"> 新松机器人 
                 </div>
             </div>
             <div class="right">

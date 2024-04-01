@@ -21,14 +21,17 @@ let infoText = 'AGV状态'
 
 <style>
 .info-text {
+    background-image: url('./img/button.gif');
+    background-size: 100%;
+    background-position: center;
+    background-color: #5151c03c;
     font-size: 10px;
     position: fixed;
     padding: 7px;
-    color: yellow;
-    background-color: rgb(87, 84, 84);
+    color :beige;
     border-radius: 10px;
     overflow: hidden;
     border: none;
-    text-shadow: 0 0 3px blue;
+    /* text-shadow: 0 0 3px blue; */
 }
 </style>

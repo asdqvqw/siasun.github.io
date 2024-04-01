@@ -1,96 +1,63 @@
 <template>
+
   <div class="home">
+
     <div class="canvas-container" ref="canvasDom"></div>
+
+
+
     <div class="choose">
       <div class="choose-title">控制：</div>
+
       <div class="file-upload" v-show="importflag">
-        <label for="import" class="import-label">
-          <span class="label-text">导入文件</span>
-          <input class="import" type="file" id="import" @change="handleFileChange" accept=".log">
-        </label>
-      </div>
-      <div class="playorstop" v-show="!importflag">播放暂停：<n-button class="pause-n-button" :disabled="shouldPause"
-          @click="togglePause">{{ paused ?
-        '继续' : '暂停'
-          }}</n-button></div>
-      <div class="event" v-show="!importflag">事件处理: &nbsp; <n-button class="pause-n-button" :disabled="!shouldPause"
-          @click="resumeCarMovement">跳过</n-button></div>
-      <div class="replay" v-show="!importflag">重播：<n-button class="pause-n-button" @click="restartCar">重播</n-button>
-      </div>
-      <div class="cameractrl" v-show="!importflag">镜头控制：<n-button class="pause-n-button" @click="toggleCameraFollow">{{
-        cameraFollow ? '取消跟随' :
-          '跟随' }}</n-button></div>
-      <div class="singlestep" v-show="!importflag">单步运行：<n-button class="pause-n-button"
-          :disabled="!paused || currentCoordinateIndex === parsedLogData.length + 1" @click="previousStep">{{ paused ?
-        '上一步'
-        : '请暂停' }}</n-button>
-        <n-button class="pause-n-button" :disabled="!paused || currentCoordinateIndex === parsedLogData.length - 1"
-          @click="nextStep">{{ paused ? '下一步' :
-        '请暂停' }}</n-button>
-      </div>
-      <div v-if="showModalS" class="modal">
-        <div class="modal-content">
-          <n-button class="pause-n-button" @click="closeModal">关闭弹窗</n-button><br>
-          <br>
-          <n-button class="round-button" @click="prevItem">＜</n-button>
-          <n-button class="round-button" @click="nextItem">＞</n-button><br>
+        <input ref="importInput" type="file" accept=".log" style="display: none" @change="handleFileChange" />
+        <el-button @click="$refs.importInput.click()" class="buttonstyle">
+          导入
+        </el-button>
 
-          <div class="parsedItemsdata" v-if="parsedLogData[currentCoordinateIndex].parsedItems">
-            <h2>{{ parsedLogData[currentCoordinateIndex].parsedItems[currentItemIndex_Y].itemName }}</h2>
-            <div
-              v-for="(value, key) in parsedLogData[currentCoordinateIndex].parsedItems[currentItemIndex_Y].itemObject"
-              :key="key">
-              {{ key }}: {{ value }}
-            </div>
-          </div>
+      </div>
 
-        </div>
+      <contorl></contorl>
+
+      <div class="singlestep" v-show="!importflag">单步运行：
+        
+        <el-button
+          :disabled="!paused || currentCoordinateIndex === parsedLogData.length + 1" @click="previousStep"
+          class="buttonstyle">{{
+        paused ?
+          '上一步'
+          : '请暂停' }}</el-button>
+        <el-button :disabled="!paused || currentCoordinateIndex === parsedLogData.length - 1" @click="nextStep"
+          class="buttonstyle">{{
+        paused ?
+          '下一步' :
+          '请暂停' }}</el-button>
       </div>
       <infobox></infobox>
     </div>
-    <div class="reserve" v-show="!importflag"><n-button class="pause-n-button" @click="reservewindow">预留</n-button>
+    <div class="logprocess">
+      回放进度:{{
+        shouldPause ?
+          '请处理事件'
+          : '' }}
+      <input :disabled="shouldPause" type="range" style="width: 100%;" v-model="currentCoordinateIndex" min="0" :max=parsedLogData.length-1 step="1" @change="LogProcess"
+      >
     </div>
-    <div class="statistics" v-show="!importflag"><n-button class="pause-n-button"> <router-link
-          to="/main/review/components/bbb_Aqw">
-          统计
-        </router-link></n-button>
-    </div>
+
+
     <agvdevice></agvdevice>
+
+    <ELECTOR></ELECTOR>
+
+    <!-- <statistics></statistics> -->
 
     <agvnav></agvnav>
 
-    <div class="election" @mouseenter="state_toggleSize" @mouseleave="state_toggleSizelev"
-      :class="{ state_expanded: state_isExpanded }"
-      :style="{ width: state_wh + 'px', height: state_wh + 'px', top: state_top + 'px', zIndex: election_zIndexValue }">
-      <div class="election-title" :style="{ width: state_wh + 'px' }">电气模块：</div>
-      <div class="election-info" :class="{ election_info_expanded: state_isExpanded }">
+    <screen ref="screenRef" />
 
-        保险杠状态：{{ ele_safe_bHardBumper }}<br>
-        急停触发：{{ ele_safe_bEmgStop }}<br>
-        pls状态：{{ ele_safe_nPlsTrig }}<br>
-        二维码信息：{{ }}<br>
-        惯导：{{ }}<br>
-        磁导航：{{ }}<br>
-        电池：{{ }}<br>
-      </div>
-      <div class="election-info-big" v-show="state_isExpanded">
-        <div class="replay1">切换驱动单元：<n-button class="pause-n-button" @click="Cutdrive">{{ ele_dev_name }}</n-button>
-        </div>
-        轮伺服实际速度：{{ ele_dev_wheel_fServoSpeed }}<br>
-        轮伺服状态码：{{ ele_dev_wheel_nServoState }}<br>
-        轮伺服错误码：{{ ele_dev_wheel_nServoErrCode }}<br>
-        舵伺服实际位置：{{ ele_dev_steer_fServoPosition }}<br>
-        舵伺服状态码：{{ ele_dev_steer_nServoState }}<br>
-        舵伺服错误码：{{ ele_dev_steer_nServoErrCode }}<br>
-        舵限位开关：{{ ele_dev_steer_bPositiveLimitSwt }}<br>
-        舵限位开关：{{ ele_dev_steer_bNegativeLimitSwt }}<br>
-        舵零位开关：{{ ele_dev_steer_bZeroSwt }}<br>
-      </div>
-      <Echart></Echart>
-
-    </div>
     <contral></contral>
   </div>
+
 </template>
 
 <script setup>
@@ -99,40 +66,27 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { onMounted, ref } from 'vue';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader';
-import { modbusscreendatajson } from './modbusscreen.js'
+import contorl from './contorl.vue'
 import contral from './Contral_Net.vue'
 import infobox from './Info_box.vue'
 import agvdevice from './AGV_device.vue'
 import agvnav from './AGV_Nav.vue'
-import Echart from './Ele_chart.vue'
-import {
-  Net_Info_uFromNode, Net_Info_uToNode, Net_Info_sProgress, Net_Info_CurSpeed, Net_Info_usCargoState, Net_Info_WorkState,
-  Net_Info_EventState, Net_Info_EventDetail, Net_Info_usBatterState, Net_Info_TaskState, Net_Info_TaskID, Net_Info_Key,
-  Net_Info_Head
-} from './sharedata.js'
+import ELECTOR from './AGV_ELE.vue'
+import statistics from './statistics.vue'
+import screen from './screen_info.vue'
+import { raycaster } from './sharedata.js';
+const Gundongtiao = ref(0);
+const screenRef = ref(null);
 
 import {
-  infoTextVisible, infoTextX, infoTextY, agvmode,
-  event_name, event_detail, event_advise
+  infoTextVisible, infoTextX, infoTextY
 } from './sharedata.js'
-
-
 import {
-  Net_equ_uEquipmentTaskState, Net_equ_uEquipmentTaskID, Net_equ_uEquipmentTaskError,
-  Net_equ_uEquipmentState, Net_equ_strEquipmentTaskMessage
+  updateTargetCoordinates, CCupdateTargetCoordinates, currentCoordinateIndex, parsedLogData, importflag,
+  parsedLogDatabak,color
 } from './sharedata.js'
 
-
-import {
-  targetCoordinates, CCtargetCoordinates, nav_pos,
-  nav_LR, nav_thi, nav_sversion, nav_mversion
-} from './sharedata.js'
-
-import {
-  state_isExpanded, ele_dev_wheel_fServoSpeed
-} from './sharedata.js'
-
-
+import { paused, shouldPause, cameraFollow } from './sharedata.js'
 import { data } from './sharedata.js'
 
 const gltfLoader = new GLTFLoader();
@@ -157,93 +111,18 @@ light4.position.set(-10, 0, 0);
 const light5 = new THREE.DirectionalLight(0xffffff, 1);
 light5.position.set(0, 10, 0);
 
-const directionalLight = new THREE.DirectionalLight(0xFF0000, 2);
-directionalLight.position.set(0, 1, 0);
-
-//模块样式
-let jsonData = ref('');
-let state_wh = ref(400);
-let state_top = ref(360);
-let election_zIndexValue = ref(50);
-
-const state_toggleSize = () => {
-  state_isExpanded.value = true;
-  election_zIndexValue.value = 100;
-  state_wh.value = 700;
-  state_top.value = 50;
-};
-const state_toggleSizelev = () => {
-  state_isExpanded.value = false;
-  election_zIndexValue.value = 50;
-  state_wh.value = 400;
-  state_top.value = 360;
-};
-
-//相机跟随
-let cameraFollow = ref(false);
-
-//预留弹窗
-let currentItemIndex_Y = ref(0);
-let showModalS = ref(false);
-const closeModal = () => {
-  showModalS.value = false;
-};
-const reservewindow = () => {
-  showModalS.value = true;
-};
-const prevItem = () => {
-  if (currentItemIndex_Y.value > 0) {
-    currentItemIndex_Y.value--;
-  }
-};
-const nextItem = () => {
-  if (currentItemIndex_Y.value < parsedLogData[currentCoordinateIndex].parsedItems.length - 1) {
-    currentItemIndex_Y.value++;
-  }
-};
-
-
-
-//电器模块
-//安全模块
-let ele_safe_bEmgStop = ref('');
-let ele_safe_bHardBumper = ref('');
-let ele_safe_nPlsTrig = ref('');
-//轮舵
-let ele_dev_name = ref('驱动轴');
-let ele_dev_count = ref('');
-let ele_dev_Dcount = 0;
-
-let ele_dev_wheel_nServoErrCode = ref('');
-let ele_dev_wheel_nServoState = ref('');
-
-let ele_dev_steer_fServoPosition = ref('');
-let ele_dev_steer_nServoState = ref('');
-let ele_dev_steer_nServoErrCode = ref('');
-let ele_dev_steer_bPositiveLimitSwt = ref('');
-let ele_dev_steer_bNegativeLimitSwt = ref('');
-let ele_dev_steer_bZeroSwt = ref('');
-
 
 let controls, gridHelper, car;
 let canvasDom = ref(null);
 // 速度
 let carSpeed = 7;
-//导入文档进度
-let importflag = ref(true);
-//暂停
-let paused = ref(false);
-//事件跳过
-let shouldPause = ref(false);
 
-const raycaster = new THREE.Raycaster();
+
+
 const mouse = new THREE.Vector2();
-
-let currentCoordinateIndex = 0;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 2, 6);
-
 
 //弹窗结束
 //导入LOG
@@ -257,9 +136,8 @@ const handleFileChange = (event) => {
   reader.readAsText(file);
 };
 
-const logData = ref(null);
-let parsedLogData = [];
-const parsedLogDatabak = [];
+
+
 
 
 const parseLog = (content) => {
@@ -277,35 +155,34 @@ const parseLog = (content) => {
 
 
 
-    //item
-    const items = logJson.item;
-    const parsedItems = [];
-    for (const item of items) {
-      const itemName = item.name;
-      let itemObject = {};
-      // 遍历item对象中的键值对
-      for (const key in item) {
-        if (key !== "name") {
-          const value = item[key];
-          itemObject[key] = value;
+    // //item
+    // const items = logJson.item;
+    // const parsedItems = [];
+    // for (const item of items) {
+    //   const itemName = item.name;
+    //   let itemObject = {};
+    //   // 遍历item对象中的键值对
+    //   for (const key in item) {
+    //     if (key !== "name") {
+    //       const value = item[key];
+    //       itemObject[key] = value;
 
-        }
-      }
-      parsedItems.push({ itemName, itemObject });
-    }
-    //end
-    const StatisticsData = logJson.statistics;
-
+    //     }
+    //   }
+    //   parsedItems.push({ itemName, itemObject });
+    // }
+    // //end
+    // const StatisticsData = logJson.statistics;
+    // , parsedItems, StatisticsData
 
     const logDateTimea = 0;
-    parsedLogData.push({ logDateTime, logDateTimea, logJson, realx, realy, realthita, realz, parsedItems, StatisticsData });
-    parsedLogDatabak.push({ logDateTime, logDateTimea, logJson, realx, realy, realthita, realz , parsedItems, StatisticsData});
+    parsedLogData.value.push({ logDateTime, logDateTimea, logJson, realx, realy, realthita, realz });
+    parsedLogDatabak.push({ logDateTime, logDateTimea, logJson, realx, realy, realthita, realz });
   }
 
-  logData.value = parsedLogData;
   importflag.value = false;
-  jsonData.value = parsedLogData[0].logJson.electricalModule.kinematic.drive[0].wheel;
-  data.parsedLogData_b = parsedLogData;
+  data.parsedLogData_b = parsedLogData.value;
+
   startCar();
 };
 
@@ -313,15 +190,15 @@ const parseLog = (content) => {
 const startCar = () => {
   // 重新初始化画布
   const lineMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 1 });
-  const linePoints = parsedLogData.map(coord => new THREE.Vector3(coord.realx, coord.realz, coord.realy));
+  const linePoints = parsedLogData.value.map(coord => new THREE.Vector3(coord.realx, coord.realz, coord.realy));
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(linePoints);
   let line = new THREE.Line(lineGeometry, lineMaterial);
 
   const lineMaterial1 = new THREE.LineBasicMaterial({ color: 0xFF0000, linewidth: 1 });
-  const linePoints1 = parsedLogData.map(coord => new THREE.Vector3(coord.logJson.tcInfo.iDevX / 1000, 0, coord.logJson.tcInfo.iDevY / 1000));
+  const linePoints1 = parsedLogData.value.map(coord => new THREE.Vector3(coord.logJson.tcInfo.iDevX / 1000, 0, coord.logJson.tcInfo.iDevY / 1000));
   const lineGeometry1 = new THREE.BufferGeometry().setFromPoints(linePoints1);
   let line1 = new THREE.Line(lineGeometry1, lineMaterial1);
-  currentCoordinateIndex = 0;
+  currentCoordinateIndex.value = 0;
   // currentProgress = 0;
   scene.add(line);
   scene.add(line1);
@@ -330,446 +207,31 @@ const startCar = () => {
 
   render();
 };
-//镜头跟随
-const toggleCameraFollow = () => {
-  cameraFollow.value = !cameraFollow.value;
 
-  if (cameraFollow.value) {
-    controls.enabled = false;
-  } else {
-    controls.enabled = true;
+
+
+//回放进度
+const LogProcess = () => {
+  if (car  && currentCoordinateIndex.value > 0) {
+    currentCoordinateIndex.value--;
+    const previousCoord = parsedLogData.value[currentCoordinateIndex.value];
+    car.position.set(previousCoord.realx, 0, previousCoord.realy);
+
+    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value - 1].realthita), 0, 'XYZ');
+    const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
+    car.setRotationFromQuaternion(targetQuaternion);
+    updateTargetCoordinates();
+    CCupdateTargetCoordinates();
   }
-};
-//事件跳过
-const resumeCarMovement = () => {
-  if (shouldPause.value) {
-    const event = parsedLogData[currentCoordinateIndex].logJson.event.name;
-    while (parsedLogData[currentCoordinateIndex].logJson.event.name === event) {
-      if (currentCoordinateIndex === parsedLogData.length - 1) {
-        break;
-      }
-      if (currentCoordinateIndex === 0) {
-        break;
-      }
-      currentCoordinateIndex++;
-    }
-    // car.material.color.set(0x00ff00);
-    scene.remove(directionalLight);
-    scene.add(light1);
-    scene.add(light2);
-    scene.add(light3);
-    scene.add(light4);
-    scene.add(light5);
-    shouldPause.value = false;
-  }
-};
-//暂停
-const togglePause = () => {
-  paused.value = !paused.value;
-
-  if(paused.value)
-  {
-    pauseAnimation();
-  }else{
-    animateWheel();
-  }
-
-  
-};
-//重播
-
-const restartCar = () => {
-  currentCoordinateIndex = 0;
-  parsedLogData = [];
-  parsedLogData = parsedLogDatabak.concat();
-};
-//infobox
-const updateTargetCoordinates = () => {
-  if (currentCoordinateIndex < parsedLogData.length - 1) {
-    const targetPoint = parsedLogData[currentCoordinateIndex + 1];
-    targetCoordinates.value = `(x=${targetPoint.realx},  y=${-targetPoint.realy}, thita=${targetPoint.realthita})`;
-
-  } else {
-    targetCoordinates.value = '';
-  }
-  nav_pos.value = `(x=${parsedLogData[currentCoordinateIndex].logJson.tcInfo.iDevX},y=${parsedLogData[currentCoordinateIndex].logJson.tcInfo.iDevY})`;
-  //导航
-  nav_LR.value = parsedLogData[currentCoordinateIndex].logJson.navInfo.fXDev.toFixed(4);
-  nav_thi.value = parsedLogData[currentCoordinateIndex].logJson.navInfo.fThitaDev.toFixed(4);
-  nav_sversion.value = parsedLogData[currentCoordinateIndex].logJson.navInfo.swVersion;
-  nav_mversion.value = parsedLogData[currentCoordinateIndex].logJson.navInfo.fmVersion;
-  //状态
-  if (parsedLogData[currentCoordinateIndex].logJson.nAgvState === 0) {
-    agvmode.value = '加载中';
-  } else if (parsedLogData[currentCoordinateIndex].logJson.nAgvState === 1) {
-    agvmode.value = '空闲';
-  } else if (parsedLogData[currentCoordinateIndex].logJson.nAgvState === 2) {
-    agvmode.value = '手动';
-  } else if (parsedLogData[currentCoordinateIndex].logJson.nAgvState === 3) {
-    agvmode.value = '自动';
-  }
-  //事件
-  event_name.value = parsedLogData[currentCoordinateIndex].logJson.event.name;
-  event_detail.value = parsedLogData[currentCoordinateIndex].logJson.event.detail;
-  event_advise.value = parsedLogData[currentCoordinateIndex].logJson.event.advise;
-  //控制台
-  Net_Info_Head.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.sHeading;
-  Net_Info_CurSpeed.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.sCurSpeed;
-  Net_Info_WorkState.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.uWorkState;
-  if (Net_Info_WorkState.value === 1) {
-    Net_Info_WorkState.value = '运行';
-  } else if (Net_Info_WorkState.value === 2) {
-    Net_Info_WorkState.value = '挂起';
-  } else if (Net_Info_WorkState.value === 3) {
-    Net_Info_WorkState.value = '静态OP';
-  } else if (Net_Info_WorkState.value === 4) {
-    Net_Info_WorkState.value = '充电';
-  } else if (Net_Info_WorkState.value === 5) {
-    Net_Info_WorkState.value = '等待';
-  } else if (Net_Info_WorkState.value === 6) {
-    Net_Info_WorkState.value = '睡眠';
-  } else if (Net_Info_WorkState.value === 0) {
-    Net_Info_WorkState.value = '空闲';
-  } else if (Net_Info_WorkState.value === 7) {
-    Net_Info_WorkState.value = '唤醒';
-  }
-
-  Net_Info_EventState.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.ucEventState;
-  switch (Net_Info_EventState.value) {
-    case 0:
-      Net_Info_EventState.value = '无故障';
-      break;
-    // case 0:
-    // Net_Info_EventState.value = '导航信号丢失';
-    //   break;
-    case 1:
-      Net_Info_EventState.value = ' 自旋误差超限';
-      break;
-    case 2:
-      Net_Info_EventState.value = '导航误差超限';
-      break;
-    case 3:
-      Net_Info_EventState.value = '位置校验失败';
-      break;
-    case 4:
-      Net_Info_EventState.value = '地标信号异常';
-      break;
-    case 5:
-      Net_Info_EventState.value = '磁导航通讯超时';
-      break;
-    case 6:
-      Net_Info_EventState.value = '惯导信息故障';
-      break;
-    case 7:
-      Net_Info_EventState.value = '定位模块通讯中断';
-      break;
-    case 30:
-      Net_Info_EventState.value = 'CAN通讯超时';
-      break;
-    case 31:
-      Net_Info_EventState.value = 'CanOpen伺服故障';
-      break;
-    case 32:
-      Net_Info_EventState.value = '舵碰限位';
-      break;
-    case 33:
-      Net_Info_EventState.value = '车轮过热';
-      break;
-    case 34:
-      Net_Info_EventState.value = '自制伺服故障';
-      break;
-    case 35:
-      Net_Info_EventState.value = 'Mcu重启';
-      break;
-    case 36:
-      Net_Info_EventState.value = 'IO检测板故障';
-      break;
-    case 37:
-      Net_Info_EventState.value = '机械臂网络连接断开';
-      break;
-    case 60:
-      Net_Info_EventState.value = '车载设备故障';
-      break;
-    case 61:
-      Net_Info_EventState.value = '设备车体互锁';
-      break;
-    case 90:
-      Net_Info_EventState.value = '伺服电源故障';
-      break;
-    case 91:
-      Net_Info_EventState.value = '用户紧急停车';
-      break;
-    case 92:
-      Net_Info_EventState.value = '硬件保险杠碰撞';
-      break;
-    case 93:
-      Net_Info_EventState.value = 'PLS近距离急停';
-      break;
-    case 94:
-      Net_Info_EventState.value = 'PLS中距离停车';
-      break;
-    case 95:
-      Net_Info_EventState.value = 'PLS切区错误';
-      break;
-    case 96:
-      Net_Info_EventState.value = '3D相机状态错误';
-      break;
-    case 97:
-      Net_Info_EventState.value = '软pls状态错误';
-      break;
-    case 120:
-      Net_Info_EventState.value = '控制台挂起';
-      break;
-    case 121:
-      Net_Info_EventState.value = '网络通讯超时';
-      break;
-    case 122:
-      Net_Info_EventState.value = '控制台任务删除';
-      break;
-    case 123:
-      Net_Info_EventState.value = '禁止上线';
-      break;
-    case 124:
-      Net_Info_EventState.value = 'AGV紧急停车';
-      break;
-    case 125:
-      Net_Info_EventState.value = '任务错误';
-      break;
-    case 150:
-      Net_Info_EventState.value = '电池电量低';
-      break;
-    case 151:
-      Net_Info_EventState.value = '电池电量太低';
-      break;
-    case 152:
-      Net_Info_EventState.value = '充电失败';
-      break;
-    case 153:
-      Net_Info_EventState.value = '电池系统故障';
-      break;
-    case 180:
-      Net_Info_EventState.value = '地图信息错误';
-      break;
-    case 210:
-      Net_Info_EventState.value = '用户暂停';
-      break;
-  }
-
-
-
-  Net_Info_EventDetail.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.usEventDetail;
-  if (Net_Info_EventDetail.value === 0) {
-    Net_Info_EventDetail.value = '无故障';
-  }
-  Net_Info_TaskID.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.usTaskID;
-  Net_Info_Key.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.usKey;
-  Net_Info_TaskState.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.ucTaskState;
-  if (parsedLogData[currentCoordinateIndex].logJson.nAgvState === 3) {
-    if (Net_Info_TaskState.value === 1) {
-      Net_Info_TaskState.value = '开始';
-    } else if (Net_Info_TaskState.value === 2) {
-      Net_Info_TaskState.value = '运行中';
-    } else if (Net_Info_TaskState.value === 3) {
-      Net_Info_TaskState.value = '结束';
-    }
-
-
-  } else {
-    Net_Info_TaskState.value = '无任务';
-  }
-
-
-  Net_Info_usCargoState.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.usCargoState;
-  if (Net_Info_usCargoState.value === 0) {
-    Net_Info_usCargoState.value = '未载货';
-  } else if (Net_Info_usCargoState.value === 1) {
-    Net_Info_usCargoState.value = '载货';
-  }
-  Net_Info_usBatterState.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.usBatterState;
-  if (Net_Info_usBatterState.value === 0) {
-    Net_Info_usBatterState.value = '无需充电';
-  } else if (Net_Info_usBatterState.value === 1) {
-    Net_Info_usBatterState.value = '正常电量';
-  } else if (Net_Info_usBatterState.value === 2) {
-    Net_Info_usBatterState.value = '电量低';
-  } else if (Net_Info_usBatterState.value === 3) {
-    Net_Info_usBatterState.value = '电量极低';
-  }
-  Net_Info_uFromNode.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.uFromNode;
-  Net_Info_uToNode.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.uToNode;
-  Net_Info_sProgress.value = parsedLogData[currentCoordinateIndex].logJson.tcInfo.sProgress;
-
-
-
-  Net_equ_uEquipmentState.value = parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.uEquipmentState;
-  if (Net_equ_uEquipmentState.value === 0) {
-    Net_equ_uEquipmentState.value = '其他';
-  } else if (Net_equ_uEquipmentState.value === 1) {
-    Net_equ_uEquipmentState.value = '开始';
-  } else if (Net_equ_uEquipmentState.value === 2) {
-    Net_equ_uEquipmentState.value = '暂停';
-  } else if (Net_equ_uEquipmentState.value === 3) {
-    Net_equ_uEquipmentState.value = '结束';
-  }
-  Net_equ_uEquipmentTaskError.value = parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.uEquipmentTaskError;
-  if (Net_equ_uEquipmentTaskError.value === 0) {
-    Net_equ_uEquipmentTaskError.value = '无故障';
-  }
-  Net_equ_uEquipmentTaskID.value = parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.uEquipmentTaskID;
-
-  if (Net_equ_uEquipmentTaskID.value === 0) {
-    Net_equ_uEquipmentTaskState.value = '无任务';
-    Net_equ_strEquipmentTaskMessage.value = '无';
-  } else {
-    //设备
-    Net_equ_strEquipmentTaskMessage.value = parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.strEquipmentTaskMessage;
-    const keyToValueMap = modbusscreendatajson.AgvEquipmentInfo.reduce((map, item) => {
-      map[item.Key] = item.value;
-      return map;
-    }, {});
-    const convertedValue = keyToValueMap[Net_equ_strEquipmentTaskMessage.value] || "";
-    Net_equ_strEquipmentTaskMessage.value = convertedValue;
-
-
-    Net_equ_uEquipmentTaskState.value = parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.uEquipmentTaskState;
-
-    if (Net_equ_uEquipmentTaskState.value === 0) {
-      Net_equ_uEquipmentTaskState.value = '运行中';
-    } else if (Net_equ_uEquipmentTaskState.value === 1) {
-      Net_equ_uEquipmentTaskState.value = '结束';
-    } else if (Net_equ_uEquipmentTaskState.value === -1) {
-      Net_equ_uEquipmentTaskState.value = '无任务';
-    }
-  }
-
-
-  //安全回路
-  ele_safe_bEmgStop.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.safeCheck.bEmgStop;
-  ele_safe_bHardBumper.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.safeCheck.bHardBumper;
-  ele_safe_nPlsTrig.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.safeCheck.nPlsTrig;
-  if (!ele_safe_bEmgStop.value) {
-    ele_safe_bEmgStop.value = '未触发';
-  } else {
-    ele_safe_bEmgStop.value = '触发';
-  }
-
-  if (!ele_safe_bHardBumper.value) {
-    ele_safe_bHardBumper.value = '未触发';
-  } else {
-    ele_safe_bHardBumper.value = '触发';
-  }
-
-  if (ele_safe_nPlsTrig.value === 0) {
-    ele_safe_nPlsTrig.value = '未触发';
-  } else if (ele_safe_nPlsTrig.value === 1) {
-    ele_safe_nPlsTrig.value = '近';
-  } else if (ele_safe_nPlsTrig.value === 2) {
-    ele_safe_nPlsTrig.value = '中';
-  } else if (ele_safe_nPlsTrig.value === 3) {
-    ele_safe_nPlsTrig.value = '远';
-  }
-
-  //轮舵
-  ele_dev_count.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.nDriveCount;
-  if (parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].wheel !== undefined) {
-    ele_dev_wheel_fServoSpeed.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].wheel.fServoSpeed.toFixed(5);
-    ele_dev_wheel_nServoErrCode.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].wheel.nServoErrCode;
-    switch (ele_dev_wheel_nServoErrCode.value) {
-      case 0:
-        ele_dev_wheel_nServoErrCode.value = '无错误';
-        break;
-      case 100:
-        ele_dev_wheel_nServoErrCode.value = 'Motec 系统故障/Kinco 内部错误报警';
-        break;
-      case 101:
-        ele_dev_wheel_nServoErrCode.value = ' Motec 驱动器启动故障/Kinco 编码器ABZ连接报警';
-        break;
-      case 102:
-        ele_dev_wheel_nServoErrCode.value = 'Motec 参数错误/Kinco 编码器UVW连接报警';
-        break;
-      case 103:
-        ele_dev_wheel_nServoErrCode.value = ' Motec 欠压报警/Kinco  编码器计数报警';
-        break;
-      case 104:
-        ele_dev_wheel_nServoErrCode.value = 'Motec 过压报警/Kinco 温度报警';
-        break;
-      case 105:
-        ele_dev_wheel_nServoErrCode.value = ' Motec I2T报警/Kinco 高压报警';
-        break;
-      case 106:
-        ele_dev_wheel_nServoErrCode.value = ' Motec 超过峰值电流/Kinco 低压报警';
-        break;
-      case 107:
-        ele_dev_wheel_nServoErrCode.value = ' Motec 位置误差超限/Kinco 过流报警';
-        break;
-      case 108:
-        ele_dev_wheel_nServoErrCode.value = 'Motec 编码器故障/Kinco 吸收电阻报警';
-        break;
-      case 109:
-        ele_dev_wheel_nServoErrCode.value = 'Motec 速度误差超限/Kinco 位置误差过大报警';
-        break;
-      case 110:
-        ele_dev_wheel_nServoErrCode.value = 'Kinco 逻辑低压报警';
-        break;
-      case 111:
-        ele_dev_wheel_nServoErrCode.value = ' Kinco 电机或驱动器iit报警';
-        break;
-      case 112:
-        ele_dev_wheel_nServoErrCode.value = ' Kinco 脉冲频率过高报警';
-        break;
-      case 113:
-        ele_dev_wheel_nServoErrCode.value = 'Kinco STO错误';
-        break;
-      case 114:
-        ele_dev_wheel_nServoErrCode.value = 'Kinco 电机励磁报警';
-        break;
-      case 115:
-        ele_dev_wheel_nServoErrCode.value = 'Motec 电机没有使能/Kinco 存储器报警';
-        break;
-    }
-
-
-    ele_dev_wheel_nServoState.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].wheel.nServoState;
-  }
-  if (parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].steer !== undefined) {
-    console.log(parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].steer);
-    ele_dev_steer_fServoPosition.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].steer.fServoPosition.toFixed(5);
-    ele_dev_steer_nServoState.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].steer.nServoState;
-    ele_dev_steer_nServoErrCode.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].steer.nServoErrCode;
-    ele_dev_steer_bPositiveLimitSwt.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].steer.bPositiveLimitSwt;
-    ele_dev_steer_bNegativeLimitSwt.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].steer.bNegativeLimitSwt;
-    ele_dev_steer_bZeroSwt.value = parsedLogData[currentCoordinateIndex].logJson.electricalModule.kinematic.drive[ele_dev_Dcount].steer.bZeroSwt;
-  }
-
-};
-const CCupdateTargetCoordinates = () => {
-  if (currentCoordinateIndex < parsedLogData.length - 1) {
-    const targetPoint = parsedLogData[currentCoordinateIndex];
-    CCtargetCoordinates.value = `(${targetPoint.realx}, ${-targetPoint.realy}, ${targetPoint.realthita})`;
-  } else {
-    CCtargetCoordinates.value = '';
-  }
-};
-//切换轴
-const Cutdrive = () => {
-  if (ele_dev_Dcount < ele_dev_count.value - 1) {
-    ele_dev_Dcount++;
-  } else {
-    ele_dev_Dcount = 0;
-  }
-  console.log(ele_dev_Dcount);
-  ele_dev_name.value = '驱动轴' + ele_dev_Dcount.toString();
-  updateTargetCoordinates();
-  CCupdateTargetCoordinates();
 };
 //单步运行
 const previousStep = () => {
-  if (car && paused.value && currentCoordinateIndex > 0) {
-    currentCoordinateIndex--;
-    const previousCoord = parsedLogData[currentCoordinateIndex];
+  if (car && paused.value && currentCoordinateIndex.value > 0) {
+    currentCoordinateIndex.value--;
+    const previousCoord = parsedLogData.value[currentCoordinateIndex.value];
     car.position.set(previousCoord.realx, 0, previousCoord.realy);
 
-    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData[currentCoordinateIndex - 1].realthita), 0, 'XYZ');
+    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value - 1].realthita), 0, 'XYZ');
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
     car.setRotationFromQuaternion(targetQuaternion);
     updateTargetCoordinates();
@@ -778,12 +240,12 @@ const previousStep = () => {
 };
 
 const nextStep = () => {
-  if (car && paused.value && currentCoordinateIndex < parsedLogData.length - 1) {
-    currentCoordinateIndex++;
-    const nextCoord = parsedLogData[currentCoordinateIndex];
+  if (car && paused.value && currentCoordinateIndex.value < parsedLogData.value.length - 1) {
+    currentCoordinateIndex.value++;
+    const nextCoord = parsedLogData.value[currentCoordinateIndex.value];
     car.position.set(nextCoord.realx, 0, nextCoord.realy);
 
-    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData[currentCoordinateIndex + 1].realthita), 0, 'XYZ');
+    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value + 1].realthita), 0, 'XYZ');
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
     car.setRotationFromQuaternion(targetQuaternion);
     updateTargetCoordinates();
@@ -820,27 +282,21 @@ const size = 500;
 
 //AGV移动逻辑
 const moveCar = () => {
-  if (car && !paused.value && !shouldPause.value && parsedLogData[currentCoordinateIndex] && parsedLogData[currentCoordinateIndex + 1]) {
-    currentCoordinateIndex++;
-    const nextCoord = parsedLogData[currentCoordinateIndex];
+  if (car && !paused.value && !shouldPause.value && parsedLogData.value[currentCoordinateIndex.value] && parsedLogData.value[currentCoordinateIndex.value + 1]) {
+    currentCoordinateIndex.value++;
+    const nextCoord = parsedLogData.value[currentCoordinateIndex.value];
     car.position.set(nextCoord.realx, 0, nextCoord.realy);
 
-    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData[currentCoordinateIndex + 1].realthita), 0, 'XYZ');
+    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value + 1].realthita), 0, 'XYZ');
 
 
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
     car.setRotationFromQuaternion(targetQuaternion);
     updateTargetCoordinates();
     CCupdateTargetCoordinates();
-    if (parsedLogData[currentCoordinateIndex].logJson.nAgvState === 3) {
-      if (parsedLogData[currentCoordinateIndex].logJson.event.name !== "") {
-        scene.remove(light1);
-        scene.remove(light2);
-        scene.remove(light3);
-        scene.remove(light4);
-        scene.remove(light5);
-        scene.add(directionalLight);
-        // car.material.color.set(0xff0000);
+    if (parsedLogData.value[currentCoordinateIndex.value].logJson.nAgvState === 3) {
+      if (parsedLogData.value[currentCoordinateIndex.value].logJson.event.name !== "") {
+        color.value = 2;
         shouldPause.value = true;
       }
     }
@@ -907,18 +363,19 @@ gltfLoader.load(
 );
 
 gltfLoader.load(
-  'https://asdqvqw.github.io/whwtest.github.io/huojia.draco.draco.glb',
+  './main/test2.glb',
   (gltf) => {
     car = gltf.scene;
     // 设置模型的位置、缩放等属性
     car.position.set(0, 0, 0);
-    car.scale.set(1, 0.5, 0.5);
+    car.scale.set(1, 0.6, 0.7);
 
     car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
     scene.add(car);
 
     animateWheel();
-
+    animateWheel2();
+    animatelight();
   },
   (xhr) => {
     console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
@@ -933,18 +390,85 @@ const pauseAnimation = () => {
   cancelAnimationFrame(animationId); // 停止动画的执行
 };
 
+const material3 = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+
 const animateWheel = () => {
   car.traverse((child) => {
-    if (child.name === 'upDown') {
-      child.rotation.y += 0.01;
+    if (child.name === 'Material_9举升3-14') {
+      // child.material = material3;
     }
+    if (child.name === 'upDown') {
+
+      child.rotation.y += 0.01;
+
+    }
+
   });
   animationId = requestAnimationFrame(animateWheel);
 };
+
+const animateWheel2 = () => {
+  car.traverse((child) => {
+    if (child.name === 'screen') {
+      // 随机生成闪烁颜色
+      const randomColor = Math.random() * 0xffffff;
+      child.material.color.setHex(randomColor);
+    }
+  });
+
+  setTimeout(animateWheel2, 200);
+};
+let lightflag = 1;
+
+
+
+const animatelight = () => {
+  const colorOptions = {
+    1: {
+      on: 0x00ff00, // 绿色
+      off: 0xffffff // 原始颜色
+    },
+    2: {
+      on: 0xff0000, // 红色
+      off: 0xffffff // 原始颜色
+    }
+  };
+
+  const colorData = colorOptions[color.value];
+  const onColor = colorData.on;
+  const offColor = colorData.off;
+
+  const setColor = (child, color) => {
+    child.traverse((subChild) => {
+      if (subChild instanceof THREE.Mesh) {
+        const originalColor = subChild.material.color.clone();
+        subChild.material.color.set(color);
+      }
+    });
+  };
+
+  car.traverse((child) => {
+    if (child.name === 'light') {
+      if (lightflag === 1) {
+        setColor(child, onColor);
+      } else {
+        setColor(child, offColor);
+      }
+    }
+  });
+
+  lightflag = 1 - lightflag; // 切换灯光状态
+
+  setTimeout(animatelight, 500);
+};
+
 onMounted(() => {
   // 鼠标移入移出
   window.addEventListener('mousemove', handleMouseMove);
   window.addEventListener('mouseout', handleMouseOut);
+  window.addEventListener('click', () => {
+    screenRef.value.handleMouseClick(car);
+  });
 
   canvasDom.value.appendChild(renderer.domElement);
   //网格
@@ -961,9 +485,6 @@ onMounted(() => {
   scene.add(arrowX, arrowY, arrowZ);
 
 
-
-
-
   controls = new OrbitControls(camera, renderer.domElement);
   controls.update();
   //光源
@@ -976,97 +497,18 @@ onMounted(() => {
   render();
 });
 
+
 </script>
 
-<style scoped>
-.file-upload {
-  display: inline-block;
-  position: relative;
-}
+<style lang="scss" scoped>
+.buttonstyle {
+  background-color: #12b2de3e;
+  color: aliceblue;
+  opacity: 0.7;
+  /* 设置透明度的值，可以根据需求调整 */
+  background-size: 100%;
+  background-position: top left;
 
-.import {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.import-label {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #15e6e6;
-  color: white;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.label-text {
-  display: inline-block;
-}
-
-.import-label:hover {
-  background-color: #0a61dc;
-}
-
-.playorstop {
-  top: 20px;
-  position: absolute;
-  left: 10px;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(246, 246, 246);
-  text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
-
-.event {
-  top: 20px;
-  position: absolute;
-  left: 240px;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(246, 246, 246);
-  text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
-
-.replay {
-  top: 20px;
-  position: absolute;
-  left: 470px;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(246, 246, 246);
-  text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
-
-.reserve {
-  top: 100px;
-  position: absolute;
-  left: 410px;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(246, 246, 246);
-  text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
-
-.statistics {
-  top: 100px;
-  position: absolute;
-  left: 480px;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(246, 246, 246);
-  text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
-
-.cameractrl {
-  top: 80px;
-  position: absolute;
-  left: 10px;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(246, 246, 246);
-  text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
 }
 
 .singlestep {
@@ -1078,6 +520,24 @@ onMounted(() => {
   color: rgb(246, 246, 246);
   text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
 }
+
+.logprocess {
+  width: 20%;
+  background-image: url('./img/1-1-bg.png');
+  background-size: 100%;
+  background-position: center;
+  background-color: #30499344;
+  position: absolute;
+  right: 0%;
+  bottom: 30%;
+  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+  font-size: 18px;
+  color: rgb(246, 246, 246);
+  border-radius: 10px;
+  border: 5px solid transparent;
+}
+
+
 
 .home {
   position: fixed;
@@ -1092,12 +552,15 @@ onMounted(() => {
 }
 
 .choose {
-  width: 680px;
-  height: 150px;
-  color: aliceblue;
+  width: 50%;
+  height: 20%;
+  background-image: url('./img/1-1-bg.png');
+  background-size: 100%;
+  background-position: center;
+  background-color: #30499344;
   position: absolute;
-  top: 600px;
-  left: 400px;
+  top: 80%;
+  left: 50%;
   font-size: 18px;
   font-weight: 600;
 
@@ -1107,155 +570,30 @@ onMounted(() => {
   align-items: center;
   border-radius: 10px;
   border: 5px solid transparent;
-  /* 设置边框样式为透明 */
-  background-image: linear-gradient(to bottom, rgba(2, 251, 10, 0.046), rgba(24, 17, 233, 0));
-  /* 应用渐变背景图像 */
-  background-clip: padding-box;
-  /* 限制背景图像的显示范围为内边距区域 */
+
 }
 
 .choose-title {
-  top: -35px;
+  width: 97%;
+  top: -30%;
   position: absolute;
   font-size: 20px;
-  width: 660px;
-  color: rgb(7, 19, 33);
-  background-color: rgb(140, 205, 229);
-  padding: 10px;
-  height: 20px;
-  line-height: 20px;
-
-  text-align: center;
-  /* 文字居中 */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(45deg, rgba(33, 33, 34, 0.004), rgb(120, 180, 210));
-  /* 使用渐变背景 */
-}
-
-
-.election {
-  color: aliceblue;
-  position: absolute;
-  left: 0px;
-  font-size: 18px;
-  font-weight: 600;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   border-radius: 10px;
   border: 5px solid transparent;
-  /* 设置边框样式为透明 */
-  background-image: linear-gradient(to bottom, rgba(2, 251, 10, 0.046), rgba(24, 17, 233, 0));
-  /* 应用渐变背景图像 */
-  background-clip: padding-box;
-  /* 限制背景图像的显示范围为内边距区域 */
-  transition: opacity 1.5s, background-color 1.5s;
-}
-
-.election-title {
-  top: 0px;
-  position: absolute;
-  font-size: 20px;
   color: rgb(7, 19, 33);
-  background-color: rgb(144, 201, 221);
+  // background-color: rgb(140, 205, 229);
   padding: 10px;
-  height: 20px;
-  line-height: 20px;
-
+  height: 11px;
+  line-height: 11px;
+  background-position: top left;
   text-align: center;
-  /* 文字居中 */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(45deg, rgba(33, 33, 34, 0.004), rgb(120, 180, 210));
+  background-image: url('./img/header-bg.png');
+  background-size: 100%;
+
+  background-color: #30499344;
+  // /* 文字居中 */
+  // text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  // background: linear-gradient(45deg, rgba(33, 33, 34, 0.004), rgb(120, 180, 210));
   /* 使用渐变背景 */
-}
-
-.election-info {
-  line-height: 40px;
-  margin-left: -150px;
-  position: fixed;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(245, 243, 243);
-  text-shadow: 2px 2px 4px rgba(246, 245, 245, 0.5);
-}
-
-.election_info_expanded {
-  line-height: 40px;
-  margin-left: -450px;
-  margin-top: -250px;
-  position: fixed;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(0, 0, 0);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.election-info-big {
-  width: 300px;
-  line-height: 45px;
-  margin-left: 300px;
-  margin-top: -80px;
-  position: fixed;
-  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-  font-size: 18px;
-  color: rgb(0, 0, 0);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.state_expanded {
-  opacity: 1;
-  /* 取消透明度 */
-  background-color: #066987cc;
-  /* 修改框的颜色为红色 */
-}
-
-
-
-.pause-n-button {
-  display: inline-block;
-  margin-top: 5px;
-  margin-left: 15px;
-  padding: 10px 20px;
-  background-color: #7fd8f100;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.3s ease-in-out;
-  font-size: 16px;
-  border: 1px solid #65ac67;
-  /* 深绿色边框 */
-  color: #e8e2e2;
-}
-
-.pause-n-button:hover {
-  background-color: #648e59ab;
-}
-
-.pause-n-button:disabled {
-  background-color: #b0a7a766;
-  cursor: not-allowed;
-}
-
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(204, 175, 220, 0.193);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background-color: #563131;
-  padding: 20px;
-  border-radius: 10px;
-  width: 500px;
-  height: 500px;
-
 }
 </style>

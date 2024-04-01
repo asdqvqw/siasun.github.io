@@ -1,6 +1,6 @@
 <template>
 
-    <div class="chart" id="main2" v-show="state_isExpanded" :style="{ width: 700 + 'px', height: 300 + 'px' }"
+    <div class="chart" id="main2" v-show="true" :style="{ width: 100 + 'px', height: 100 + 'px' }"
         ref="main2">
 
     </div>
@@ -123,14 +123,14 @@ onMounted(() => {
   const myChart = echarts.init(main2.value);
 
   setInterval(() => {
-    let data1 = (ele_dev_wheel_fServoSpeed.value * 1000).toFixed(2);
+    let data1 = (1000).toFixed(2);
     let nowTime = new Date().toLocaleTimeString().replace(/^\D*/, '');
     time.shift();
     time.push(nowTime);
     dataOne.shift();
     dataOne.push(data1);
     dataTwo.shift();
-    dataTwo.push(Net_Info_CurSpeed);
+    dataTwo.push(200);
 
     myChart.setOption({
       xAxis: [

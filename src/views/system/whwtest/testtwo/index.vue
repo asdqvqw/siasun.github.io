@@ -1,620 +1,293 @@
 <template>
-  <div class="page-container main-view">
+  <div class="home">
 
-      <div class="table-box content-container page-content-box">
-          <div class="top-container">
-              <div class="left">
-                  <el-button type="primary" @click="handleAdd">
-                      新增
-                  </el-button>
-                  <el-button plain type="primary" @click="handleExport">
-                      导出json
-                  </el-button>
-                  <el-button plain type="primary" @click="handlepeizhi" >
-                      导出配置
-                  </el-button>
-                  &nbsp;&nbsp;<input ref="fileInputRef" type="file" style="display: none" @change="handleFileChange" accept=".json">
-                  <el-button type="primary" @click="handleImport">导入配置</el-button>
-                  <el-button @click="handleExpand" type="info" plain>
-                      展开 / 折叠
-                  </el-button>
-                  <el-button @click="handleExpand11" type="info" plain>
-                      查看
-                  </el-button>
-                  <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible" @close="dialogVisible = false">
-                      <p>{{ message }}</p>
-                  </el-dialog>
-              </div>
-
-          </div>
-
-          <div class="table-container">
-              <el-table ref="ElTableRef" v-loading="dataContainer.loading" :data="dataContainer.list"
-                  @cell-dblclick="handleCopyVale" border row-key="id" :tree-props="{
-                      children: 'childs',
-                  }" height="100%">
-                  <el-table-column type="index" align="left" label="序号" width="60" fixed="left" />
-                  <el-table-column label="名称" show-overflow-tooltip align="left" min-width="170" prop="name" />
-                  <el-table-column label="字段" show-overflow-tooltip align="left" prop="key" width="150" />
-                  <el-table-column label="值" show-overflow-tooltip align="left" prop="value" min-width="150" />
-                  <el-table-column label="格式" show-overflow-tooltip align="left" prop="format" min-width="150" />
-                  <el-table-column label="操作" width="200" fixed="right" class-name="small-padding fixed-width">
-                      <template #default="scope">
-                          <el-button :text="true" @click="handleDetails(scope.row, {
-                              isShow: true,
-                              afterTitle: ' - 查看',
-                          })">
-                              查看
-                          </el-button>
-                          <el-button :text="true" @click="handleEdit(scope.row, {
-                              isShow: false,
-                              afterTitle: ' - 编辑',
-                          })">
-                              编辑
-                          </el-button>
-                          <el-button :text="true" @click="handleAdd({
-                                parentId: scope.row.id,
-                            }, {
-                                afterTitle: ' - 添加',
-                            })" :disabled="scope.row.format === 'string' || scope.row.format === 'number'">
-                                新增
-                            </el-button>
-                          <el-button :text="true" type="danger" @click="handleDelete(scope.row)">
-                              删除
-                          </el-button>
-                      </template>
-                  </el-table-column>
-              </el-table>
-          </div>
-      </div>
-      <EditDataDialog ref="EditDataDialogRef"></EditDataDialog>
+    <div class="canvas-container" ref="canvasDom"></div>
+    <div class="choose">
+      <div class="choose-title">控制：</div>
+    <el-button @click="followWheel">aaaaaa</el-button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
-import { useRouter } from "vue-router";
-import { copyValue, deepCopyObj } from '@/common/OtherTools';
-import { debounceFn } from "@/common/DebounceAndThrottle";
-import { responseData } from "./common/Data.js";
-import { messageSuccess, confirm } from "@/action/MessagePrompt.js";
-import EditDataDialog from "./components/EditDataDialog.vue";
-import { toTree, unfoldTreeList } from "@/common/MenuTools";
-import { guid } from "@/common/Guid";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { onMounted, ref } from 'vue';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader';
+const parsedLogData = ref([{ x: 1, y: 2, realthita: 0.1, angel: 0.1, speed: 2, top: 1 }, { x: 3, y: 5, realthita: 1.5, angel: -2.1, speed: -2, top: 5 }, { x: 2, y: 6, realthita: 3.5, angel: +1.1, speed: 2, top: 2 }
+  , { x: 2, y: 1, realthita: 1.68, angel: 0, speed: 0, top: 0 }]);
+const currentCoordinateIndex = ref(0)
 
-const EditDataDialogRef = ref(null); //组件实例
-const ElTableRef = ref(null); //组件实例
-const router = useRouter();
-const dataContainer = reactive({
-  loading: false,
-  showSearch: true,
-  defaultExpandAll: false,
-  form: {},
-  params: {
-      //基础参数
-  },
-  list: [],
+const gltfLoader = new GLTFLoader();
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath('https://asdqvqw.github.io/whwtest.github.io/draco/');
+gltfLoader.setDRACOLoader(dracoLoader);
+
+
+//光源
+const light1 = new THREE.DirectionalLight(0xffffff, 1);
+light1.position.set(0, 0, 10);
+
+const light2 = new THREE.DirectionalLight(0xffffff, 1);
+light2.position.set(0, 0, -10);
+
+const light3 = new THREE.DirectionalLight(0xffffff, 1);
+light3.position.set(10, 0, 0);
+
+const light4 = new THREE.DirectionalLight(0xffffff, 1);
+light4.position.set(-10, 0, 0);
+
+const light5 = new THREE.DirectionalLight(0xffffff, 1);
+light5.position.set(0, 10, 0);
+let renderCounter = 0;
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
 });
-let getDataListdata = ref(null);
-/** 获取数据列表 */
-const getDataList = debounceFn(function () {
-  dataContainer.loading = true;
-  Promise.resolve(responseData)
-      .then(res => {
-          let list = deepCopyObj(res.rows || []);
-          /** 
-           * 将树形结构展开
-           * 需要换成一维数组来过滤不要展示的目录
-           *  */
-          list = unfoldTreeList(list, {
-              childsKey: 'childs',
-              setParentKey: 'parentId',
-              getParentKey: 'id',
-              forEachFn(item) {
-                  /** 添加唯一标识以便区分 */
-                  item.id = guid();
-              },
-          });
-          /** 重新组装 */
-          list = toTree(list.map(item => {
-              delete item.childs;
-              return item;
-          }), {
-              pKey: 'parentId',
-              key: 'id',
-              childsKey: 'childs',
-              isNew: true,
-          });
-          dataContainer.list = list;
-      })
-      .catch(() => {
-          return;
-      })
-      .finally(() => {
-          dataContainer.loading = false;
-      });
-}, 300);
-getDataList();
-
-
-/** 导入数据列表 */
-const getDataList2 = debounceFn(function () {
-  dataContainer.loading = true;
-  Promise.resolve(getDataListdata)
-      .then(res => {
-          let list = deepCopyObj(res.rows || []);
-          /** 
-           * 将树形结构展开
-           * 需要换成一维数组来过滤不要展示的目录
-           *  */
-          list = unfoldTreeList(list, {
-              childsKey: 'childs',
-              setParentKey: 'parentId',
-              getParentKey: 'id',
-              forEachFn(item) {
-                  /** 添加唯一标识以便区分 */
-                  item.id = guid();
-              },
-          });
-          /** 重新组装 */
-          list = toTree(list.map(item => {
-              delete item.childs;
-              return item;
-          }), {
-              pKey: 'parentId',
-              key: 'id',
-              childsKey: 'childs',
-              isNew: true,
-          });
-          dataContainer.list = list;
-      })
-      .catch(() => {
-          return;
-      })
-      .finally(() => {
-          dataContainer.loading = false;
-      });
-}, 300);
-
-
-
-/** 设置树形结构层级 */
-function setupLevels() {
-  function setFunction(list, levels) {
-      list.forEach(item => {
-          item.treeLevels = levels;
-          if (item.childs) {
-              let levels_ = levels + 1;
-              setFunction(item.childs, levels_);
-          }
-      });
+renderer.setSize(window.innerWidth, window.innerHeight);
+//网格大小
+const size = 500;
+const render = () => {
+  renderCounter++;
+  if (renderCounter >= carSpeed) {
+    moveCar();
+    renderCounter = 0;
   }
-  setFunction(dataContainer.list, 1);
-}
 
-/** 双击单元格，复制单元格内容 */
-const handleCopyVale = (_, __, ___, event) => {
-  copyValue(event.target.innerText);
-  messageSuccess("复制成功，内容为：" + event.target.innerText);
+  renderer.render(scene, camera);
+  controls && controls.update();
+  requestAnimationFrame(render);
 };
 
+let controls, gridHelper, car;
+let canvasDom = ref(null);
+// 速度
+let carSpeed = 10;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 2, 6);
+
+gltfLoader.load(
+  './main/test.glb',
+  (gltf) => {
+    car = gltf.scene;
+    // 设置模型的位置、缩放等属性
+    car.position.set(0, 0, 0);
+    car.scale.set(1, 0.6, 0.7);
+
+    car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+    scene.add(car);
+    animateWheel();
+    startCar();
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+  },
+  (error) => {
+    console.error('Error loading model:', error);
+  }
+);
 
 
-/** 导出数据 */
-const handleExport = () => {
-  const listWithoutIds = JSON.parse(JSON.stringify(dataContainer.list));
+const animateWheel = () => {
+  car.traverse((child) => {
+    if (child.name === 'leftwheel') {
 
-  // 定义递归函数，用于遍历树结构并删除 id 和 parentId 属性
-  const removeIdsFromTree = (node) => {
-      // 删除当前节点的 id 和 parentId 属性
-      delete node.id;
-      delete node.parentId;
+      child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].speed * 0.05;
 
-      // 如果当前节点有子节点，则递归调用该函数处理子节点
-      if (node.childs) {
-          node.childs.forEach(child => {
-              removeIdsFromTree(child);
-          });
-      }
-  };
 
-  // 遍历树的每个节点并删除 id 和 parentId 属性
-  listWithoutIds.forEach(node => {
-      removeIdsFromTree(node);
+    }
+    if (child.name === 'rightwheel') {
+
+      child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].speed * 0.05;
+
+
+    }
   });
+  requestAnimationFrame(animateWheel);
+};
+const followWheel = () => {
+  const targetScreen = car.getObjectByName('Material_2电器-接近开关M8');
+  if (targetScreen) {
+    console.log('11111',targetScreen.position.y)
 
-  // 打印处理后的数据
-
-  const transformedData = transformData(listWithoutIds);
-
-
-  // 将转换后的数据导出为 JSON 文件
-  const jsonContent = JSON.stringify(transformedData, null, 2);
-  const blob = new Blob([jsonContent], { type: 'application/json' });
-  const url = window.URL.createObjectURL(blob);
-
-  // 创建一个 <a> 标签用于下载
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'transformedData.json';
-
-  // 触发点击事件进行下载
-  document.body.appendChild(link);
-  link.click();
-
-  // 释放 URL 对象
-  window.URL.revokeObjectURL(url);
+      const offset = new THREE.Vector3(0, 100, -300); // 设置相对于屏幕的偏移量
+    const targetPosition = targetScreen.localToWorld(offset);
+    camera.position.copy(targetPosition);
+    camera.lookAt(car.position);
 
 
+  }
+  requestAnimationFrame(render);
 };
 
-/** 新增按钮操作 */
-const handleAdd = (params, test) => {
-  
-    if (!EditDataDialogRef.value) return;
-    setupLevels();
+const animateWheel2 = () => {
+  car.traverse((child) => {
+    if (child.name === 'upDown') {
 
-    // 获取所选行的格式和子元素情况
-    const selectedRow = dataContainer.list.find(item => item.id === params.parentId);
-    let format = ''; // 初始化新增数据的格式
-    if (selectedRow && selectedRow.format === 'array' && selectedRow.childs.length > 0) {
-        
-        format = selectedRow.childs[0].format;
-        // 弹出新增对话框，并将预先确定的格式传递给对话框组件
-        EditDataDialogRef.value.initData(true, {
-            ...params,
-            format: format, // 设置新增数据的格式
-            isFormatDisabled: true,
-        }, {
-            ...test,
-            menuList: dataContainer.list,
-            
-        }).then((data) => {
-            data.id = guid();
-            let list = deepCopyObj(dataContainer.list || []);
-            list = unfoldTreeList(list, {
-                childsKey: 'childs',
-                setParentKey: 'parentId',
-                getParentKey: 'id',
-            });
-            list.push(data);
-            list.sort((a, b) => {
-                return (Number(b.sort) || 0) - (Number(a.sort) || 0);
-            })
-            list = toTree(list.map(item => {
-                delete item.childs;
-                return item;
-            }), {
-                pKey: 'parentId',
-                key: 'id',
-                childsKey: 'childs',
-                isNew: true,
-            });
-            dataContainer.list = list;
-        }).catch(() => {
+      child.position.y = parsedLogData.value[currentCoordinateIndex.value].top * 50 + 1000;
 
-        });
-    } 
-    else {
-        // 弹出新增对话框，并将预先确定的格式传递给对话框组件
-        EditDataDialogRef.value.initData(true, {
-            ...params,
-        }, {
-            ...test,
-            menuList: dataContainer.list,
-        }).then((data) => {
-            data.id = guid();
-            let list = deepCopyObj(dataContainer.list || []);
-            list = unfoldTreeList(list, {
-                childsKey: 'childs',
-                setParentKey: 'parentId',
-                getParentKey: 'id',
-            });
-            list.push(data);
-            list.sort((a, b) => {
-                return (Number(b.sort) || 0) - (Number(a.sort) || 0);
-            })
-            list = toTree(list.map(item => {
-                delete item.childs;
-                return item;
-            }), {
-                pKey: 'parentId',
-                key: 'id',
-                childsKey: 'childs',
-                isNew: true,
-            });
-            dataContainer.list = list;
-        }).catch(() => {
 
-        });
     }
 
-
-
-};
-
-/** 详情按钮操作 */
-const handleDetails = (row, querys) => {
-  if (!EditDataDialogRef.value) return;
-  EditDataDialogRef.value.initData(true, {
-      ...row,
-  }, {
-      ...querys,
-      menuList: dataContainer.list,
-  }).then(() => {
-
-  }).catch(() => {
-
   });
 };
+//开始运行
+const startCar = () => {
+  // 重新初始化画布
+  const lineMaterial1 = new THREE.LineBasicMaterial({ color: 0xFF0000, linewidth: 1 });
+  const linePoints1 = parsedLogData.value.map(coord => new THREE.Vector3(coord.x, 0, -coord.y));
+  const lineGeometry1 = new THREE.BufferGeometry().setFromPoints(linePoints1);
+  let line1 = new THREE.Line(lineGeometry1, lineMaterial1);
 
-/** 编辑按钮操作 */
-const handleEdit = (row, querys) => {
-  if (!EditDataDialogRef.value) return;
-  setupLevels();
-  EditDataDialogRef.value.initData(true, {
-      ...row,
-  }, {
-      ...querys,
-      menuList: dataContainer.list,
-  }).then((data) => {
-      let list = deepCopyObj(dataContainer.list || []);
-      /** 
-       * 将树形结构展开
-       * 需要换成一维数组来过滤不要展示的目录
-       *  */
-      list = unfoldTreeList(list, {
-          childsKey: 'childs',
-          setParentKey: 'parentId',
-          getParentKey: 'id',
-      });
-      /** 过滤修改的 */
-      list = list.filter(item => {
-          return item.id != data.id;
-      });
-      list.push(data);
-      /** 排序 */
-      list.sort((a, b) => {
-          return (Number(b.sort) || 0) - (Number(a.sort) || 0);
-      })
-      /** 重新组装 */
-      list = toTree(list.map(item => {
-          delete item.childs;
-          return item;
-      }), {
-          pKey: 'parentId',
-          key: 'id',
-          childsKey: 'childs',
-          isNew: true,
-      });
-      dataContainer.list = list;
-  }).catch(() => {
-
-  });
-};
-
-/** 删除 */
-const handleDelete = (data) => {
-  confirm('确认删除该数据？', '提示').then(() => {
-      let list = deepCopyObj(dataContainer.list || []);
-      /** 
-       * 将树形结构展开
-       * 需要换成一维数组来过滤不要展示的目录
-       *  */
-      list = unfoldTreeList(list, {
-          childsKey: 'childs',
-          setParentKey: 'parentId',
-          getParentKey: 'id',
-      });
-      /** 过滤修改的 */
-      list = list.filter(item => {
-          return item.id != data.id;
-      });
-      /** 排序 */
-      list.sort((a, b) => {
-          return (Number(b.sort) || 0) - (Number(a.sort) || 0);
-      })
-      /** 重新组装 */
-      list = toTree(list.map(item => {
-          delete item.childs;
-          return item;
-      }), {
-          pKey: 'parentId',
-          key: 'id',
-          childsKey: 'childs',
-          isNew: true,
-      });
-      dataContainer.list = list;
-      messageSuccess("删除成功");
-  }).catch(() => { });
+  currentCoordinateIndex.value = 0;
+  scene.add(line1);
+  render();
 };
 
 
-/** 展开/折叠行 */
-const handleExpand = () => {
-  if (!ElTableRef.value) return;
-  dataContainer.defaultExpandAll = !dataContainer.defaultExpandAll;
-  function setupState(list) {
-      list.forEach(item => {
-          ElTableRef.value.toggleRowExpansion(item);
-          if (item.childs) {
-              setupState(item.childs);
-          }
-      });
+
+
+//AGV移动逻辑
+const moveCar = () => {
+  if (car && parsedLogData.value[currentCoordinateIndex.value] && parsedLogData.value[currentCoordinateIndex.value + 1]) {
+    currentCoordinateIndex.value++;
+    const nextCoord = parsedLogData.value[currentCoordinateIndex.value];
+    car.position.set(nextCoord.x, 0, -nextCoord.y);
+    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value].realthita), 0, 'XYZ');
+    animateWheel2();
+    const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
+    car.setRotationFromQuaternion(targetQuaternion);
   }
-  setupState(dataContainer.list);
-};
 
-const dialogVisible = ref(false);
-const message = ref('');
-
-
-const handleExpand11 = () => {
-  // 复制数据并处理
-  const listWithoutIds = JSON.parse(JSON.stringify(dataContainer.list));
-
-  // 定义递归函数，用于遍历树结构并删除 id 和 parentId 属性
-  const removeIdsFromTree = (node) => {
-      // 删除当前节点的 id 和 parentId 属性
-      delete node.id;
-      delete node.parentId;
-
-      // 如果当前节点有子节点，则递归调用该函数处理子节点
-      if (node.childs) {
-          node.childs.forEach(child => {
-              removeIdsFromTree(child);
-          });
-      }
-  };
-
-  // 遍历树的每个节点并删除 id 和 parentId 属性
-  listWithoutIds.forEach(node => {
-      removeIdsFromTree(node);
-  });
-
-  // 打印处理后的数据
-
-
-
-  const transformedData = transformData(listWithoutIds);
-  message.value = transformedData;
-  dialogVisible.value = true;
 };
 
 
-function transformData(data) {
 
-  if (Array.isArray(data)) {
-      const result = {};
-      data.forEach(item => {
+onMounted(() => {
 
-          if (item.format === 'string' || item.format === 'number') {
-              result[item.key] = transformData(item.value);
+  canvasDom.value.appendChild(renderer.domElement);
+  //网格
+  gridHelper = new THREE.GridHelper(size, size);
+  gridHelper.material.opacity = 0.3;
+  gridHelper.material.transparent = true;
+  scene.add(gridHelper);
 
-          } else if (item.format === 'object') {
-              result[item.key] = transformData(item.childs);
+  const arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), size / 2, 0xff0000);
+  const arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0), size / 2, 0x00ff00);
+  const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0, 0), size / 2, 0x0000ff);
+  scene.add(arrowX, arrowY, arrowZ);
 
-          } else if (item.format === 'array') {
-              result[item.key] = transformarr(item.childs);
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.update();
+  //光源
+  scene.add(light1);
+  scene.add(light2);
+  scene.add(light3);
+  scene.add(light4);
+  scene.add(light5);
 
-          }
+  render();
+});
 
-      });
-      return result;
-  } else {
-      return data;
-  }
-}
-function transformarr(data) {
-
-  const result = [];
-  data.forEach(item => {
-      if (item.format === 'object') {
-          result.push(transformData(item.childs));
-      } else if (item.format === 'string' || item.format === 'number') {
-          result.push(transformData(item.value));
-      } else if (item.format === 'array') {
-          result.push(transformarr(item.childs));
-      }
-  });
-  return result;
-
-}
-
-
-const handlepeizhi = () => {
-
-  // 将 responseData 对象转换为一个合法的 JavaScript 代码字符串
-   const responseDataString = JSON.stringify(responseData, null, 2);
-      console.log(responseData)
-
-  const blob = new Blob([responseDataString], { type: 'application/json' });
-
-
-  const url = window.URL.createObjectURL(blob);
-
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'Data.json'; // 设置下载文件的名称为 Data.js
-
-  document.body.appendChild(link);
-  link.click();
-  window.URL.revokeObjectURL(url);
-};
-
-//导入配置
-const fileInputRef = ref(null);
-
-const handleImport = () => {
-// 触发文件选择对话框
-fileInputRef.value.click();
-};
-
-const handleFileChange = (event) => {
-const file = event.target.files[0];
-if (!file) return;
-
-// 读取文件内容
-const reader = new FileReader();
-reader.onload = () => {    
-   getDataListdata = JSON.parse(reader.result);
-   getDataList2();
-};
-reader.readAsText(file);
-};
 
 </script>
 
-
-
-
-
 <style lang="scss" scoped>
-.main-view {
+.buttonstyle {
+  background-color: #12b2de3e;
+  color: aliceblue;
+  opacity: 0.7;
+  /* 设置透明度的值，可以根据需求调整 */
+  background-size: 100%;
+  background-position: top left;
+
+}
+
+.singlestep {
+  top: 80px;
+  position: absolute;
+  left: 240px;
+  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+  font-size: 18px;
+  color: rgb(246, 246, 246);
+  text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
+}
+
+.logprocess {
+  width: 20%;
+  background-image: url('./img/1-1-bg.png');
+  background-size: 100%;
+  background-position: center;
+  background-color: #30499344;
+  position: absolute;
+  right: 0%;
+  bottom: 30%;
+  font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
+  font-size: 18px;
+  color: rgb(246, 246, 246);
+  border-radius: 10px;
+  border: 5px solid transparent;
+}
+
+
+
+.home {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+
+.canvas-container {
+  width: 100%;
+  height: 100%;
+}
+
+.choose {
+  width: 50%;
+  height: 20%;
+  background-image: url('./img/1-1-bg.png');
+  background-size: 100%;
+  background-position: center;
+  background-color: #30499344;
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  font-size: 18px;
+  font-weight: 600;
+
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  border: 5px solid transparent;
 
-  >.page-query-box {
-      margin: 0 0 10px 0 !important;
-      padding: 10px 10px 0px 10px;
+}
 
-      :deep(.el-form-item) {
-          margin-bottom: 10px !important;
-      }
+.choose-title {
+  width: 97%;
+  top: -30%;
+  position: absolute;
+  font-size: 20px;
+  border-radius: 10px;
+  border: 5px solid transparent;
+  color: rgb(7, 19, 33);
+  // background-color: rgb(140, 205, 229);
+  padding: 10px;
+  height: 11px;
+  line-height: 11px;
+  background-position: top left;
+  text-align: center;
+  background-image: url('./img/header-bg.png');
+  background-size: 100%;
 
-      :deep(.el-form-item--default) {
-          width: 100%;
-          margin-right: 0;
-      }
-  }
-
-  >.content-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 10px 10px;
-      box-sizing: border-box;
-      background: #fff;
-
-      >.top-container {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin: 0px 0 10px 0;
-      }
-
-      >.table-container {
-          flex: 1 1 auto;
-          height: 0;
-          overflow: auto;
-      }
-  }
-
-  .pagination-container {
-      display: flex;
-      justify-content: flex-end;
-      padding: 0;
-      margin: 10px 0 0 0;
-  }
+  background-color: #30499344;
+  // /* 文字居中 */
+  // text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  // background: linear-gradient(45deg, rgba(33, 33, 34, 0.004), rgb(120, 180, 210));
+  /* 使用渐变背景 */
 }
 </style>
