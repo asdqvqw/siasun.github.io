@@ -1,5 +1,5 @@
 <template>
-  <el-button class="EXButtonNAV" @click="clickbutton">导航</el-button>
+  <el-button class="EXButtonNAV" @click="clickbutton" v-show="!importflag">导航</el-button>
   <el-dialog v-model="dialogVisible" title="导航" custom-class="custom-dialog" @opened="openDialog">
     目标位置:{{ targetCoordinates }} <br>
     当前位置：{{ CCtargetCoordinates }}<br>
@@ -20,7 +20,7 @@ import { ref } from 'vue';
 import * as echarts from 'echarts';
 import {
   targetCoordinates, CCtargetCoordinates, nav_pos,
-  nav_LR, nav_thi, nav_sversion, nav_mversion
+  nav_LR, nav_thi, nav_sversion, nav_mversion,importflag
 } from './sharedata.js';
 
 const dialogVisible = ref(false);

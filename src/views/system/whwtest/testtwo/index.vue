@@ -281,7 +281,7 @@ onMounted(() => {
   line-height: 11px;
   background-position: top left;
   text-align: center;
-  background-image: url('./img/header-bg.png');
+  background-image: url('./img/headerbg.png');
   background-size: 100%;
 
   background-color: #30499344;

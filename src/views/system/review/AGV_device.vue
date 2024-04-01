@@ -1,7 +1,14 @@
 <template>
 
-  <el-button class="EXButtonDEV" @click="clickbutton">车体设备</el-button>
-  <el-dialog v-model="dialogVisible" title="车体设备" custom-class="custom-dialog" >
+  <el-button class="EXButtonDEV" @click="clickbutton" v-show="!importflag">车体设备</el-button>
+  <el-dialog v-model="dialogVisible" title="车体设备" custom-class="custom-dialog">
+    转盘纵向开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.turn_axis.bZero?'触发':'未触发' }}<br>
+    转盘横向开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.turn_axis.bLevel?'触发':'未触发' }}<br>
+    转盘位置:{{ parsedLogData[currentCoordinateIndex].trunpan.toFixed(3) }}<br>
+    
+    举升高位开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.lifter_axis.bTop?'触发':'未触发' }}<br>
+    举升零位开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.lifter_axis.bBottom?'触发':'未触发' }}<br>
+    举升位置：{{ parsedLogData[currentCoordinateIndex].lifter.toFixed(3)}}<br>
     当前设备状态：{{ Net_equ_uEquipmentState }}<br>
     当前设备任务号：{{ Net_equ_uEquipmentTaskID }}<br>
     当前设备任务状态：{{ Net_equ_uEquipmentTaskState }}<br>
@@ -18,7 +25,8 @@
 import { ref } from 'vue'
 import {
   Net_equ_uEquipmentTaskState, Net_equ_uEquipmentTaskID, Net_equ_uEquipmentTaskError,
-  Net_equ_uEquipmentState, Net_equ_strEquipmentTaskMessage
+  Net_equ_uEquipmentState, Net_equ_strEquipmentTaskMessage,parsedLogData,currentCoordinateIndex,
+  importflag
 } from './sharedata.js'
 
 const dialogVisible = ref(false);
@@ -45,6 +53,5 @@ const clickbutton = () => {
   top: 240px;
   /* clip-path: polygon(90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%, 10% 0%); */
 }
-
-
 </style>
+

@@ -17,32 +17,30 @@
 
       </div>
 
-      <contorl></contorl>
-
-      <div class="singlestep" v-show="!importflag">单步运行：
-        
-        <el-button
-          :disabled="!paused || currentCoordinateIndex === parsedLogData.length + 1" @click="previousStep"
-          class="buttonstyle">{{
-        paused ?
-          '上一步'
-          : '请暂停' }}</el-button>
-        <el-button :disabled="!paused || currentCoordinateIndex === parsedLogData.length - 1" @click="nextStep"
-          class="buttonstyle">{{
-        paused ?
-          '下一步' :
-          '请暂停' }}</el-button>
-      </div>
-      <infobox></infobox>
-    </div>
-    <div class="logprocess">
-      回放进度:{{
+      <div class="logprocess" v-show="!importflag">
+        回放进度:{{
         shouldPause ?
           '请处理事件'
-          : '' }}
-      <input :disabled="shouldPause" type="range" style="width: 100%;" v-model="currentCoordinateIndex" min="0" :max=parsedLogData.length-1 step="1" @change="LogProcess"
-      >
+          : (parsedLogData[currentCoordinateIndex] === undefined ? '' : parsedLogData[currentCoordinateIndex].logDateTime)
+      }}
+        <input :disabled="shouldPause" type="range" style="width: 100%;" v-model="currentCoordinateIndex" min="0"
+          :max=logsize step="1" @change="LogProcess">
+      </div>
+
+      <contorl></contorl>
+
+      <div v-show="!importflag">
+
+        <button :disabled="!paused || currentCoordinateIndex === parsedLogData.length + 1" @click="previousStep"
+          class="next2playbuttonstyle" :title="paused ? '上一步' : '请暂停'"></button>
+        <button :disabled="!paused || currentCoordinateIndex === parsedLogData.length - 1" @click="nextStep"
+          class="nextplaybuttonstyle" :title="paused ? '下一步' : '请暂停'">
+        </button>
+      </div>
+
+      <infobox></infobox>
     </div>
+
 
 
     <agvdevice></agvdevice>
@@ -54,7 +52,7 @@
     <agvnav></agvnav>
 
     <screen ref="screenRef" />
-
+    <wheelinfo ref="wheelRef" />
     <contral></contral>
   </div>
 
@@ -73,17 +71,19 @@ import agvdevice from './AGV_device.vue'
 import agvnav from './AGV_Nav.vue'
 import ELECTOR from './AGV_ELE.vue'
 import statistics from './statistics.vue'
-import screen from './screen_info.vue'
+import screen from './dialog_info/screen_info.vue'
+import wheelinfo from './dialog_info/wheel_info.vue'
 import { raycaster } from './sharedata.js';
 const Gundongtiao = ref(0);
 const screenRef = ref(null);
+const wheelRef = ref(null);
 
 import {
   infoTextVisible, infoTextX, infoTextY
 } from './sharedata.js'
 import {
   updateTargetCoordinates, CCupdateTargetCoordinates, currentCoordinateIndex, parsedLogData, importflag,
-  parsedLogDatabak,color
+  parsedLogDatabak, color
 } from './sharedata.js'
 
 import { paused, shouldPause, cameraFollow } from './sharedata.js'
@@ -93,7 +93,7 @@ const gltfLoader = new GLTFLoader();
 const dracoLoader = new DRACOLoader()
 dracoLoader.setDecoderPath('https://asdqvqw.github.io/whwtest.github.io/draco/');
 gltfLoader.setDRACOLoader(dracoLoader);
-
+const logsize = ref(0);
 
 //光源
 const light1 = new THREE.DirectionalLight(0xffffff, 1);
@@ -141,6 +141,7 @@ const handleFileChange = (event) => {
 
 
 const parseLog = (content) => {
+  ElMessage.success('开始导入数据...');
   const logEntries = content.split("[INFO | ");
   for (let i = 1; i < logEntries.length; i++) {
     const logEntry = logEntries[i];
@@ -152,9 +153,9 @@ const parseLog = (content) => {
     const realy = logJson.navInfo.fRealY.toFixed(3);
     const realz = 0;
     const realthita = (logJson.navInfo.fRealThita * 180 / Math.PI).toFixed(3);
-
-
-
+    const trunpan = logJson.equipmentInfo.rack.turn_axis.fAxisPosition / 1000;
+    const lifter = logJson.equipmentInfo.rack.lifter_axis.fAxisPosition;
+    const agvType = logJson.uAgvType;
     // //item
     // const items = logJson.item;
     // const parsedItems = [];
@@ -175,35 +176,63 @@ const parseLog = (content) => {
     // const StatisticsData = logJson.statistics;
     // , parsedItems, StatisticsData
 
-    const logDateTimea = 0;
-    parsedLogData.value.push({ logDateTime, logDateTimea, logJson, realx, realy, realthita, realz });
-    parsedLogDatabak.push({ logDateTime, logDateTimea, logJson, realx, realy, realthita, realz });
+    parsedLogData.value.push({ logDateTime, logJson, realx, realy, realthita, realz, trunpan, lifter, agvType });
+    parsedLogDatabak.push({ logDateTime, logJson, realx, realy, realthita, realz, trunpan, lifter, agvType });
+  }
+
+  ElMessage.success('开始导入模型...');
+  data.parsedLogData_b = parsedLogData.value;
+  logsize.value = parsedLogData.value.length - 1;
+
+  if (parsedLogData.value[0].agvType === 0) {
+    gltfLoader.load(
+      './main/test.glb',
+      (gltf) => {
+        car = gltf.scene;
+        // 设置模型的位置、缩放等属性
+        car.position.set(0, 0, 0);
+        car.scale.set(1, 0.6, 0.7);
+
+        car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+        scene.add(car);
+        animateWheel();
+        animateWheel2();
+        animatelight();
+      },
+      (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+      },
+      (error) => {
+        console.error('Error loading model:', error);
+      }
+    );
+    ElMessage.success('导入完成');
+  } else {
+    ElMessage.error('没有匹配模型');
   }
 
   importflag.value = false;
-  data.parsedLogData_b = parsedLogData.value;
-
   startCar();
 };
 
 //开始运行
 const startCar = () => {
+
+
   // 重新初始化画布
   const lineMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 1 });
-  const linePoints = parsedLogData.value.map(coord => new THREE.Vector3(coord.realx, coord.realz, coord.realy));
+  const linePoints = parsedLogData.value.map(coord => new THREE.Vector3(coord.realx, coord.realz, -coord.realy));
   const lineGeometry = new THREE.BufferGeometry().setFromPoints(linePoints);
   let line = new THREE.Line(lineGeometry, lineMaterial);
 
   const lineMaterial1 = new THREE.LineBasicMaterial({ color: 0xFF0000, linewidth: 1 });
-  const linePoints1 = parsedLogData.value.map(coord => new THREE.Vector3(coord.logJson.tcInfo.iDevX / 1000, 0, coord.logJson.tcInfo.iDevY / 1000));
+  const linePoints1 = parsedLogData.value.map(coord => new THREE.Vector3(coord.logJson.tcInfo.iDevX / 1000, 0, -coord.logJson.tcInfo.iDevY / 1000));
   const lineGeometry1 = new THREE.BufferGeometry().setFromPoints(linePoints1);
   let line1 = new THREE.Line(lineGeometry1, lineMaterial1);
   currentCoordinateIndex.value = 0;
-  // currentProgress = 0;
+
   scene.add(line);
   scene.add(line1);
-  scene.add(car);
-
 
   render();
 };
@@ -212,10 +241,10 @@ const startCar = () => {
 
 //回放进度
 const LogProcess = () => {
-  if (car  && currentCoordinateIndex.value > 0) {
+  if (car && currentCoordinateIndex.value > 0) {
     currentCoordinateIndex.value--;
     const previousCoord = parsedLogData.value[currentCoordinateIndex.value];
-    car.position.set(previousCoord.realx, 0, previousCoord.realy);
+    car.position.set(previousCoord.realx, 0, -previousCoord.realy);
 
     const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value - 1].realthita), 0, 'XYZ');
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
@@ -229,7 +258,7 @@ const previousStep = () => {
   if (car && paused.value && currentCoordinateIndex.value > 0) {
     currentCoordinateIndex.value--;
     const previousCoord = parsedLogData.value[currentCoordinateIndex.value];
-    car.position.set(previousCoord.realx, 0, previousCoord.realy);
+    car.position.set(previousCoord.realx, 0, -previousCoord.realy);
 
     const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value - 1].realthita), 0, 'XYZ');
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
@@ -243,7 +272,7 @@ const nextStep = () => {
   if (car && paused.value && currentCoordinateIndex.value < parsedLogData.value.length - 1) {
     currentCoordinateIndex.value++;
     const nextCoord = parsedLogData.value[currentCoordinateIndex.value];
-    car.position.set(nextCoord.realx, 0, nextCoord.realy);
+    car.position.set(nextCoord.realx, 0, -nextCoord.realy);
 
     const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value + 1].realthita), 0, 'XYZ');
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
@@ -257,17 +286,20 @@ const handleMouseMove = (event) => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects([car]);
+  if (car !== undefined) {
+    const intersects = raycaster.intersectObjects([car]);
 
-  if (intersects.length > 0) {
+    if (intersects.length > 0) {
 
-    infoTextX.value = event.clientX + 10;
-    infoTextY.value = event.clientY + 10;
-    infoTextVisible.value = true;
+      infoTextX.value = event.clientX + 10;
+      infoTextY.value = event.clientY + 10;
+      infoTextVisible.value = true;
 
-  } else {
-    infoTextVisible.value = false;
+    } else {
+      infoTextVisible.value = false;
+    }
   }
+
 };
 const handleMouseOut = () => {
   infoTextVisible.value = false;
@@ -285,13 +317,12 @@ const moveCar = () => {
   if (car && !paused.value && !shouldPause.value && parsedLogData.value[currentCoordinateIndex.value] && parsedLogData.value[currentCoordinateIndex.value + 1]) {
     currentCoordinateIndex.value++;
     const nextCoord = parsedLogData.value[currentCoordinateIndex.value];
-    car.position.set(nextCoord.realx, 0, nextCoord.realy);
+    car.position.set(nextCoord.realx, 0, -nextCoord.realy);
 
-    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value + 1].realthita), 0, 'XYZ');
-
-
+    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value].realthita), 0, 'XYZ');
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
     car.setRotationFromQuaternion(targetQuaternion);
+
     updateTargetCoordinates();
     CCupdateTargetCoordinates();
     if (parsedLogData.value[currentCoordinateIndex.value].logJson.nAgvState === 3) {
@@ -324,92 +355,81 @@ const render = () => {
 };
 
 
-gltfLoader.load(
-  'https://asdqvqw.github.io/whwtest.github.io/kivastation.gltf',
-  (gltf) => {
-    let huojiacar = gltf.scene;
-    // 设置模型的位置、缩放等属性
-    huojiacar.position.set(9.25, 0, 1.7);
-    huojiacar.scale.set(1.5, 0.8, 0.8);
-
-    // huojiacar.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
-    scene.add(huojiacar);
-  },
-  (xhr) => {
-    console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-  },
-  (error) => {
-    console.error('Error loading model:', error);
-  }
-);
-
-gltfLoader.load(
-  'https://asdqvqw.github.io/whwtest.github.io/kivastation.gltf',
-  (gltf) => {
-    let huojiacar2 = gltf.scene;
-    // 设置模型的位置、缩放等属性
-    huojiacar2.position.set(9.1, 0, -3.5);
-    huojiacar2.scale.set(1.5, 0.8, 0.8);
-
-    huojiacar2.rotation.set(0, THREE.MathUtils.degToRad(180), 0);
-    scene.add(huojiacar2);
-  },
-  (xhr) => {
-    console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-  },
-  (error) => {
-    console.error('Error loading model:', error);
-  }
-);
-
-gltfLoader.load(
-  './main/test2.glb',
-  (gltf) => {
-    car = gltf.scene;
-    // 设置模型的位置、缩放等属性
-    car.position.set(0, 0, 0);
-    car.scale.set(1, 0.6, 0.7);
-
-    car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
-    scene.add(car);
-
-    animateWheel();
-    animateWheel2();
-    animatelight();
-  },
-  (xhr) => {
-    console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-  },
-  (error) => {
-    console.error('Error loading model:', error);
-  }
-);
-
-let animationId;
-const pauseAnimation = () => {
-  cancelAnimationFrame(animationId); // 停止动画的执行
-};
-
-const material3 = new THREE.MeshLambertMaterial({ color: 0x0000ff });
-
+//举升转盘
 const animateWheel = () => {
   car.traverse((child) => {
-    if (child.name === 'Material_9举升3-14') {
-      // child.material = material3;
-    }
     if (child.name === 'upDown') {
+      child.rotation.y = parsedLogData.value[currentCoordinateIndex.value].trunpan.toFixed(2);
+      child.position.y = parsedLogData.value[currentCoordinateIndex.value].lifter + 1000;
+    }
+    if (child.name === 'leftwheel') {
 
-      child.rotation.y += 0.01;
+      child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[0].wheel.fServoSpeed.toFixed(5) * 0.5;
+
+
+    }
+    if (child.name === 'rightwheel') {
+
+      child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[1].wheel.fServoSpeed.toFixed(5) * 0.5;
+
+
+    }
+    if (child.name === 'rightwheel') {
+
+      child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[1].wheel.fServoSpeed.toFixed(5) * 0.5;
+    }
+
+    if (child.name === 'turnnei') {
+      if (parsedLogData.value[currentCoordinateIndex.value].logJson.equipmentInfo.rack.turn_axis.bLevel) {
+        const materialred = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        child.material = materialred;
+      } else {
+        const materialgreen = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+        child.material = materialgreen;
+      }
 
     }
 
+    if (child.name === 'turnwai') {
+      if (parsedLogData.value[currentCoordinateIndex.value].logJson.equipmentInfo.rack.turn_axis.bZero) {
+        const materialred = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        child.material = materialred;
+      } else {
+        const materialgreen = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+        child.material = materialgreen;
+      }
+
+    }
+
+    if (child.name === 'liftertop') {
+      if (parsedLogData.value[currentCoordinateIndex.value].logJson.equipmentInfo.rack.lifter_axis.bTop) {
+        const materialred = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        child.material = materialred;
+      } else {
+        const materialgreen = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+        child.material = materialgreen;
+      }
+
+    }
+
+    if (child.name === 'lifterbuttom') {
+      if (parsedLogData.value[currentCoordinateIndex.value].logJson.equipmentInfo.rack.lifter_axis.bBottom) {
+        const materialred = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        child.material = materialred;
+      } else {
+        const materialgreen = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+        child.material = materialgreen;
+      }
+
+    }
   });
-  animationId = requestAnimationFrame(animateWheel);
+  //setTimeout(animateWheel, 200);
+  requestAnimationFrame(animateWheel);
 };
 
 const animateWheel2 = () => {
   car.traverse((child) => {
-    if (child.name === 'screen') {
+    if (child.name === 'screen2') {
       // 随机生成闪烁颜色
       const randomColor = Math.random() * 0xffffff;
       child.material.color.setHex(randomColor);
@@ -419,9 +439,6 @@ const animateWheel2 = () => {
   setTimeout(animateWheel2, 200);
 };
 let lightflag = 1;
-
-
-
 const animatelight = () => {
   const colorOptions = {
     1: {
@@ -469,6 +486,10 @@ onMounted(() => {
   window.addEventListener('click', () => {
     screenRef.value.handleMouseClick(car);
   });
+  window.addEventListener('click', () => {
+    wheelRef.value.handleMouseClickwheel(car);
+  });
+
 
   canvasDom.value.appendChild(renderer.domElement);
   //网格
@@ -477,11 +498,10 @@ onMounted(() => {
   gridHelper.material.transparent = true;
   scene.add(gridHelper);
   //坐标轴及方向
-  const axesHelper = new THREE.AxesHelper(size / 2);
-  scene.add(axesHelper);
+
   const arrowX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), size / 2, 0xff0000);
   const arrowY = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0), size / 2, 0x00ff00);
-  const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0, 0), size / 2, 0x800080);
+  const arrowZ = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0, 0), size / 2, 0x0000ff);
   scene.add(arrowX, arrowY, arrowZ);
 
 
@@ -522,14 +542,14 @@ onMounted(() => {
 }
 
 .logprocess {
-  width: 20%;
+  width: 80%;
   background-image: url('./img/1-1-bg.png');
   background-size: 100%;
   background-position: center;
-  background-color: #30499344;
+  background-color: #30499300;
   position: absolute;
-  right: 0%;
-  bottom: 30%;
+  right: 2%;
+  bottom: 60%;
   font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
   font-size: 18px;
   color: rgb(246, 246, 246);
@@ -552,7 +572,7 @@ onMounted(() => {
 }
 
 .choose {
-  width: 50%;
+  width: 100%;
   height: 20%;
   background-image: url('./img/1-1-bg.png');
   background-size: 100%;
@@ -560,7 +580,6 @@ onMounted(() => {
   background-color: #30499344;
   position: absolute;
   top: 80%;
-  left: 50%;
   font-size: 18px;
   font-weight: 600;
 
@@ -574,20 +593,20 @@ onMounted(() => {
 }
 
 .choose-title {
-  width: 97%;
+  width: 100%;
   top: -30%;
   position: absolute;
   font-size: 20px;
   border-radius: 10px;
   border: 5px solid transparent;
-  color: rgb(7, 19, 33);
+  color: rgb(220, 225, 231);
   // background-color: rgb(140, 205, 229);
   padding: 10px;
   height: 11px;
   line-height: 11px;
   background-position: top left;
   text-align: center;
-  background-image: url('./img/header-bg.png');
+  background-image: url('./img/headerbg.png');
   background-size: 100%;
 
   background-color: #30499344;
@@ -595,5 +614,237 @@ onMounted(() => {
   // text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   // background: linear-gradient(45deg, rgba(33, 33, 34, 0.004), rgb(120, 180, 210));
   /* 使用渐变背景 */
+}
+
+.nextplaybuttonstyle {
+  background-image: url('./img/xiayibu.png');
+  background-position: center;
+  background-color: #12b2de3e;
+  color: aliceblue;
+  opacity: 0.7;
+  /* 设置透明度的值，可以根据需求调整 */
+  background-size: 100%;
+  width: 70px;
+  /* 根据你的需求设置按钮的宽度 */
+  height: 70px;
+  /* 根据你的需求设置按钮的高度 */
+  border-radius: 50%;
+  /* top: 20px; */
+  position: absolute;
+  top: 40%;
+  right: 42%;
+}
+
+.nextplaybuttonstyle:disabled {
+  background-image: url('./img/xiayibu.png');
+  background-position: center;
+  background-color: #f5eded96;
+  color: aliceblue;
+  opacity: 0.7;
+  /* 设置透明度的值，可以根据需求调整 */
+  background-size: 100%;
+  width: 70px;
+  /* 根据你的需求设置按钮的宽度 */
+  height: 70px;
+  /* 根据你的需求设置按钮的高度 */
+  border-radius: 50%;
+  /* top: 20px; */
+  position: absolute;
+  top: 40%;
+  right: 42%;
+}
+
+.next2playbuttonstyle {
+  background-image: url('./img/shangyibu.png');
+  background-position: center;
+  background-color: #12b2de3e;
+  color: aliceblue;
+  opacity: 0.7;
+  /* 设置透明度的值，可以根据需求调整 */
+  background-size: 100%;
+  width: 70px;
+  /* 根据你的需求设置按钮的宽度 */
+  height: 70px;
+  /* 根据你的需求设置按钮的高度 */
+  border-radius: 50%;
+  /* top: 20px; */
+  position: absolute;
+  top: 40%;
+  left: 42%;
+}
+
+.next2playbuttonstyle:disabled {
+  background-image: url('./img/shangyibu.png');
+  background-position: center;
+  background-color: #f5eded96;
+  color: aliceblue;
+  opacity: 0.7;
+  /* 设置透明度的值，可以根据需求调整 */
+  background-size: 100%;
+  width: 70px;
+  /* 根据你的需求设置按钮的宽度 */
+  height: 70px;
+  /* 根据你的需求设置按钮的高度 */
+  border-radius: 50%;
+  /* top: 20px; */
+  position: absolute;
+  top: 40%;
+  left: 42%;
+}
+</style>
+
+
+
+<style>
+ .custom-dialog {
+     background-image: url('./img/1-1-bg.png');
+     background-color: #001034cb;
+     /* 修改弹窗背景色 */
+     animation: dialogSlideIn 0.3s ease-out forwards;
+     width: 40%;
+     height: 42.5%;
+     right: 0%;
+     bottom: -10%;
+     background-size: 100%;
+     background-position: top left;
+     overflow: auto;
+     transform-origin: top left;
+ }
+
+ @keyframes dialogSlideIn {
+     from {
+         opacity: 0;
+         transform: translateX(100%);
+     }
+
+     to {
+         opacity: 1;
+         transform: translateX(0);
+     }
+ }
+
+ .custom-dialog .el-dialog__body {
+     color: #f0e7e7;
+ }
+
+ .custom-dialog .el-dialog__header {
+     background-image: url('./img/headerbg.png');
+     background-size: 100%;
+     background-color: #eaeaea00;
+     background-position: center;
+     height: 10%;
+ }
+
+ .custom-dialog .el-dialog__header .el-dialog__title {
+     color: #ddb4b4;
+     text-align: center;
+     margin: 0 auto;
+ }
+</style>
+
+
+
+
+
+
+
+
+<style>
+.custom-dialog2 {
+    background-image: url('./img/1-1-bg.png');
+    background-color: #001034cb;
+    /* 修改弹窗背景色 */
+    animation: dialogSlideIn 1s ease-out forwards;
+    width: 50%;
+    height: 52.5%;
+    right: 10%;
+    bottom: -10%;
+    background-size: 100%;
+    background-position: top left;
+    overflow: auto;
+    transform-origin: top left;
+    transform: scale(0) translateX(100%);
+}
+
+
+@keyframes dialogSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.custom-dialog2 .el-dialog__body {
+    color: #f0e7e7;
+
+}
+
+.custom-dialog2 .el-dialog__header {
+    background-image: url('./img/headerbg.png');
+    background-size: 100%;
+    background-color: #eaeaea00;
+    background-position: center;
+    height: 10%;
+}
+
+.custom-dialog2 .el-dialog__header .el-dialog__title {
+    color: #ddb4b4;
+    text-align: center;
+    margin: 0 auto;
+}
+</style>
+
+<style>
+.custom-dialog3 {
+    background-image: url('./img/1-1-bg.png');
+    background-color: #001034cb;
+    /* 修改弹窗背景色 */
+    animation: dialogPopUp 0.3s ease-out forwards;
+    width: 40%;
+    height: 42.5%;
+    position: fixed;
+    right: 10%;
+    bottom: 10%;
+    background-size: 100%;
+    background-position: top left;
+    overflow: auto;
+    transform-origin: bottom right;
+    opacity: 0;
+    transform: scale(0) translateX(100%);
+}
+
+@keyframes dialogPopUp {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.custom-dialog3 .el-dialog__body {
+    color: #f0e7e7;
+}
+
+.custom-dialog3 .el-dialog__header {
+    background-image: url('./img/headerbg.png');
+    background-size: 100%;
+    background-color: #eaeaea00;
+    background-position: center;
+    height: 10%;
+}
+
+.custom-dialog3 .el-dialog__header .el-dialog__title {
+    color: #ddb4b4;
+    text-align: center;
+    margin: 0 auto;
 }
 </style>

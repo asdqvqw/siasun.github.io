@@ -1,6 +1,6 @@
 <template>
 
-  <el-button class="EXButton" @click="clickbutton">控制台</el-button>
+  <el-button class="EXButton" @click="clickbutton" v-show="!importflag">控制台</el-button>
 
   <el-dialog v-model="dialogVisible" title="控制台" custom-class="custom-dialog">
 
@@ -33,7 +33,7 @@ import { ref } from 'vue'
 import {
   Net_Info_uFromNode, Net_Info_uToNode, Net_Info_sProgress, Net_Info_CurSpeed, Net_Info_usCargoState, Net_Info_WorkState,
   Net_Info_EventState, Net_Info_EventDetail, Net_Info_usBatterState, Net_Info_TaskState, Net_Info_TaskID, Net_Info_Key,
-  Net_Info_Head
+  Net_Info_Head,importflag
 } from './sharedata.js'
 
 

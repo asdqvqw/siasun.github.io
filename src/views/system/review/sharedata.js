@@ -22,7 +22,6 @@ export let importflag = ref(true);
 export let parsedLogData = ref([]);
 export const parsedLogDatabak = [];
 export let ele_dev_wheel_fServoSpeed = ref('');
-export const state_isExpanded = ref(false);
 // 目标点坐标字符串
 export let targetCoordinates = ref('');
 // 当前点坐标字符串
@@ -302,6 +301,9 @@ export const updateTargetCoordinates = () => {
   } else if (Net_Info_usCargoState.value === 1) {
     Net_Info_usCargoState.value = '载货';
   }
+
+
+
   Net_Info_usBatterState.value = parsedLogData.value[currentCoordinateIndex.value].logJson.tcInfo.usBatterState;
   if (Net_Info_usBatterState.value === 0) {
     Net_Info_usBatterState.value = '无需充电';

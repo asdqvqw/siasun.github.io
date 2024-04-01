@@ -3,7 +3,7 @@
  * 页面的头部
  *  */
 import { defineComponent,ref,getCurrentInstance,reactive,toRef, computed,onMounted,onActivated,watch } from "vue";
-import img_1 from "../assets/header-bg.png";
+import img_1 from "../assets/headerbg.png";
 
 export default defineComponent({
     props:{

@@ -1,7 +1,7 @@
 <template>
 
 
-  <el-button class="EXButtonELE" @click="clickbutton">电器模块</el-button>
+  <el-button class="EXButtonELE" @click="clickbutton" v-show="!importflag">电器模块</el-button>
   <el-dialog v-model="dialogVisible" title="电器模块" custom-class="custom-dialog">
     保险杠状态：{{ ele_safe_bHardBumper }}<br>
     急停触发：{{ ele_safe_bEmgStop }}<br>
@@ -44,7 +44,7 @@ import Echart from './charts/Ele_chart.vue'
 import {
   ele_dev_wheel_fServoSpeed, ele_safe_bEmgStop, ele_safe_bHardBumper, ele_safe_nPlsTrig, ele_dev_name, ele_dev_wheel_nServoErrCode, ele_dev_wheel_nServoState, ele_dev_steer_fServoPosition,
   ele_dev_steer_nServoState, ele_dev_steer_nServoErrCode, ele_dev_steer_bPositiveLimitSwt, ele_dev_steer_bNegativeLimitSwt, ele_dev_steer_bZeroSwt
-  , ele_dev_count, ele_dev_Dcount, parsedLogData, currentCoordinateIndex
+  , ele_dev_count, ele_dev_Dcount, parsedLogData, currentCoordinateIndex,importflag
 } from './sharedata.js'
 
 import {

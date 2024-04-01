@@ -1,25 +1,18 @@
 <template>
-    <div class="playorstop" v-show="!importflag" >播放暂停：<el-button :disabled="shouldPause" @click="togglePause"
-        class="buttonstyle">{{ paused
-        ?
-        '继续' : '暂停'
-            }}</el-button></div>
+    <div  v-show="!importflag"><button  :disabled="shouldPause" @click="togglePause"
+        :class="{'playbuttonstyle': paused, 'stopbuttonstyle': !paused}" :title="paused ? '播放' : (shouldPause ? '请处理事件' : '暂停')">
+            </button>
+        </div>
 
-    <div class="event" v-show="!importflag">事件处理: <el-button :disabled="!shouldPause"  @click="resumeCarMovement" class="buttonstyle"
-             >{{
-        shouldPause ?
-          '跳过'
-          : '无事件' }}</el-button></div>
+    <div  v-show="!importflag"><button :disabled="!shouldPause" @click="resumeCarMovement"
+            class="eventbuttonstyle" :title="shouldPause ? '事件跳过' : '无事件'"></button></div>
 
 
-
-
-    <div class="replay" v-show="!importflag">重播：<el-button @click="restartCar" class="buttonstyle">重播</el-button>
+    <div  v-show="!importflag"><button :disabled="shouldPause" @click="restartCar" class="replaybuttonstyle" title='重播'></button>
     </div>
 
-    <div class="cameractrl" v-show="!importflag">镜头控制：<el-button @click="toggleCameraFollow" class="buttonstyle">{{
-        cameraFollow ? '取消跟随' :
-            '跟随' }}</el-button></div>
+    <div  v-show="!importflag"><button @click="toggleCameraFollow" :class="{'genbuttonstyle':cameraFollow
+    ,'bugenbuttonstyle':!cameraFollow}" title='镜头跟随'></button></div>
 
 
 
@@ -31,7 +24,7 @@ import * as THREE from "three";
 import { importflag } from './sharedata.js'
 import {
     paused, shouldPause, currentCoordinateIndex, parsedLogData, parsedLogDatabak,
-    cameraFollow,color
+    cameraFollow, color
 } from './sharedata.js'
 
 
@@ -96,66 +89,145 @@ const resumeCarMovement = () => {
 </script>
 
 <style>
-.replay {
-    top: 20px;
-    position: absolute;
-    left: 470px;
-    font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-    font-size: 18px;
-    color: rgb(246, 246, 246);
-    text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
 
-
-
-
-.playorstop {
-    top: 20px;
-    position: absolute;
-    left: 10px;
-    font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-    font-size: 18px;
-    color: rgb(246, 246, 246);
-    text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
-
-
-
-.event {
-    top: 20px;
-    position: absolute;
-    left: 240px;
-    font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-    font-size: 18px;
-    color: rgb(246, 246, 246);
-    text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
-
-
-.cameractrl {
-    top: 80px;
-    position: absolute;
-    left: 10px;
-    font-family: 'SimSun', 'Microsoft YaHei', sans-serif;
-    font-size: 18px;
-    color: rgb(246, 246, 246);
-    text-shadow: 2px 2px 4px rgba(247, 245, 245, 0.5);
-}
-
-.buttonstyle {
-  background-color: #12b2de3e;
-  color: aliceblue;
-  opacity: 0.7; /* 设置透明度的值，可以根据需求调整 */
-  background-size: 100%;
-  background-position: top left;
-
-}
-
-.buttonstyle:disabled {
+.genbuttonstyle {
+    background-image: url('./img/gensuizhong.png');
+    background-position: center;
     background-color: #12b2de3e;
-  color: aliceblue;
-  opacity: 0.7; /* 设置透明度的值，可以根据需求调整 */
-  background-size: 100%;
-  background-position: top left;
+    color: aliceblue;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    width: 50px; /* 根据你的需求设置按钮的宽度 */
+    height:50px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+    /* top: 20px; */
+    position: absolute;
+    top: 52%;
+    right: 32.5%;
 }
+.bugenbuttonstyle {
+    background-image: url('./img/gen.png');
+    background-position: center;
+    background-color: #12b2de3e;
+    color: aliceblue;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    width: 50px; /* 根据你的需求设置按钮的宽度 */
+    height:50px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+    /* top: 20px; */
+    position: absolute;
+    top: 52%;
+    right: 32.5%;
+}
+
+.replaybuttonstyle {
+    background-image: url('./img/chongbo.png');
+    background-position: center;
+    background-color: #12b2de3e;
+    color: aliceblue;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    width: 50px; /* 根据你的需求设置按钮的宽度 */
+    height:50px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+    /* top: 20px; */
+    position: absolute;
+    top: 52%;
+    left: 32.5%;
+}
+
+.replaybuttonstyle:disabled {
+    background-image: url('./img/chongbo.png');
+    background-position: center;
+    background-color: #f5eded96;
+    color: aliceblue;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    width: 50px; /* 根据你的需求设置按钮的宽度 */
+    height:50px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+    /* top: 20px; */
+    position: absolute;
+    top: 52%;
+    left: 32.5%;
+}
+.eventbuttonstyle {
+    background-image: url('./img/tiaoguo.png');
+    background-position: center;
+    background-color: #12b2de3e;
+    color: aliceblue;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    width: 50px; /* 根据你的需求设置按钮的宽度 */
+    height:50px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+    /* top: 20px; */
+    position: absolute;
+    top: 52%;
+    right: 38%;
+}
+
+.eventbuttonstyle:disabled {
+    background-image: url('./img/tiaoguo.png');
+    background-position: center;
+    background-color: #f5eded96;
+    color: aliceblue;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    width: 50px; /* 根据你的需求设置按钮的宽度 */
+    height:50px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+    /* top: 20px; */
+    position: absolute;
+    top: 52%;
+    right: 36.5%;
+}
+
+.playbuttonstyle {
+    background-image: url('./img/bofang.png');
+    background-position: center;
+    background-color: #12b2de3e;
+    color: aliceblue;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    /* position: absolute; */
+    margin-top:50%;
+    width: 80px; /* 根据你的需求设置按钮的宽度 */
+    height:80px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+}
+.stopbuttonstyle {
+    background-image: url('./img/zanting.png');
+    background-position: center;
+    background-color: #12b2de3e;
+    color: aliceblue;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    margin-top:50%;
+    width: 80px; /* 根据你的需求设置按钮的宽度 */
+    height: 80px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+}
+.stopbuttonstyle:disabled {
+    background-image: url('./img/zanting.png');
+    background-position: center;
+    background-color: #f5eded96;
+    opacity: 0.7;
+    /* 设置透明度的值，可以根据需求调整 */
+    background-size: 100%;
+    margin-top:50%;
+    width: 75px; /* 根据你的需求设置按钮的宽度 */
+    height: 75px; /* 根据你的需求设置按钮的高度 */
+    border-radius: 50%;
+}
+
 </style>

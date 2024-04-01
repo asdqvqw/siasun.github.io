@@ -606,7 +606,7 @@ onMounted(() => {
   line-height: 11px;
   background-position: top left;
   text-align: center;
-  background-image: url('./img/header-bg.png');
+  background-image: url('./img/headerbg.png');
   background-size: 100%;
 
   background-color: #30499344;
@@ -690,5 +690,161 @@ onMounted(() => {
   position: absolute;
   top: 40%;
   left: 42%;
+}
+</style>
+
+
+
+<style>
+ .custom-dialog {
+     background-image: url('./img/1-1-bg.png');
+     background-color: #001034cb;
+     /* 修改弹窗背景色 */
+     animation: dialogSlideIn 0.3s ease-out forwards;
+     width: 40%;
+     height: 42.5%;
+     right: 0%;
+     bottom: -10%;
+     background-size: 100%;
+     background-position: top left;
+     overflow: auto;
+     transform-origin: top left;
+ }
+
+ @keyframes dialogSlideIn {
+     from {
+         opacity: 0;
+         transform: translateX(100%);
+     }
+
+     to {
+         opacity: 1;
+         transform: translateX(0);
+     }
+ }
+
+ .custom-dialog .el-dialog__body {
+     color: #f0e7e7;
+ }
+
+ .custom-dialog .el-dialog__header {
+     background-image: url('./img/headerbg.png');
+     background-size: 100%;
+     background-color: #eaeaea00;
+     background-position: center;
+     height: 10%;
+ }
+
+ .custom-dialog .el-dialog__header .el-dialog__title {
+     color: #ddb4b4;
+     text-align: center;
+     margin: 0 auto;
+ }
+</style>
+
+
+
+
+
+
+
+
+<style>
+.custom-dialog2 {
+    background-image: url('./img/1-1-bg.png');
+    background-color: #001034cb;
+    /* 修改弹窗背景色 */
+    animation: dialogSlideIn 1s ease-out forwards;
+    width: 50%;
+    height: 52.5%;
+    right: 10%;
+    bottom: -10%;
+    background-size: 100%;
+    background-position: top left;
+    overflow: auto;
+    transform-origin: top left;
+    transform: scale(0) translateX(100%);
+}
+
+
+@keyframes dialogSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.custom-dialog2 .el-dialog__body {
+    color: #f0e7e7;
+
+}
+
+.custom-dialog2 .el-dialog__header {
+    background-image: url('./img/headerbg.png');
+    background-size: 100%;
+    background-color: #eaeaea00;
+    background-position: center;
+    height: 10%;
+}
+
+.custom-dialog2 .el-dialog__header .el-dialog__title {
+    color: #ddb4b4;
+    text-align: center;
+    margin: 0 auto;
+}
+</style>
+
+<style>
+.custom-dialog3 {
+    background-image: url('./img/1-1-bg.png');
+    background-color: #001034cb;
+    /* 修改弹窗背景色 */
+    animation: dialogPopUp 0.3s ease-out forwards;
+    width: 40%;
+    height: 42.5%;
+    position: fixed;
+    right: 10%;
+    bottom: 10%;
+    background-size: 100%;
+    background-position: top left;
+    overflow: auto;
+    transform-origin: bottom right;
+    opacity: 0;
+    transform: scale(0) translateX(100%);
+}
+
+@keyframes dialogPopUp {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.custom-dialog3 .el-dialog__body {
+    color: #f0e7e7;
+}
+
+.custom-dialog3 .el-dialog__header {
+    background-image: url('./img/headerbg.png');
+    background-size: 100%;
+    background-color: #eaeaea00;
+    background-position: center;
+    height: 10%;
+}
+
+.custom-dialog3 .el-dialog__header .el-dialog__title {
+    color: #ddb4b4;
+    text-align: center;
+    margin: 0 auto;
 }
 </style>
