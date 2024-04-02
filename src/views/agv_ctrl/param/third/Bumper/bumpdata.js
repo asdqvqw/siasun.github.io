@@ -10,16 +10,16 @@ export const newRow = ref({
     pos:7,
     HardBum:{
         one:{
-            input:[],
-            output:[],
+            input:[0,2,2,2,0],
+            output:[0,2,2,2,0],
         },
         two:{
-            input:[],
-            output:[],
+            input:[0,2,2,2,0],
+            output:[0,2,2,2,0],
         },
         reset:{
-            input:[],
-            output:[],
+            input:[0,2,2,2,0],
+            output:[0,2,2,2,0],
         },
     }
 });

@@ -39,7 +39,7 @@
             <el-dialog :title="titleinput" v-model="stop1input" :visible="stop1input" width="600px"
                 :close-on-click-modal="false" class="edit-data-dialog">
                 <div>
-                    <IO2 :diver="newRow.input"></IO2>
+                    <IO2 :wheel="newRow.input"></IO2>
                 </div>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="stop1input = false">取 消</el-button>
@@ -51,7 +51,7 @@
             <el-dialog :title="titleoutput" v-model="stop1output" :visible="stop1output" width="600px"
                 :close-on-click-modal="false" class="edit-data-dialog">
                 <div>
-                    <IO2 :diver="newRow.output"></IO2>
+                    <IO2 :wheel="newRow.output"></IO2>
                 </div>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="stop1output = false">取 消</el-button>
@@ -110,8 +110,8 @@ const handlestop1inputQ = () => {
 
 const addNewRow = () => {
     newRow.value.name = 'No name';
-    newRow.value.input = [];
-    newRow.value.output = [];
+    newRow.value.input = [0,2,2,2,0];
+    newRow.value.output = [0,2,2,2,0];
 
     newRow.value.editingIndex = -1;
     dialogVisible.value = true;

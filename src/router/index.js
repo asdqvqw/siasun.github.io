@@ -53,7 +53,7 @@ export const constantRoutes = [
             },
             {
                 path: 'second',
-                component: () => import('@/views/agv_ctrl/param/second/divermode.vue'),
+                component: () => import('@/views/agv_ctrl/param/second/wheelmode.vue'),
             },
             {
                 path: 'third',

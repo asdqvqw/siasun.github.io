@@ -183,7 +183,7 @@ const selectedcan4 = ref('1');
 
 
 // const props = defineProps({
-//     diver: {
+//     wheel: {
 //         type: Array,
 //         required: true
 //     }

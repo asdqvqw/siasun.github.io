@@ -99,7 +99,7 @@ import { CANRFID, CANRFID2, CANRFID3 } from './common/commondata.js';
 import { AUTOPARM, AUTOPARMLEV } from './common/commondata.js';
 import { MANUALPARMA, MANUALRAPARM } from './common/commondata.js';
 import { selected } from './common/commondata.js';
-import { RealyTimeisChecked, RealyTimeinput1, RealyTimeinput2 } from './common/commondata.js';
+import { delayisChecked, delayinput1, delayinput2 } from './common/commondata.js';
 import { OTHERPARM,functioncDate } from './common/commondata.js';
 import { tableDataCrtlswitch,tableDataCrtlswitchEmg } from './common/commondata.js';
 import { tableDataCrtlBumper,tableDataCrtlPLS,tableDataCrtlSound,MANUALDATA } from './common/commondata.js';
@@ -166,10 +166,10 @@ const handleImport = (event) => {
         tableDataCrtlnet.value = importedData.network;
         functioncDate.value = importedData.function;
         //com
-        isChecked.value = jsondata.value.com.comone;
-        isChecked1.value = jsondata.value.com.comtwo;
-        isChecked2.value = jsondata.value.com.comthree;
-        isChecked3.value = jsondata.value.com.comfour;
+        isChecked.value = jsondata.value.com.com1;
+        isChecked1.value = jsondata.value.com.com2;
+        isChecked2.value = jsondata.value.com.com3;
+        isChecked3.value = jsondata.value.com.com4;
 
         // canpos
         if (jsondata.value.can1.can_pos !== undefined) {
@@ -207,7 +207,7 @@ const handleImport = (event) => {
                 const newRow = {
                     ID: item[0].toString(),
                     canID: item[1].toString(),
-                    servoType: item[2].toString(),
+                    servo_type: item[2].toString(),
                 };
                 CANOPEN.value.push(newRow);
             }
@@ -218,7 +218,7 @@ const handleImport = (event) => {
                 const newRow = {
                     ID: item[0].toString(),
                     canID: item[1].toString(),
-                    servoType: item[2].toString(),
+                    servo_type: item[2].toString(),
                 };
                 CANOPEN2.value.push(newRow);
             }
@@ -229,7 +229,7 @@ const handleImport = (event) => {
                 const newRow = {
                     ID: item[0].toString(),
                     canID: item[1].toString(),
-                    servoType: item[2].toString(),
+                    servo_type: item[2].toString(),
                 };
                 CANOPEN3.value.push(newRow);
             }
@@ -428,21 +428,20 @@ const handleImport = (event) => {
             }))
         }
 
-        //AGVmodel
-        if (jsondata.value.AGVmodel.type !== undefined) {
-            selected.value = jsondata.value.AGVmodel.type.toString();
+        //Kinematic
+        if (jsondata.value.Kinematic.type !== undefined) {
+            selected.value = jsondata.value.Kinematic.type.toString();
         }
 
-        if (jsondata.value.AGVmodel.RealyTime[0] === undefined) {
-            RealyTimeisChecked.value = false;
-        } else {
-            RealyTimeinput1.value = jsondata.value.AGVmodel.RealyTime[0];
-            RealyTimeinput2.value = jsondata.value.AGVmodel.RealyTime[1];
-        }
+        if (jsondata.value.Kinematic.delay !== undefined) {
+            delayisChecked.value = jsondata.value.Kinematic.delay.need_delay_time;
+            delayinput1.value = jsondata.value.Kinematic.delay.servoenable_delay_time;
+            delayinput2.value = jsondata.value.Kinematic.delay.servospeed_delay_time;
+        } 
 
 
-        if (jsondata.value.AGVmodel.OrdinaryDW !== undefined) {
-            tableDataCrtl.value = jsondata.value.AGVmodel.OrdinaryDW;
+        if (jsondata.value.Kinematic.drive !== undefined) {
+            tableDataCrtl.value = jsondata.value.Kinematic.drive;
         }
         //OTHER
         OTHERPARM.value.forEach((item) => {

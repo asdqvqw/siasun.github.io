@@ -157,7 +157,7 @@ const selectedcan3 = ref('1');
 
 
 const props = defineProps({
-    diver: {
+    wheel: {
         type: Array,
         required: true
     }
@@ -165,28 +165,31 @@ const props = defineProps({
 
 const putJSON = () => {
 
-    if (props.diver[0] !== undefined) {
-        if (props.diver[0] === 1 || props.diver[0] === 2 || props.diver[0] === 4) {
+    if (props.wheel[0] !== undefined) {
+        if (props.wheel[0] === 1 || props.wheel[0] === 2 || props.wheel[0] === 4) {
             servoabled.value = true;
-            selected.value = props.diver[0].toString();
+            selected.value = props.wheel[0].toString();
             handleChange();
-            selectedcan.value = props.diver[1].toString();
-            selectedcan1.value = props.diver[2].toString();
-            selectedcan2.value = props.diver[3].toString();
-            selectedcan3.value = props.diver[4].toString();
-        } else if (props.diver[0] === 3) {
+            selectedcan.value = props.wheel[1].toString();
+            selectedcan1.value = props.wheel[2].toString();
+            selectedcan2.value = props.wheel[3].toString();
+            selectedcan3.value = props.wheel[4].toString();
+        } else if (props.wheel[0] === 3) {
             servoabled.value = true;
-            selected.value = props.diver[0].toString();
+            selected.value = props.wheel[0].toString();
             handleChange();
-            selectedcan.value = props.diver[1].toString();
-            selectedcan1.value = props.diver[2].toString();
-            selectedcan2.value = props.diver[3].toString();
-        } else if (props.diver[0] === 5) {
+            selectedcan.value = props.wheel[1].toString();
+            selectedcan1.value = props.wheel[2].toString();
+            selectedcan2.value = props.wheel[3].toString();
+        } else if (props.wheel[0] === 5) {
             servoabled.value = true;
-            selected.value = props.diver[0].toString();
+            selected.value = props.wheel[0].toString();
             handleChange();
-            selectedcan.value = props.diver[1].toString();
-            selectedcan1.value = props.diver[2].toString();
+            selectedcan.value = props.wheel[1].toString();
+            selectedcan1.value = props.wheel[2].toString();
+        }else if (props.wheel[0] === 0) {
+            servoabled.value = false;
+            handleChange();
         }
 
     } else {
@@ -199,7 +202,7 @@ const putJSON = () => {
 const servoabledcheck = () => {
 
     if (!servoabled.value) {
-        props.diver.value = [];
+        props.wheel.value = [0,2,2,2,0];
     }
     generateJSON();
 
@@ -208,14 +211,14 @@ const servoabledcheck = () => {
 const generateJSON = () => {
 
     if (!servoabled.value) {
-        props.diver.value = [];
+        props.wheel.value = [0,2,2,2,0];
     } else {
         if (selected.value === "1" || selected.value === "2" || selected.value === "4") {
-            props.diver.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value), parseInt(selectedcan3.value)]
+            props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value), parseInt(selectedcan3.value)]
         } else if (selected.value === "3") {
-            props.diver.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value)]
+            props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value)]
         } else if (selected.value === "5") {
-            props.diver.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value)]
+            props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value)]
         }
 
     }

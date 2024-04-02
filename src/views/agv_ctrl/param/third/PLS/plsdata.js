@@ -7,9 +7,9 @@ export const flagex = ref(true);
 export const newRow = ref({
     name: '',
     type: 0,
-    near:[],
-    mid:[],
-    far:[]
+    near:[0,2,2,2,0],
+    mid:[0,2,2,2,0],
+    far:[0,2,2,2,0]
 });
 
 export const newRowEX = ref({

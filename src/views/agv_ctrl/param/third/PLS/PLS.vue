@@ -43,7 +43,7 @@
                         <el-dialog title="近" v-model="IOnear" :visible="IOnear" width="600px"
                             :close-on-click-modal="false" class="edit-data-dialog">
                             <div>
-                                <IO :diver="newRow.near"></IO>
+                                <IO :wheel="newRow.near"></IO>
                             </div>
                             <div slot="footer" class="dialog-footer">
                                 <el-button @click="IOnear = false">取 消</el-button>
@@ -55,7 +55,7 @@
                         <el-dialog title="中" v-model="IOmid" :visible="IOmid" width="600px"
                             :close-on-click-modal="false" class="edit-data-dialog">
                             <div>
-                                <IO1 :diver="newRow.mid"></IO1>
+                                <IO1 :wheel="newRow.mid"></IO1>
                             </div>
                             <div slot="footer" class="dialog-footer">
                                 <el-button @click="IOmid = false">取 消</el-button>
@@ -68,7 +68,7 @@
                         <el-dialog title="远" v-model="IOfar" :visible="IOfar" width="600px"
                             :close-on-click-modal="false" class="edit-data-dialog">
                             <div>
-                                <IO2 :diver="newRow.far"></IO2>
+                                <IO2 :wheel="newRow.far"></IO2>
                             </div>
                             <div slot="footer" class="dialog-footer">
                                 <el-button @click="IOfar = false">取 消</el-button>
@@ -237,10 +237,10 @@ const addNewRow = () => {
     newRow.value.CUTtype = 0;
     newRow.value.port = '';
     newRow.value.ip = '';
-    newRow.value.near = [];
+    newRow.value.near = [0,2,2,2,0];
     newRow.value.area = [];
-    newRow.value.mid = [];
-    newRow.value.far = [];
+    newRow.value.mid = [0,2,2,2,0];
+    newRow.value.far = [0,2,2,2,0];
     newRow.value.editingIndex = -1;
     dialogVisible.value = true;
 };
@@ -328,7 +328,7 @@ const handleAddRow = (bool) => {
                     console.log('mid', newRow.value.mid.value)
                     tableDataCrtlPLS.value[newRow.value.editingIndex].mid = newRow.value.mid.value;
 
-                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].mid = [];
+                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].mid = [0,2,2,2,0];
                     console.log('mid') }
 
 
@@ -336,7 +336,7 @@ const handleAddRow = (bool) => {
                     console.log('near', newRow.value.near.value)
                     tableDataCrtlPLS.value[newRow.value.editingIndex].near = newRow.value.near.value;
 
-                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].near = [];
+                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].near = [0,2,2,2,0];
                     console.log('near')}
 
 
@@ -345,7 +345,7 @@ const handleAddRow = (bool) => {
                     console.log('far', newRow.value.far.value)
                     tableDataCrtlPLS.value[newRow.value.editingIndex].far = newRow.value.far.value;
 
-                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].far = [] ;
+                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].far = [0,2,2,2,0] ;
                     console.log('far')
                 }
 

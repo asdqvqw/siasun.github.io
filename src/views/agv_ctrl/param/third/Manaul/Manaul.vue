@@ -1,3 +1,4 @@
+
 <template>
     <el-form ref="form" :model="MANUALDATA" label-width="150px">
         <el-form-item label="🎆选择手控盒">
@@ -12,7 +13,7 @@
                 <el-option label="未使用串口" :value=0></el-option>
 
                 <template v-for="(value, key, index) in filteredJsonData">
-                    <el-option v-if="value === true" :key="index" :label="key" :value="index + 1"></el-option>
+                    <el-option v-if="value === true" :key="index" :label="key" :value="parseInt(key.slice(3))"></el-option>
                 </template>
             </el-select><br>
         </el-form-item>
@@ -28,134 +29,13 @@
         <el-form-item label="🎆选择can线">
             <el-select v-model="MANUALDATA.can" placeholder="请选择" :disabled="!MANUALDATA.manualcan &&!MANUALDATA.manualforklift" @change="syncdata">
                 <el-option label="未安装" :value=0></el-option>
-                <el-option v-for="(canKey, index) in canOptions" :key="index" :label="canKey"
-                    :value="index + 1"></el-option>
+                <el-option v-for="(canKey, index) in canOptions" :key="index" :label="('can'+canKey)"
+                    :value="canKey"></el-option>
             </el-select><br>
         </el-form-item>
 
-        <!-- <el-form-item label="🎄轮模拟量CAN口" class="inline-form-item">
-            <el-select v-model="MANUALDATA.wheel[0]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata" style="width: 20%">
-                <el-option label="1" :value=1></el-option>
-                <el-option label="2" :value=2></el-option>
-                <el-option label="3" :value=3></el-option>
-            </el-select>
-
-            <el-form-item label="MCU单元" style="width: 20%">
-                <el-select v-model="MANUALDATA.wheel[1]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                    <el-option label="1" :value=1></el-option>
-                    <el-option label="2" :value=2></el-option>
-                    <el-option label="3" :value=3></el-option>
-                    <el-option label="4" :value=4></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="通道" style="width: 20%">
-                <el-select v-model="MANUALDATA.wheel[2]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                    <el-option label="1" :value=1></el-option>
-                    <el-option label="2" :value=2></el-option>
-                    <el-option label="3" :value=3></el-option>
-                    <el-option label="4" :value=4></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="轮零位" style="width: 20%">
-                <el-input v-model="MANUALDATA.wheel[3]" placeholder="请输入" style="width:100%;" type="number"
-                    :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                </el-input>
-            </el-form-item>
-
-            <el-form-item label="轮K值" style="width: 20%">
-                <el-input v-model="MANUALDATA.wheel[4]" placeholder="请输入" style="width:100%;" type="number"
-                    :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                </el-input>
-            </el-form-item>
-        </el-form-item> -->
-
-
-        <!-- <el-form-item label="🎄舵模拟量CAN口" class="inline-form-item">
-            <el-select v-model="MANUALDATA.steel[0]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata" style="width: 20%">
-                <el-option label="1" :value=1></el-option>
-                <el-option label="2" :value=2></el-option>
-                <el-option label="3" :value=3></el-option>
-            </el-select>
-
-            <el-form-item label="MCU单元" style="width: 20%">
-                <el-select v-model="MANUALDATA.steel[1]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                    <el-option label="1" :value=1></el-option>
-                    <el-option label="2" :value=2></el-option>
-                    <el-option label="3" :value=3></el-option>
-                    <el-option label="4" :value=4></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="通道" style="width: 20%">
-                <el-select v-model="MANUALDATA.steel[2]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                    <el-option label="1" :value=1></el-option>
-                    <el-option label="2" :value=2></el-option>
-                    <el-option label="3" :value=3></el-option>
-                    <el-option label="4" :value=4></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="舵零位" style="width: 20%">
-                <el-input v-model="MANUALDATA.steel[3]" placeholder="请输入" style="width:100%;" type="number"
-                    :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                </el-input>
-            </el-form-item>
-
-            <el-form-item label="舵K值" style="width: 20%">
-                <el-input v-model="MANUALDATA.steel[4]" placeholder="请输入" style="width:100%;" type="number"
-                    :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                </el-input>
-            </el-form-item>
-        </el-form-item> -->
-
-
-        <!-- <el-form-item label="🎄货叉模拟量CAN口">
-            <el-select v-model="MANUALDATA.forklift[0]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata" style="width: 20%">
-                <el-option label="1" :value=1></el-option>
-                <el-option label="2" :value=2></el-option>
-                <el-option label="3" :value=3></el-option>
-            </el-select>
-
-            <el-form-item label="MCU单元" style="width: 20%">
-                <el-select v-model="MANUALDATA.forklift[1]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                    <el-option label="1" :value=1></el-option>
-                    <el-option label="2" :value=2></el-option>
-                    <el-option label="3" :value=3></el-option>
-                    <el-option label="4" :value=4></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="通道" style="width: 20%">
-                <el-select v-model="MANUALDATA.forklift[2]" placeholder="请选择" :disabled="!MANUALDATA.manualforklift" @change="syncdata">
-                    <el-option label="1" :value=1></el-option>
-                    <el-option label="2" :value=2></el-option>
-                    <el-option label="3" :value=3></el-option>
-                    <el-option label="4" :value=4></el-option>
-                </el-select>
-            </el-form-item>
-
-
-
-
-        </el-form-item> -->
-        <!-- <el-form-item label="">
-            <el-button @click="handleIO" type="primary">手柄微动开关</el-button>
-            <el-dialog title="手柄微动开关" v-model="IOweidong" :visible="IOweidong" width="600px"
-                :close-on-click-modal="false" class="edit-data-dialog">
-                <div>
-                    <IO></IO>
-                </div>
-                <div slot="footer" class="dialog-footer">
-                    <el-button @click="IOweidong = false">取 消</el-button>
-                    <el-button @click="handleIOQ">确定</el-button>
-                </div>
-            </el-dialog>&nbsp;
-        </el-form-item> -->
     </el-form>
 
-    <!-- {{ MANUALDATA }} -->
 
 </template>
 
@@ -163,27 +43,10 @@
 import { ref, computed } from 'vue'
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 import { MANUALDATA } from '@/views/agv_ctrl/param/common/commondata.js'
-import { flag,newRow } from './manualdata.js'
-import IO from './IO.vue'
 
 
 const IOweidong = ref(false);
 
-
-
-const handleIO = () => {
-    newRow.value.value.value = MANUALDATA.value.switch;
-    flag.value = !flag.value;
-    IOweidong.value = true;
-};
-
-const handleIOQ = () => {
-    if (newRow.value.value != undefined) {
-        MANUALDATA.value.switch = newRow.value.value;
-    }
-    syncdata();
-    IOweidong.value = false;
-};
 
 const syncdata = () => {
     jsondata.value.Manual = MANUALDATA;
@@ -193,8 +56,10 @@ const syncdata = () => {
 
 
 const canOptions = computed(() => {
-    return Object.keys(jsondata.value).filter(key => key.startsWith('can') && 'can_manual' in jsondata.value[key]);
-});
+    return Object.keys(jsondata.value)
+      .filter(key => key.startsWith('can') && 'can_manual' in jsondata.value[key])
+      .map(key => parseInt(key.slice(3))); // 提取键中的数字部分
+  });
 
 const filteredJsonData = computed(() => {
     return Object.fromEntries(

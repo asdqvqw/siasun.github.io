@@ -56,7 +56,7 @@
                 <el-dialog :title="titleinput" v-model="stop1input" :visible="stop1input" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO2 :diver="newRow.HardBum.one.input"></IO2>
+                        <IO2 :wheel="newRow.HardBum.one.input"></IO2>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="stop1input = false">取 消</el-button>
@@ -68,7 +68,7 @@
                 <el-dialog :title="titleoutput" v-model="stop1output" :visible="stop1output" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO2 :diver="newRow.HardBum.one.output"></IO2>
+                        <IO2 :wheel="newRow.HardBum.one.output"></IO2>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="stop1output = false">取 消</el-button>
@@ -80,7 +80,7 @@
                 <el-dialog :title="titleinput" v-model="stop2input" :visible="stop2input" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO5 :diver="newRow.HardBum.two.input" ></IO5>
+                        <IO5 :wheel="newRow.HardBum.two.input" ></IO5>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="stop2input = false">取 消</el-button>
@@ -92,7 +92,7 @@
                 <el-dialog :title="titleoutput" v-model="stop2output" :visible="stop2output" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO5 :diver="newRow.HardBum.two.output" ></IO5>
+                        <IO5 :wheel="newRow.HardBum.two.output" ></IO5>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="stop2output = false">取 消</el-button>
@@ -104,7 +104,7 @@
                 <el-dialog :title="titleinput" v-model="resetI" :visible="resetI" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO6 :diver="newRow.HardBum.reset.input" ></IO6>
+                        <IO6 :wheel="newRow.HardBum.reset.input" ></IO6>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="resetI = false">取 消</el-button>
@@ -116,7 +116,7 @@
                 <el-dialog :title="titleoutput" v-model="resetO" :visible="resetO" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO6 :diver="newRow.HardBum.reset.output" ></IO6>
+                        <IO6 :wheel="newRow.HardBum.reset.output" ></IO6>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="resetO = false">取 消</el-button>
@@ -231,14 +231,14 @@ const addNewRow = () => {
     newRow.value.isHardBum = false;
     newRow.value.value.value = [1, 1, 1, 1, 1];
     newRow.value.editingIndex = -1;
-    newRow.value.HardBum.one.input = [];
-    newRow.value.HardBum.one.output = [];
+    newRow.value.HardBum.one.input = [0,2,2,2,0];
+    newRow.value.HardBum.one.output = [0,2,2,2,0];
 
-    newRow.value.HardBum.two.input = [];
-    newRow.value.HardBum.two.output = [];
+    newRow.value.HardBum.two.input = [0,2,2,2,0];
+    newRow.value.HardBum.two.output = [0,2,2,2,0];
 
-    newRow.value.HardBum.reset.input = [];
-    newRow.value.HardBum.reset.output = [];
+    newRow.value.HardBum.reset.input = [0,2,2,2,0];
+    newRow.value.HardBum.reset.output = [0,2,2,2,0];
 
     console.log('addNewRow', newRow.value.value.value)
     dialogVisible.value = true;

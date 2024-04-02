@@ -44,13 +44,15 @@ export const jsondata = ref({
       SpeedLev: 0,
     },
   },
-  AGVmodel: {
-    type: 1,
-    RealyTime: [200, 200],
-    OrdinaryDW: [
-      {
+  Kinematic: {
+    // type: 1,
+    delay: {
+      need_delay_time:false,
+      servoenable_delay_time:200,
+      servospeed_delay_time:200
+    },
+    drive: [
 
-      }
     ],
   },
   switch: {
@@ -68,12 +70,17 @@ export const jsondata = ref({
     com: 0,
     can: 0,
     // wheel: [0, 0, 0, 0, 0],
-    // steel: [0, 0, 0, 0, 0],
+    // steer: [0, 0, 0, 0, 0],
     // forklift: [0, 0, 0, 0],
     // switch: []
   },
-  Better: {},
-  Relay:[]
+  Better: {
+    type: 0,
+    elect: 0,
+    param: []
+  },
+  Relay:[],
+  PLS:[]
 });
 
 export const tableDataCrtlRelay = ref([
@@ -114,71 +121,60 @@ export const OTHERPARM = ref([
 
 export const tableDataCrtl = ref([
   //   {
-  //     name: '左轮驱动', AGVposX: '', AGVposY: '', isDrWheel: true, driverType: 0, isSteel: true,diver: {
-  //         Indirection:0,
-  //         servoType:0,
+  //     name: '左轮驱动', install_x: '', install_y: '', use_wheel: true, drive_type: 0, use_steer: true,wheel: {
+  //         install_dir:0,
+  //         servo_type:0,
   //         MeParm: [0, 0, 0.23, 21, 2700, 48],
   //         SeParm: [0, 0],
-  //         morehot: [],
+  //         wheel_check: [],
 
   //     },
-  //     steel: {
-  //         Indirection:0,
-  //         RuservoType:0,
-  //         isCoddist: true,
+  //     steer: {
+  //         install_dir:0,
+  //         servo_type:0,
+  //         use_absolute_encoder: true,
   //         Coddist:[0, 0, 0.22,1],
   //         MeParm: [0, 0, 0.22],
-  //         zeroindex: [54],
+  //         home_offset: [54],
   //         SeParm: [0, 0],
   //         sevorestu: [],
   //         sevoreable: [],
-  //         LimitOne:[],
-  //         LimitTwo:[],
-  //         LimitZero:[],
+  //         unclockwise_limit_switch:[],
+  //         clockwise_limit_switch:[],
+  //         zero_limit_switch:[],
   //     }
   // },
   // {
-  //     name: '右轮驱动', AGVposX: '', AGVposY: '', isDrWheel: true, driverType: 1, isSteel: true,diver: {
-  //         Indirection:1,
-  //         servoType:0,
+  //     name: '右轮驱动', install_x: '', install_y: '', use_wheel: true, drive_type: 1, use_steer: true,wheel: {
+  //         install_dir:1,
+  //         servo_type:0,
   //         MeParm: [0, 0, 0.23, 21, 2700, 48],
   //         SeParm: [0, 0],
-  //         morehot: [],
+  //         wheel_check: [],
 
 
-  //     }, steel: {
-  //         Indirection:1,
-  //         RuservoType:0,
-  //         isCoddist: false,
+  //     }, steer: {
+  //         install_dir:1,
+  //         servo_type:0,
+  //         use_absolute_encoder: false,
   //         Coddist:[0, 0, 0.22,1],
   //         MeParm: [0, 0, 0.23],
-  //         zeroindex: [54],
+  //         home_offset: [54],
   //         SeParm: [0, 0],
   //         sevorestu: [],
   //         sevoreable: [],
-  //         LimitOne:[],
-  //         LimitTwo:[],
-  //         LimitZero:[],
+  //         unclockwise_limit_switch:[],
+  //         clockwise_limit_switch:[],
+  //         zero_limit_switch:[],
   //     }
 
   // }
 ]);
 
-export const tableDataCrtlswitch = ref([{
-  name: '启动开关',
-  value: [
-    1, 1, 1, 1, 1, 1
-  ]
-}
+export const tableDataCrtlswitch = ref([
 
 ]);
-export const tableDataCrtlswitchEmg = ref([{
-  name: '急停开关',
-  value: [
-    1, 1, 1, 1, 1, 1
-  ]
-}
-
+export const tableDataCrtlswitchEmg = ref([
 ]);
 
 export const tableDataCrtlSound = ref([
@@ -220,9 +216,9 @@ export const tableDataCrtlPLS = ref([
 
 export const flag = ref(false);
 export const selected = ref('1');
-export const RealyTimeisChecked = ref(true);
-export const RealyTimeinput1 = ref(200);
-export const RealyTimeinput2 = ref(200);
+export const delayisChecked = ref(true);
+export const delayinput1 = ref(200);
+export const delayinput2 = ref(200);
 
 export const MANUALRAPARM = ref([
   { manRadLev: 0, manRadNum: 2, value: true },

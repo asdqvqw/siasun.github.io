@@ -165,7 +165,7 @@ const selectedcan3 = ref('1');
 
 
 // const props = defineProps({
-//     diver: {
+//     wheel: {
 //         type: Array,
 //         required: true
 //     }
@@ -174,7 +174,7 @@ const selectedcan3 = ref('1');
 const servoabledcheck = () => {
 
     if (!servoabled.value) {
-        newRowEX.value.area = [];
+        newRowEX.value.area = [0,2,2,2,0];
     }
     generateJSON();
 
@@ -190,7 +190,7 @@ const generateJSON = () => {
             newRowEX.value.area = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value)]
         }
     } else {
-        newRowEX.value.area = [];
+        newRowEX.value.area = [0,2,2,2,0];
     }
 
     console.log('generateJSON', newRowEX.value.area)
@@ -235,6 +235,10 @@ const putJSON = () => {
             selectedcan.value = newRowEX.value.area.value[1].toString();
             selectedcan1.value = newRowEX.value.area.value[2].toString();
             handleChange();
+        }else if(newRowEX.value.area.value[0] === 0)
+        {
+            servoabled.value = false;
+            handleChange();
         }
 
     }
@@ -263,7 +267,11 @@ const putJSON = () => {
                 selectedcan.value = newRowEX.value.area[1].toString();
                 selectedcan1.value = newRowEX.value.area[2].toString();
                 handleChange();
-            }
+            }else if(newRowEX.value.area.value[0] === 0)
+        {
+            servoabled.value = false;
+            handleChange();
+        }
 
         } else {
 

@@ -23,9 +23,9 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="servoType" label="伺服类型">
+        <el-table-column prop="servo_type" label="伺服类型">
           <template #default="scope">
-            <el-select v-model="scope.row.servoType" placeholder="请选择">
+            <el-select v-model="scope.row.servo_type" placeholder="请选择">
               <el-option label="Elmo伺服" value="0"></el-option>
               <el-option label="步科伺服" value="1"></el-option>
               <el-option label="Motec伺服" value="2"></el-option>
@@ -55,7 +55,7 @@ const addNewRow = () => {
   CANOPEN2.value.push({
     ID: '',
     canID: '',
-    servoType: '',
+    servo_type: '',
 
   });
 };
@@ -71,7 +71,7 @@ jsondata.value.can2 = {
     return CANOPEN2.value.map((row) => [
       isNaN(parseInt(row.ID)) ? 0 : parseInt(row.ID),
       isNaN(parseInt(row.canID)) ? 0 : parseInt(row.canID),
-      isNaN(parseInt(row.servoType))?0:parseInt(row.servoType),
+      isNaN(parseInt(row.servo_type))?0:parseInt(row.servo_type),
 
     ]);
   })

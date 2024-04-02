@@ -165,7 +165,7 @@ const selectedcan3 = ref('1');
 
 
 // const props = defineProps({
-//     diver: {
+//     wheel: {
 //         type: Array,
 //         required: true
 //     }
@@ -174,7 +174,7 @@ const selectedcan3 = ref('1');
 const servoabledcheck = () => {
 
     if (!servoabled.value) {
-        newRow.value.value = [];
+        newRow.value.value = [0,2,2,2,0];
     }
     generateJSON();
 
@@ -190,7 +190,7 @@ const generateJSON = () => {
             newRow.value.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value)]
         }
     } else {
-        newRow.value.value = [];
+        newRow.value.value = [0,2,2,2,0];
     }
 
     console.log('generateJSON', newRow.value.value)
@@ -234,6 +234,9 @@ const putJSON = () => {
             selectedcan.value = newRow.value.value.value[1].toString();
             selectedcan1.value = newRow.value.value.value[2].toString();
             handleChange();
+        }else if (newRow.value.value.value[0] === 0) {
+            servoabled.value = false;
+            handleChange();
         }
 
     }
@@ -264,7 +267,10 @@ const putJSON = () => {
                 selectedcan.value = newRow.value.value[1].toString();
                 selectedcan1.value = newRow.value.value[2].toString();
                 handleChange();
-            }
+            }else if (newRow.value.value.value[0] === 0) {
+            servoabled.value = false;
+            handleChange();
+        }
 
         } else {
             servoabled.value = false;
