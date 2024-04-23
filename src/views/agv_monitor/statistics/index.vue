@@ -221,19 +221,7 @@ const update = () => {
         ],
     };
     chartInstance.setOption(option);
-    chartInstance.setOption({
-        toolbox: {
-            show: true,
-            feature: {
-                saveAsImage: {
-                    name: 'chartInstance',
-                    title: '保存图表',
-                    pixelRatio: 2,
-                },
-                magicType: { type: ['bar', 'line', 'stack','tiled'] },
-            },
-        },
-    });
+
 }
 
 
