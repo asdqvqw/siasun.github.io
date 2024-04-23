@@ -500,7 +500,8 @@ export default defineComponent({
                     class="logo"
                     :src="dataContainer.img.img_1" fit="cover" /> -->
                 <div class="name">
-                    <img src="@/assets/siasun.png" style="width: 110%; height: 100%; margin-top: 15%; margin-left: -5%;"> 新松机器人 
+                    <!-- <img src="@/assets/siasun.png" style="width: 110%; height: 100%; margin-top: 15%; margin-left: -5%;"> -->
+                     新松机器人 
                 </div>
             </div>
             <div class="right">
