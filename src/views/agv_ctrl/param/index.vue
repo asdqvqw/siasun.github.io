@@ -11,23 +11,28 @@
                     </el-button>
                     &nbsp;&nbsp; -->
                     <input ref="importInput" type="file" accept=".json" style="display: none" @change="handleImport" />
-                    <el-button @click="$refs.importInput.click()" type="success" >
-                        导入
+                    <el-button @click="$refs.importInput.click()" type="success">
+                        本地导入
                     </el-button>
 
-                    <el-button type="primary" @click="handlecheck" >
+                    <el-button type="primary" @click="syncAgvParm">
+                        从AGV同步参数
+                    </el-button>
+
+                    <el-button type="info" @click="handlecheck">
                         查看设备
                     </el-button>
-                    <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" 
-                    width="900px" @close="checkdevice = false">
+                    <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" width="900px"
+                        @close="checkdevice = false">
                         <checkbox></checkbox>
                     </el-dialog>
 
                     &nbsp;
-                    <el-button type="info" @click="handleExpand11"  >
+                    <el-button type="info" @click="handleExpand11">
                         查看
                     </el-button>
-                    <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible" @close="dialogVisible = false">
+                    <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible"
+                        @close="dialogVisible = false">
                         <pre>{{ formattedJsondata }}</pre>
                     </el-dialog>
 
@@ -83,12 +88,12 @@
 </template>
 
 <script setup>
-import { ref,computed } from 'vue';
+import { ref, computed } from 'vue';
 import Consloe from './common/Consloe.vue';
 import CanLine from './common/CanLine.vue';
 import checkbox from '@/views/agv_ctrl/param/check.vue';
 import { jsondata } from './common/commondata.js';
-import { tableDataCrtl,tableDataCrtlnet } from './common/commondata.js';
+import { tableDataCrtl, tableDataCrtlnet } from './common/commondata.js';
 import { CANPOS, CANPOS2, CANPOS3 } from './common/commondata.js';
 import { CANOPEN, CANOPEN2, CANOPEN3 } from './common/commondata.js';
 import { CANGUIDE, CANGUIDE2, CANGUIDE3 } from './common/commondata.js';
@@ -100,10 +105,10 @@ import { AUTOPARM, AUTOPARMLEV } from './common/commondata.js';
 import { MANUALPARMA, MANUALRAPARM } from './common/commondata.js';
 import { selected } from './common/commondata.js';
 import { delayisChecked, delayinput1, delayinput2 } from './common/commondata.js';
-import { OTHERPARM,functioncDate } from './common/commondata.js';
-import { tableDataCrtlswitch,tableDataCrtlswitchEmg } from './common/commondata.js';
-import { tableDataCrtlBumper,tableDataCrtlPLS,tableDataCrtlSound,MANUALDATA } from './common/commondata.js';
-import { tableDataCrtlBetter,tableDataCrtlRelay } from './common/commondata.js';
+import { OTHERPARM, functioncDate } from './common/commondata.js';
+import { tableDataCrtlswitch, tableDataCrtlswitchEmg } from './common/commondata.js';
+import { tableDataCrtlBumper, tableDataCrtlPLS, tableDataCrtlSound, MANUALDATA } from './common/commondata.js';
+import { tableDataCrtlBetter, tableDataCrtlRelay } from './common/commondata.js';
 
 
 const ShowNetSelect = ref(false);
@@ -155,6 +160,359 @@ const handleExport = () => {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
 };
+import axios from 'axios'
+const responseData = ref(null) // 创建响应式变量
+const syncAgvParm = () => {
+    let userList = {
+        data:'SystemParm.json',
+        group: 'siasun',
+        account: 'test',
+        password: '123456'
+    }
+
+    axios({
+        method: 'post',
+        url: '/api/data/jsoneditor',
+        data: JSON.stringify(userList)
+    })
+        .then((res) => {
+            ElMessage.success('请求成功')
+            responseData.value = res.data
+            // console.log('responseData',responseData.value)
+            jsondata.value = responseData.value;
+            syncdata();
+        })
+        .catch((error) => {
+            ElMessage.error('请求失败')
+        })
+        .finally(() => {
+            // 可以在此处执行其他操作
+        })
+}
+
+const syncdata = () => {
+    tableDataCrtlnet.value = jsondata.value.network;
+    functioncDate.value = jsondata.value.function;
+    //com
+    isChecked.value = jsondata.value.com.com1;
+    isChecked1.value = jsondata.value.com.com2;
+    isChecked2.value = jsondata.value.com.com3;
+    isChecked3.value = jsondata.value.com.com4;
+
+    // canpos
+    if (jsondata.value.can1.can_pos !== undefined) {
+        for (const item of jsondata.value.can1.can_pos) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+            };
+            CANPOS.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can2.can_pos !== undefined) {
+        for (const item of jsondata.value.can2.can_pos) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+            };
+            CANPOS2.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can3.can_pos !== undefined) {
+        for (const item of jsondata.value.can3.can_pos) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+            };
+            CANPOS3.value.push(newRow);
+        }
+    }
+    //open
+    if (jsondata.value.can1.can_open !== undefined) {
+        for (const item of jsondata.value.can1.can_open) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+                servo_type: item[2].toString(),
+            };
+            CANOPEN.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can2.can_open !== undefined) {
+        for (const item of jsondata.value.can2.can_open) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+                servo_type: item[2].toString(),
+            };
+            CANOPEN2.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can3.can_open !== undefined) {
+        for (const item of jsondata.value.can3.can_open) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+                servo_type: item[2].toString(),
+            };
+            CANOPEN3.value.push(newRow);
+        }
+    }
+    //guide
+    if (jsondata.value.can1.can_guide !== undefined) {
+        for (const item of jsondata.value.can1.can_guide) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANGUIDE.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can2.can_guide !== undefined) {
+        for (const item of jsondata.value.can2.can_guide) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANGUIDE2.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can3.can_guide !== undefined) {
+        for (const item of jsondata.value.can3.can_guide) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANGUIDE3.value.push(newRow);
+        }
+    }
+
+    //BMS
+    if (jsondata.value.can1.can_BMS !== undefined) {
+        for (const item of jsondata.value.can1.can_BMS) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+                subSystem: item[2].toString(),
+
+            };
+            CANBMS.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can2.can_BMS !== undefined) {
+        for (const item of jsondata.value.can2.can_BMS) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+                subSystem: item[2].toString(),
+
+            };
+            CANBMS2.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can3.can_BMS !== undefined) {
+        for (const item of jsondata.value.can3.can_BMS) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+                subSystem: item[2].toString(),
+
+            };
+            CANBMS3.value.push(newRow);
+        }
+    }
+    //io
+    if (jsondata.value.can1.can_io !== undefined) {
+        for (const item of jsondata.value.can1.can_io) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANIO.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can2.can_io !== undefined) {
+        for (const item of jsondata.value.can2.can_io) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANIO2.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can3.can_io !== undefined) {
+        for (const item of jsondata.value.can3.can_io) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANIO3.value.push(newRow);
+        }
+    }
+
+    //MANU
+    if (jsondata.value.can1.can_manual !== undefined) {
+        for (const item of jsondata.value.can1.can_manual) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+            };
+            CANMANUAL.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can2.can_manual !== undefined) {
+        for (const item of jsondata.value.can2.can_manual) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+            };
+            CANMANUAL2.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can3.can_manual !== undefined) {
+        for (const item of jsondata.value.can3.can_manual) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+            };
+            CANMANUAL3.value.push(newRow);
+        }
+    }
+
+    //RFID
+    if (jsondata.value.can1.can_rfid !== undefined) {
+        for (const item of jsondata.value.can1.can_rfid) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANRFID.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can2.can_rfid !== undefined) {
+        for (const item of jsondata.value.can2.can_rfid) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANRFID2.value.push(newRow);
+        }
+    }
+
+    if (jsondata.value.can3.can_rfid !== undefined) {
+        for (const item of jsondata.value.can3.can_rfid) {
+            const newRow = {
+                ID: item[0].toString(),
+                canID: item[1].toString(),
+
+            };
+            CANRFID3.value.push(newRow);
+        }
+    }
+
+    //opparam
+    AUTOPARM.value.forEach((item) => {
+        if (jsondata.value.OperatingParam.autoparam[item.key] !== undefined) {
+            item.value = jsondata.value.OperatingParam.autoparam[item.key];
+        }
+    });
+    if (jsondata.value.OperatingParam.autoparam.SpeedLev !== undefined) {
+        AUTOPARMLEV.value[0].value = jsondata.value.OperatingParam.autoparam.SpeedLev;
+    }
+
+    if (jsondata.value.OperatingParam.manualparm.setSpeed !== undefined) {
+        MANUALPARMA.value = jsondata.value.OperatingParam.manualparm.setSpeed.map((item, index) => ({
+            manSpeLev: index,
+            adAutoSpe: item[0].toString(),
+            value: item[1] === 1 ? true : false,
+        }))
+    }
+    if (jsondata.value.OperatingParam.manualparm.setRadius !== undefined) {
+        MANUALRAPARM.value = jsondata.value.OperatingParam.manualparm.setRadius.map((item, index) => ({
+            manRadLev: index,
+            manRadNum: item[0].toString(),
+            value: item[1] === 1 ? true : false,
+        }))
+    }
+
+    //Kinematic
+    if (jsondata.value.Kinematic.type !== undefined) {
+        selected.value = jsondata.value.Kinematic.type.toString();
+    }
+
+    if (jsondata.value.Kinematic.delay !== undefined) {
+        delayisChecked.value = jsondata.value.Kinematic.delay.need_delay_time;
+        delayinput1.value = jsondata.value.Kinematic.delay.servoenable_delay_time;
+        delayinput2.value = jsondata.value.Kinematic.delay.servospeed_delay_time;
+    }
+
+
+    if (jsondata.value.Kinematic.drive !== undefined) {
+        tableDataCrtl.value = jsondata.value.Kinematic.drive;
+    }
+    //OTHER
+    OTHERPARM.value.forEach((item) => {
+        if (jsondata.value.other[item.key] !== undefined) {
+            item.value = jsondata.value.other[item.key];
+        }
+    });
+    //ele
+    if (jsondata.value.switch.StartButton !== undefined) {
+        tableDataCrtlswitch.value = jsondata.value.switch.StartButton;
+    }
+
+    if (jsondata.value.switch.EmgButton !== undefined) {
+        tableDataCrtlswitchEmg.value = jsondata.value.switch.EmgButton;
+    }
+
+    if (jsondata.value.HardBumper !== undefined) {
+        tableDataCrtlBumper.value = jsondata.value.HardBumper;
+    }
+
+    if (jsondata.value.Relay !== undefined) {
+        tableDataCrtlRelay.value = jsondata.value.Relay;
+    }
+
+
+    if (jsondata.value.Better !== undefined) {
+        tableDataCrtlBetter.value = jsondata.value.Better;
+    }
+
+    if (jsondata.value.Sound !== undefined) {
+        tableDataCrtlSound.value = jsondata.value.Sound;
+    }
+
+    if (jsondata.value.Manual !== undefined) {
+        MANUALDATA.value = jsondata.value.Manual;
+    }
+
+
+    if (jsondata.value.PLS !== undefined) {
+        tableDataCrtlPLS.value = jsondata.value.PLS;
+    }
+}
+
 
 
 const handleImport = (event) => {
@@ -163,327 +521,8 @@ const handleImport = (event) => {
     reader.onload = (e) => {
         const importedData = JSON.parse(e.target.result);
         jsondata.value = importedData;
-        tableDataCrtlnet.value = importedData.network;
-        functioncDate.value = importedData.function;
-        //com
-        isChecked.value = jsondata.value.com.com1;
-        isChecked1.value = jsondata.value.com.com2;
-        isChecked2.value = jsondata.value.com.com3;
-        isChecked3.value = jsondata.value.com.com4;
+        syncdata();
 
-        // canpos
-        if (jsondata.value.can1.can_pos !== undefined) {
-            for (const item of jsondata.value.can1.can_pos) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                };
-                CANPOS.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can2.can_pos !== undefined) {
-            for (const item of jsondata.value.can2.can_pos) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                };
-                CANPOS2.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can3.can_pos !== undefined) {
-            for (const item of jsondata.value.can3.can_pos) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                };
-                CANPOS3.value.push(newRow);
-            }
-        }
-        //open
-        if (jsondata.value.can1.can_open !== undefined) {
-            for (const item of jsondata.value.can1.can_open) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                    servo_type: item[2].toString(),
-                };
-                CANOPEN.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can2.can_open !== undefined) {
-            for (const item of jsondata.value.can2.can_open) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                    servo_type: item[2].toString(),
-                };
-                CANOPEN2.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can3.can_open !== undefined) {
-            for (const item of jsondata.value.can3.can_open) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                    servo_type: item[2].toString(),
-                };
-                CANOPEN3.value.push(newRow);
-            }
-        }
-        //guide
-        if (jsondata.value.can1.can_guide !== undefined) {
-            for (const item of jsondata.value.can1.can_guide) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANGUIDE.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can2.can_guide !== undefined) {
-            for (const item of jsondata.value.can2.can_guide) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANGUIDE2.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can3.can_guide !== undefined) {
-            for (const item of jsondata.value.can3.can_guide) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANGUIDE3.value.push(newRow);
-            }
-        }
-
-        //BMS
-        if (jsondata.value.can1.can_BMS !== undefined) {
-            for (const item of jsondata.value.can1.can_BMS) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                    subSystem: item[2].toString(),
-
-                };
-                CANBMS.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can2.can_BMS !== undefined) {
-            for (const item of jsondata.value.can2.can_BMS) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                    subSystem: item[2].toString(),
-
-                };
-                CANBMS2.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can3.can_BMS !== undefined) {
-            for (const item of jsondata.value.can3.can_BMS) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                    subSystem: item[2].toString(),
-
-                };
-                CANBMS3.value.push(newRow);
-            }
-        }
-        //io
-        if (jsondata.value.can1.can_io !== undefined) {
-            for (const item of jsondata.value.can1.can_io) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANIO.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can2.can_io !== undefined) {
-            for (const item of jsondata.value.can2.can_io) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANIO2.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can3.can_io !== undefined) {
-            for (const item of jsondata.value.can3.can_io) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANIO3.value.push(newRow);
-            }
-        }
-
-        //MANU
-        if (jsondata.value.can1.can_manual !== undefined) {
-            for (const item of jsondata.value.can1.can_manual) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                };
-                CANMANUAL.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can2.can_manual !== undefined) {
-            for (const item of jsondata.value.can2.can_manual) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                };
-                CANMANUAL2.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can3.can_manual !== undefined) {
-            for (const item of jsondata.value.can3.can_manual) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-                };
-                CANMANUAL3.value.push(newRow);
-            }
-        }
-
-        //RFID
-        if (jsondata.value.can1.can_rfid !== undefined) {
-            for (const item of jsondata.value.can1.can_rfid) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANRFID.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can2.can_rfid !== undefined) {
-            for (const item of jsondata.value.can2.can_rfid) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANRFID2.value.push(newRow);
-            }
-        }
-
-        if (jsondata.value.can3.can_rfid !== undefined) {
-            for (const item of jsondata.value.can3.can_rfid) {
-                const newRow = {
-                    ID: item[0].toString(),
-                    canID: item[1].toString(),
-
-                };
-                CANRFID3.value.push(newRow);
-            }
-        }
-
-        //opparam
-        AUTOPARM.value.forEach((item) => {
-            if (jsondata.value.OperatingParam.autoparam[item.key] !== undefined) {
-                item.value = jsondata.value.OperatingParam.autoparam[item.key];
-            }
-        });
-        if (jsondata.value.OperatingParam.autoparam.SpeedLev !== undefined) {
-            AUTOPARMLEV.value[0].value = jsondata.value.OperatingParam.autoparam.SpeedLev;
-        }
-
-        if (jsondata.value.OperatingParam.manualparm.setSpeed !== undefined) {
-            MANUALPARMA.value = jsondata.value.OperatingParam.manualparm.setSpeed.map((item, index) => ({
-                manSpeLev: index,
-                adAutoSpe: item[0].toString(),
-                value: item[1] === 1 ? true : false,
-            }))
-        }
-        if (jsondata.value.OperatingParam.manualparm.setRadius !== undefined) {
-            MANUALRAPARM.value = jsondata.value.OperatingParam.manualparm.setRadius.map((item, index) => ({
-                manRadLev: index,
-                manRadNum: item[0].toString(),
-                value: item[1] === 1 ? true : false,
-            }))
-        }
-
-        //Kinematic
-        if (jsondata.value.Kinematic.type !== undefined) {
-            selected.value = jsondata.value.Kinematic.type.toString();
-        }
-
-        if (jsondata.value.Kinematic.delay !== undefined) {
-            delayisChecked.value = jsondata.value.Kinematic.delay.need_delay_time;
-            delayinput1.value = jsondata.value.Kinematic.delay.servoenable_delay_time;
-            delayinput2.value = jsondata.value.Kinematic.delay.servospeed_delay_time;
-        } 
-
-
-        if (jsondata.value.Kinematic.drive !== undefined) {
-            tableDataCrtl.value = jsondata.value.Kinematic.drive;
-        }
-        //OTHER
-        OTHERPARM.value.forEach((item) => {
-            if (jsondata.value.other[item.key] !== undefined) {
-                item.value = jsondata.value.other[item.key];
-            }
-        });
-        //ele
-        if (jsondata.value.switch.StartButton !== undefined) {
-            tableDataCrtlswitch.value = jsondata.value.switch.StartButton;
-        }
-
-        if (jsondata.value.switch.EmgButton !== undefined) {
-            tableDataCrtlswitchEmg.value = jsondata.value.switch.EmgButton;
-        }
-
-        if (jsondata.value.HardBumper !== undefined) {
-            tableDataCrtlBumper.value = jsondata.value.HardBumper;
-        }
-
-        if (jsondata.value.Relay !== undefined) {
-            tableDataCrtlRelay.value = jsondata.value.Relay;
-        }
-
-        
-        if (jsondata.value.Better !== undefined) {
-            tableDataCrtlBetter.value = jsondata.value.Better;
-        }
-        
-        if (jsondata.value.Sound !== undefined) {
-            tableDataCrtlSound.value = jsondata.value.Sound;
-        }
-        
-        if (jsondata.value.Manual !== undefined) {
-            MANUALDATA.value = jsondata.value.Manual;
-        }
-        
-
-        if (jsondata.value.PLS !== undefined) {
-            tableDataCrtlPLS.value = jsondata.value.PLS;
-        }
-        
     };
     reader.readAsText(file);
 

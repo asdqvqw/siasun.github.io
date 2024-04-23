@@ -121,7 +121,7 @@
 
             <div v-if="selected5">
                 输入点对应位:
-                <el-input v-model="selectedcan" type="number" @change="generateJSON">
+                <el-input v-model="selectedcan" @change="generateJSON">
                 </el-input>
                 <br>
                 信号极性:
@@ -156,6 +156,10 @@ const selectedcan1 = ref('1');
 const selectedcan2 = ref('1');
 const selectedcan3 = ref('1');
 
+const decimalOutput = ref('');
+const hexOutput = ref('');
+
+
 const emit = defineEmits(['myEvent'])
 
 emit('myEvent', childValue.value);
@@ -169,8 +173,9 @@ const props = defineProps({
 });
 
 const putJSON = () => {
-
-    if (props.wheel[0] !== undefined) {
+    
+    if (props.wheel !== undefined) {
+        console.log('22222', props.wheel)
         if (props.wheel[0] === 1 || props.wheel[0] === 2 || props.wheel[0] === 4) {
             servoabled.value = true;
             selected.value = props.wheel[0].toString();
@@ -190,15 +195,47 @@ const putJSON = () => {
             servoabled.value = true;
             selected.value = props.wheel[0].toString();
             handleChange();
-            selectedcan.value = props.wheel[1].toString();
+            const decimal = parseInt(props.wheel[1], 10);
+            hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+            selectedcan.value = hexOutput.value.toString();
             selectedcan1.value = props.wheel[2].toString();
-        }else if(props.wheel[0] === 0)
-        {
+        } else if (props.wheel[0] === 0) {
             servoabled.value = false;
             handleChange();
         }
 
     } else {
+        if (props.wheel.value !== undefined) {
+            console.log('33333333',props.wheel.value)
+            if (props.wheel.value[0] === 1 || props.wheel.value[0] === 2 || props.wheel.value[0] === 4) {
+                servoabled.value = true;
+                selected.value = props.wheel.value[0].toString();
+                handleChange();
+                selectedcan.value = props.wheel.value[1].toString();
+                selectedcan1.value = props.wheel.value[2].toString();
+                selectedcan2.value = props.wheel.value[3].toString();
+                selectedcan3.value = props.wheel.value[4].toString();
+            } else if (props.wheel.value[0] === 3) {
+                servoabled.value = true;
+                selected.value = props.wheel.value[0].toString();
+                handleChange();
+                selectedcan.value = props.wheel.value[1].toString();
+                selectedcan1.value = props.wheel.value[2].toString();
+                selectedcan2.value = props.wheel.value[3].toString();
+            } else if (props.wheel.value[0] === 5) {
+                servoabled.value = true;
+                selected.value = props.wheel.value[0].toString();
+                handleChange();
+                const decimal = parseInt(props.wheel.value[1], 10);
+                hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+                selectedcan.value = hexOutput.value.toString();
+                selectedcan1.value = props.wheel.value[2].toString();
+            } else if (props.wheel.value[0] === 0) {
+                servoabled.value = false;
+                handleChange();
+            }
+        }
+
         servoabled.value = false;
     }
 
@@ -206,25 +243,27 @@ const putJSON = () => {
 };
 
 const servoabledcheck = () => {
-
+    console.log('3333')
     if (!servoabled.value) {
-        props.wheel.value = [0,2,2,2,0];
+        props.wheel.value = [0, 2, 2, 2, 0];
     }
     generateJSON();
 
 };
 
 const generateJSON = () => {
-
+    console.log('1111111')
     if (!servoabled.value) {
-       props.wheel.value = [0,2,2,2,0];
+        props.wheel.value = [0, 2, 2, 2, 0];
     } else {
         if (selected.value === "1" || selected.value === "2" || selected.value === "4") {
             props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value), parseInt(selectedcan3.value)]
         } else if (selected.value === "3") {
             props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value)]
         } else if (selected.value === "5") {
-            props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value)]
+            const decimal = parseInt(selectedcan.value, 16);
+            decimalOutput.value = isNaN(decimal) ? '' : decimal.toString();
+            props.wheel.value = [parseInt(selected.value), parseInt(decimalOutput.value), parseInt(selectedcan1.value)]
         }
 
     }

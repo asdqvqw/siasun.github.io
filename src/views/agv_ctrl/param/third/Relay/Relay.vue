@@ -28,8 +28,8 @@
                     <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
                 </el-form-item>
 
-                
-<!-- {{ tableDataCrtlRelay }} -->
+
+                <!-- {{ tableDataCrtlRelay }} -->
 
             </el-form>
 
@@ -63,7 +63,7 @@
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button @click="handleAddRow">确定</el-button>
+                <el-button @click="handleAddRow(true)">确定</el-button>
 
             </div>
 
@@ -95,6 +95,7 @@ const handlestop1output = () => {
 };
 
 const handlestop1outputQ = () => {
+    handleAddRow(false);
     stop1output.value = false;
 };
 
@@ -105,13 +106,14 @@ const handlestop1input = () => {
 };
 
 const handlestop1inputQ = () => {
+    handleAddRow(false);
     stop1input.value = false;
 };
 
 const addNewRow = () => {
     newRow.value.name = 'No name';
-    newRow.value.input = [0,2,2,2,0];
-    newRow.value.output = [0,2,2,2,0];
+    newRow.value.input = [0, 2, 2, 2, 0];
+    newRow.value.output = [0, 2, 2, 2, 0];
 
     newRow.value.editingIndex = -1;
     dialogVisible.value = true;
@@ -133,12 +135,12 @@ const reedit = (index) => {
     console.log('reedit', index)
     console.log('reedit', tableDataCrtlRelay.value[index].input)
     console.log('reedit', newRow.value.input)
- 
+
     dialogVisible.value = true;
 
 };
 
-const handleAddRow = () => {
+const handleAddRow = (bool) => {
     if (newRow.value.name) {
         if (newRow.value.editingIndex !== -1) {
             // 编辑模式下更新数据
@@ -147,9 +149,11 @@ const handleAddRow = () => {
             console.log('1111', newRow.value.input.value)
             if (newRow.value.input.value !== undefined) {
                 tableDataCrtlRelay.value[newRow.value.editingIndex].input = newRow.value.input.value;
+                newRow.value.input = tableDataCrtlRelay.value[newRow.value.editingIndex].input;
             }
             if (newRow.value.output.value !== undefined) {
                 tableDataCrtlRelay.value[newRow.value.editingIndex].output = newRow.value.output.value;
+                newRow.value.output = tableDataCrtlRelay.value[newRow.value.editingIndex].output;
             }
 
             jsondata.value.Relay = tableDataCrtlRelay;
@@ -162,14 +166,16 @@ const handleAddRow = () => {
             if (newRow.value.input.value !== undefined) {
                 newRow.value.input = newRow.value.input.value;
             }
+            if (bool) {
+                const newRowData = { ...newRow.value };
 
-            const newRowData = { ...newRow.value };
+                tableDataCrtlRelay.value.push(JSON.parse(JSON.stringify(newRowData)));
+                jsondata.value.Relay = tableDataCrtlRelay;
+                console.log('handleAddRow', newRowData);
+            }
 
-            tableDataCrtlRelay.value.push(JSON.parse(JSON.stringify(newRowData)));
-            jsondata.value.Relay = tableDataCrtlRelay;
-            console.log('handleAddRow', newRowData);
         }
-        dialogVisible.value = false;
+        if(bool){dialogVisible.value = false;}
     } else {
         ElMessage.error('请填写完整数据');
     }

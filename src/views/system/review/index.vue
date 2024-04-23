@@ -46,8 +46,11 @@
     <agvdevice></agvdevice>
 
     <ELECTOR></ELECTOR>
+    <div v-if="shouldPause">
+      <event></event>
+    </div>
 
-    <!-- <statistics></statistics> -->
+    <statistics></statistics>
 
     <agvnav></agvnav>
 
@@ -70,6 +73,7 @@ import infobox from './Info_box.vue'
 import agvdevice from './AGV_device.vue'
 import agvnav from './AGV_Nav.vue'
 import ELECTOR from './AGV_ELE.vue'
+import event from './event.vue'
 import statistics from './statistics.vue'
 import screen from './dialog_info/screen_info.vue'
 import wheelinfo from './dialog_info/wheel_info.vue'
@@ -157,27 +161,27 @@ const parseLog = (content) => {
     const lifter = logJson.equipmentInfo.rack.lifter_axis.fAxisPosition;
     const agvType = logJson.uAgvType;
     // //item
-    // const items = logJson.item;
-    // const parsedItems = [];
-    // for (const item of items) {
-    //   const itemName = item.name;
-    //   let itemObject = {};
-    //   // 遍历item对象中的键值对
-    //   for (const key in item) {
-    //     if (key !== "name") {
-    //       const value = item[key];
-    //       itemObject[key] = value;
+    const items = logJson.item;
+    const parsedItems = [];
+    for (const item of items) {
+      const itemName = item.name;
+      let itemObject = {};
+      // 遍历item对象中的键值对
+      for (const key in item) {
+        if (key !== "name") {
+          const value = item[key];
+          itemObject[key] = value;
 
-    //     }
-    //   }
-    //   parsedItems.push({ itemName, itemObject });
-    // }
-    // //end
-    // const StatisticsData = logJson.statistics;
-    // , parsedItems, StatisticsData
-
-    parsedLogData.value.push({ logDateTime, logJson, realx, realy, realthita, realz, trunpan, lifter, agvType });
-    parsedLogDatabak.push({ logDateTime, logJson, realx, realy, realthita, realz, trunpan, lifter, agvType });
+        }
+      }
+      parsedItems.push({ itemName, itemObject });
+    }
+    //end
+    const StatisticsData = logJson.statistics;
+    //  , parsedItems, StatisticsData
+    //
+    parsedLogData.value.push({ logDateTime, logJson, realx, realy, realthita, realz, agvType, parsedItems, trunpan, lifter, StatisticsData });
+    parsedLogDatabak.push({ logDateTime, logJson, realx, realy, realthita, realz, agvType, parsedItems, trunpan, lifter, StatisticsData });
   }
 
   ElMessage.success('开始导入模型...');
@@ -318,7 +322,6 @@ const moveCar = () => {
     currentCoordinateIndex.value++;
     const nextCoord = parsedLogData.value[currentCoordinateIndex.value];
     car.position.set(nextCoord.realx, 0, -nextCoord.realy);
-
     const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad(parsedLogData.value[currentCoordinateIndex.value].realthita), 0, 'XYZ');
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
     car.setRotationFromQuaternion(targetQuaternion);
@@ -368,12 +371,7 @@ const animateWheel = () => {
 
 
     }
-    if (child.name === 'rightwheel') {
 
-      child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[1].wheel.fServoSpeed.toFixed(5) * 0.5;
-
-
-    }
     if (child.name === 'rightwheel') {
 
       child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[1].wheel.fServoSpeed.toFixed(5) * 0.5;
@@ -700,7 +698,7 @@ onMounted(() => {
      background-image: url('./img/1-1-bg.png');
      background-color: #001034cb;
      /* 修改弹窗背景色 */
-     animation: dialogSlideIn 0.3s ease-out forwards;
+     /* animation: dialogSlideIn 0.3s ease-out forwards; */
      width: 40%;
      height: 42.5%;
      right: 0%;
@@ -711,7 +709,7 @@ onMounted(() => {
      transform-origin: top left;
  }
 
- @keyframes dialogSlideIn {
+ /* @keyframes dialogSlideIn {
      from {
          opacity: 0;
          transform: translateX(100%);
@@ -721,7 +719,7 @@ onMounted(() => {
          opacity: 1;
          transform: translateX(0);
      }
- }
+ } */
 
  .custom-dialog .el-dialog__body {
      color: #f0e7e7;
@@ -755,8 +753,8 @@ onMounted(() => {
     background-color: #001034cb;
     /* 修改弹窗背景色 */
     animation: dialogSlideIn 1s ease-out forwards;
-    width: 50%;
-    height: 52.5%;
+    width: 30%;
+    height:32.5%;
     right: 10%;
     bottom: -10%;
     background-size: 100%;
@@ -846,5 +844,18 @@ onMounted(() => {
     color: #ddb4b4;
     text-align: center;
     margin: 0 auto;
+}
+
+
+</style>
+
+
+<style>
+.kk-dialog-class {
+  pointer-events: none;
+}
+ 
+.el-dialog {
+  pointer-events: auto;
 }
 </style>

@@ -5,6 +5,7 @@
     <div 
         class="left"
         @wheel="handleScroll">
+        
         <el-scrollbar 
             ref="ElScrollbarRef"
             height="100%">
@@ -59,6 +60,9 @@
             </draggable>
         </el-scrollbar>
     </div>
+
+
+    
     <div class="bt-list">
         <div 
             class="bt"
@@ -82,6 +86,8 @@
                 name="svg:arrow-right.svg"></SvgIcon>
         </div>
     </div>
+
+
     <div
         ref="RightOptionRef" 
         class="right">
@@ -159,6 +165,8 @@
             </div>
         </div>
     </div>
+
+    
     <div 
         v-if="dataContainer.show"
         :style="{
@@ -166,6 +174,7 @@
             '--location-y':`${dataContainer.location.y || 0}px`, 
         }"
         class="bt-list-container">
+        
         <div 
             class="item"
             @click="handleSwitchCache()">

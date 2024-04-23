@@ -144,7 +144,7 @@
 
         <div v-if="selected5">
             输入点对应位:
-            <el-input v-model="selectedcan" type="number" @change="generateJSON">
+            <el-input v-model="selectedcan"  @change="generateJSON">
             </el-input>
             <br>
             信号极性:
@@ -181,7 +181,8 @@ const selectedcan2 = ref('1');
 const selectedcan3 = ref('1');
 const selectedcan4 = ref('1');
 
-
+const decimalOutput = ref('');
+const hexOutput = ref('');
 // const props = defineProps({
 //     wheel: {
 //         type: Array,
@@ -197,7 +198,9 @@ const generateJSON = () => {
     } else if (selected.value === "3") {
         newRowEmg.value.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value), parseInt(selectedcan4.value)]
     } else if (selected.value === "5") {
-        newRowEmg.value.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan4.value)]
+        const decimal = parseInt(selectedcan.value, 16);
+        decimalOutput.value = isNaN(decimal) ? '' : decimal.toString();
+        newRowEmg.value.value = [parseInt(selected.value), parseInt(decimalOutput.value), parseInt(selectedcan1.value), parseInt(selectedcan4.value)]
     }
     console.log('generateJSON', newRowEmg.value.value)
 };
@@ -238,8 +241,10 @@ const putJSON = () => {
             handleChange();
         } else if (newRowEmg.value.value.value[0] === 5) {
             selected.value = newRowEmg.value.value.value[0].toString();
-
-            selectedcan.value = newRowEmg.value.value.value[1].toString();
+            const decimal = parseInt(newRowEmg.value.value.value[1], 10);
+            hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+            selectedcan.value = hexOutput.value.toString();
+           // selectedcan.value = newRowEmg.value.value.value[1].toString();
             selectedcan1.value = newRowEmg.value.value.value[2].toString();
             selectedcan4.value = newRowEmg.value.value.value[3].toString();
             handleChange();
@@ -269,8 +274,10 @@ const putJSON = () => {
                 handleChange();
             } else if (newRowEmg.value.value[0] === 5) {
                 selected.value = newRowEmg.value.value[0].toString();
-
-                selectedcan.value = newRowEmg.value.value[1].toString();
+                const decimal = parseInt(newRowEmg.value.value[1], 10);
+                hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+                selectedcan.value = hexOutput.value.toString();
+                //selectedcan.value = newRowEmg.value.value[1].toString();
                 selectedcan1.value = newRowEmg.value.value[2].toString();
                 selectedcan4.value = newRowEmg.value.value[3].toString();
                 handleChange();

@@ -129,7 +129,7 @@
 
             <div v-if="selected5">
                 输入点对应位:
-                <el-input v-model="selectedcan" type="number" @change="generateJSON">
+                <el-input v-model="selectedcan" @change="generateJSON">
                 </el-input>
                 <br>
                 信号极性:
@@ -163,7 +163,8 @@ const selectedcan2 = ref('1');
 const selectedcan3 = ref('1');
 
 
-
+const decimalOutput = ref('');
+const hexOutput = ref('');
 // const props = defineProps({
 //     wheel: {
 //         type: Array,
@@ -174,7 +175,7 @@ const selectedcan3 = ref('1');
 const servoabledcheck = () => {
 
     if (!servoabled.value) {
-        newRowEX.value.area = [0,2,2,2,0];
+        newRowEX.value.area = [0, 2, 2, 2, 0];
     }
     generateJSON();
 
@@ -187,10 +188,12 @@ const generateJSON = () => {
         } else if (selected.value === "3") {
             newRowEX.value.area = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value)]
         } else if (selected.value === "5") {
-            newRowEX.value.area = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value)]
+            const decimal = parseInt(selectedcan.value, 16);
+            decimalOutput.value = isNaN(decimal) ? '' : decimal.toString();
+            newRowEX.value.area = [parseInt(selected.value), parseInt(decimalOutput.value), parseInt(selectedcan1.value)]
         }
     } else {
-        newRowEX.value.area = [0,2,2,2,0];
+        newRowEX.value.area = [0, 2, 2, 2, 0];
     }
 
     console.log('generateJSON', newRowEX.value.area)
@@ -232,11 +235,13 @@ const putJSON = () => {
         } else if (newRowEX.value.area.value[0] === 5) {
             selected.value = newRowEX.value.area.value[0].toString();
             servoabled.value = true;
-            selectedcan.value = newRowEX.value.area.value[1].toString();
+            const decimal = parseInt(newRowEX.value.area.value[1], 10);
+            hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+            selectedcan.value = hexOutput.value.toString();
+            //selectedcan.value = newRowEX.value.area.value[1].toString();
             selectedcan1.value = newRowEX.value.area.value[2].toString();
             handleChange();
-        }else if(newRowEX.value.area.value[0] === 0)
-        {
+        } else if (newRowEX.value.area.value[0] === 0) {
             servoabled.value = false;
             handleChange();
         }
@@ -264,14 +269,16 @@ const putJSON = () => {
             } else if (newRowEX.value.area[0] === 5) {
                 selected.value = newRowEX.value.area[0].toString();
                 servoabled.value = true;
-                selectedcan.value = newRowEX.value.area[1].toString();
+                const decimal = parseInt(newRowEX.value.area[1], 10);
+                hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+                selectedcan.value = hexOutput.value.toString();
+                //  selectedcan.value = newRowEX.value.area[1].toString();
                 selectedcan1.value = newRowEX.value.area[2].toString();
                 handleChange();
-            }else if(newRowEX.value.area.value[0] === 0)
-        {
-            servoabled.value = false;
-            handleChange();
-        }
+            } else if (newRowEX.value.area.value[0] === 0) {
+                servoabled.value = false;
+                handleChange();
+            }
 
         } else {
 

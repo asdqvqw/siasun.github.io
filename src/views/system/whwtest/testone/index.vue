@@ -1,161 +1,38 @@
 <template>
+    <div>
+        <el-button @click="handlesevorTWO" type="primary">限位开关2</el-button>
+        {{ newrow }}
+        <el-dialog :title="title7" v-model="sevortwo" :visible="sevortwo" width="600px" :close-on-click-modal="false"
+            class="edit-data-dialog">
+            <div>
+                <IO9 :wheel="newrow.test" @update:wheel="updateWheel"></IO9>
 
-    <div class="chart" id="main2"  :style="{ width: 700 + 'px', height: 300 + 'px' }"
-        ref="main2">
+            </div>
 
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="sevortwo = false">取 消</el-button>
+                <el-button @click="handlesevortwo">确定</el-button>
+
+            </div>
+
+        </el-dialog>&nbsp;
     </div>
-
 </template>
 
-
 <script setup>
-import {ref ,onMounted} from 'vue'
-import * as echarts from 'echarts';
-
-
-const main2 = ref(null);
-
-
-//统计图
-const time = (() => {
-  let now = new Date();
-  let res = [];
-  let len = 5;
-  while (len--) {
-    res.unshift(now.toLocaleTimeString().replace(/^\D*/, ''));
-    now = new Date(+now - 500);
-  }
-  return res;
-})();
-
-const dataOne = (() => {
-  let res = [];
-  let len = 5;
-  while (len--) {
-    res.push(Math.round(Math.random() * 1000));
-  }
-  return res;
-})();
-
-const dataTwo = (() => {
-  let res = [];
-  let len = 5;
-  while (len--) {
-    res.push(Math.round(Math.random() * 1000));
-  }
-  return res;
-})();
-
-let options = {
-  title: {
-    text: '车速',
-    textStyle: {
-      color: 'white',
-    },
-  },
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      type: 'cross',
-      label: {
-        backgroundColor: '#283b56',
-      },
-    },
-  },
-  legend: {},
-  toolbox: {
-    show: true,
-    feature: {
-      dataView: { readOnly: false },
-      magicType: { type: ['bar', 'line', 'stack'] },
-      restore: {},
-      saveAsImage: {},
-    },
-    bottom: 10,
-  },
-
-  xAxis: {
-    type: 'category',
-    data: time,
-    boundaryGap: true,
-  },
-  yAxis: {
-    type: 'value',
-
-  },
-  series: [
-    {
-      data: dataOne,
-      type: 'line',
-      name: '实际',
-      color: 'green',
-      markPoint: {
-        data: [
-          { type: 'max', name: '最大值' },
-          { type: 'min', name: '最小值' },
-        ],
-      },
-      markLine: {
-        data: [{ type: 'average', name: '平均值' }],
-      },
-    },
-    {
-      data: dataTwo,
-      name: '理论',
-      type: 'line',
-      color: 'yellow',
-      markPoint: {
-        data: [
-          { type: 'max', name: '最大值' },
-          { type: 'min', name: '最小值' },
-        ],
-      },
-      markLine: {
-        data: [{ type: 'average', name: '平均值' }],
-      },
-    },
-  ],
-};
-
-
-onMounted(() => {
-  const myChart = echarts.init(main2.value);
-
-  setInterval(() => {
-    let data1 = (1000 * 1000).toFixed(2);
-    let nowTime = new Date().toLocaleTimeString().replace(/^\D*/, '');
-    time.shift();
-    time.push(nowTime);
-    dataOne.shift();
-    dataOne.push(data1);
-    dataTwo.shift();
-    dataTwo.push(200);
-
-    myChart.setOption({
-      xAxis: [
-        {
-          data: time,
-        },
-      ],
-      series: [
-        {
-          data: dataOne,
-        },
-        {
-          data: dataTwo,
-        },
-      ],
-    });
-
-
-
-  }, 400);
-
-  myChart.setOption(options);
-});
-
-
-
+import { ref } from 'vue';
+import IO9 from './IO.vue'
+const sevortwo = ref(false);
+const newrow = ({
+    test:[]
+})
+const updateWheel = (newValue) => {
+  newrow.test = newValue;
+}
+const handlesevorTWO = () => {
+    sevortwo.value = true;
+}
+const handlesevortwo = () =>{
+    sevortwo.value = false;
+}
 </script>
-
-<style></style>

@@ -45,7 +45,7 @@
                 <el-form-item>
                     <el-checkbox v-model="newRow.isHardBum" @change="HardBumchange">车型为硬件停车型保险杠</el-checkbox><br>
                 </el-form-item>
-<!-- 
+                <!-- 
 {{ tableDataCrtlBumper }} -->
 
             </el-form>
@@ -80,7 +80,7 @@
                 <el-dialog :title="titleinput" v-model="stop2input" :visible="stop2input" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO5 :wheel="newRow.HardBum.two.input" ></IO5>
+                        <IO5 :wheel="newRow.HardBum.two.input"></IO5>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="stop2input = false">取 消</el-button>
@@ -92,7 +92,7 @@
                 <el-dialog :title="titleoutput" v-model="stop2output" :visible="stop2output" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO5 :wheel="newRow.HardBum.two.output" ></IO5>
+                        <IO5 :wheel="newRow.HardBum.two.output"></IO5>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="stop2output = false">取 消</el-button>
@@ -104,7 +104,7 @@
                 <el-dialog :title="titleinput" v-model="resetI" :visible="resetI" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO6 :wheel="newRow.HardBum.reset.input" ></IO6>
+                        <IO6 :wheel="newRow.HardBum.reset.input"></IO6>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="resetI = false">取 消</el-button>
@@ -116,7 +116,7 @@
                 <el-dialog :title="titleoutput" v-model="resetO" :visible="resetO" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
-                        <IO6 :wheel="newRow.HardBum.reset.output" ></IO6>
+                        <IO6 :wheel="newRow.HardBum.reset.output"></IO6>
                     </div>
                     <div slot="footer" class="dialog-footer">
                         <el-button @click="resetO = false">取 消</el-button>
@@ -127,7 +127,7 @@
 
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button @click="handleAddRow">确定</el-button>
+                <el-button @click="handleAddRow(true)">确定</el-button>
 
             </div>
 
@@ -164,6 +164,7 @@ const handlestopresetI = () => {
 };
 
 const handlestopresetIQ = () => {
+    handleAddRow(false);
     resetI.value = false;
 };
 
@@ -174,6 +175,7 @@ const handlestopresetO = () => {
 };
 
 const handlestopresetOQ = () => {
+    handleAddRow(false);
     resetO.value = false;
 };
 
@@ -185,6 +187,7 @@ const handlestop2output = () => {
 };
 
 const handlestop2outputQ = () => {
+    handleAddRow(false);
     stop2output.value = false;
 };
 
@@ -195,6 +198,7 @@ const handlestop2input = () => {
 };
 
 const handlestop2inputQ = () => {
+    handleAddRow(false);
     stop2input.value = false;
 };
 
@@ -207,6 +211,7 @@ const handlestop1output = () => {
 };
 
 const handlestop1outputQ = () => {
+    handleAddRow(false);
     stop1output.value = false;
 };
 
@@ -217,6 +222,7 @@ const handlestop1input = () => {
 };
 
 const handlestop1inputQ = () => {
+    handleAddRow(false);
     stop1input.value = false;
 };
 
@@ -231,14 +237,14 @@ const addNewRow = () => {
     newRow.value.isHardBum = false;
     newRow.value.value.value = [1, 1, 1, 1, 1];
     newRow.value.editingIndex = -1;
-    newRow.value.HardBum.one.input = [0,2,2,2,0];
-    newRow.value.HardBum.one.output = [0,2,2,2,0];
+    newRow.value.HardBum.one.input = [0, 2, 2, 2, 0];
+    newRow.value.HardBum.one.output = [0, 2, 2, 2, 0];
 
-    newRow.value.HardBum.two.input = [0,2,2,2,0];
-    newRow.value.HardBum.two.output = [0,2,2,2,0];
+    newRow.value.HardBum.two.input = [0, 2, 2, 2, 0];
+    newRow.value.HardBum.two.output = [0, 2, 2, 2, 0];
 
-    newRow.value.HardBum.reset.input = [0,2,2,2,0];
-    newRow.value.HardBum.reset.output = [0,2,2,2,0];
+    newRow.value.HardBum.reset.input = [0, 2, 2, 2, 0];
+    newRow.value.HardBum.reset.output = [0, 2, 2, 2, 0];
 
     console.log('addNewRow', newRow.value.value.value)
     dialogVisible.value = true;
@@ -279,7 +285,7 @@ const reedit = (index) => {
 
 };
 
-const handleAddRow = () => {
+const handleAddRow = (bool) => {
     if (newRow.value.name) {
         if (newRow.value.editingIndex !== -1) {
             // 编辑模式下更新数据
@@ -289,21 +295,27 @@ const handleAddRow = () => {
             console.log('1111', newRow.value.HardBum.one.input.value)
             if (newRow.value.HardBum.one.input.value !== undefined) {
                 tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.one.input = newRow.value.HardBum.one.input.value;
+                newRow.value.HardBum.one.input = tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.one.input;
             }
             if (newRow.value.HardBum.one.output.value !== undefined) {
                 tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.one.output = newRow.value.HardBum.one.output.value;
+                newRow.value.HardBum.one.output = tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.one.output;
             }
             if (newRow.value.HardBum.two.input.value !== undefined) {
                 tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.two.input = newRow.value.HardBum.two.input.value;
+                newRow.value.HardBum.two.input = tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.two.input;
             }
             if (newRow.value.HardBum.two.output.value !== undefined) {
                 tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.two.output = newRow.value.HardBum.two.output.value;
+                newRow.value.HardBum.two.output = tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.two.output;
             }
             if (newRow.value.HardBum.reset.input.value !== undefined) {
                 tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.reset.input = newRow.value.HardBum.reset.input.value;
+                newRow.value.HardBum.reset.input = tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.reset.input;
             }
             if (newRow.value.HardBum.reset.output.value !== undefined) {
                 tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.reset.output = newRow.value.HardBum.reset.output.value;
+                newRow.value.HardBum.reset.output = tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum.reset.output;
             }
 
             if (newRow.value.value != undefined) {
@@ -313,6 +325,7 @@ const handleAddRow = () => {
             console.log('handleAddRow', newRow.value.HardBum.one.input.value);
             console.log('handleAddRow', tableDataCrtlBumper.value[newRow.value.editingIndex].HardBum);
         } else {
+
             // 新增模式下添加数据
             if (newRow.value.HardBum.one.output.value !== undefined) {
                 newRow.value.HardBum.one.output = newRow.value.HardBum.one.output.value;
@@ -333,13 +346,16 @@ const handleAddRow = () => {
                 newRow.value.HardBum.reset.input = newRow.value.HardBum.reset.input.value;
             }
 
-            const newRowData = { ...newRow.value };
+            if (bool) {
+                const newRowData = { ...newRow.value };
 
-            tableDataCrtlBumper.value.push(JSON.parse(JSON.stringify(newRowData)));
-            jsondata.value.HardBumper = tableDataCrtlBumper;
-            console.log('handleAddRow', newRowData);
+                tableDataCrtlBumper.value.push(JSON.parse(JSON.stringify(newRowData)));
+                jsondata.value.HardBumper = tableDataCrtlBumper;
+                console.log('handleAddRow', newRowData);
+            }
+
         }
-        dialogVisible.value = false;
+        if(bool){dialogVisible.value = false;} 
     } else {
         ElMessage.error('请填写完整数据');
     }

@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="dialogVisible" title="右轮" custom-class="custom-dialog3">
+    <el-dialog v-model="dialogVisible" title="右轮" custom-class="custom-dialog3" :modal="false">
         驱动内坐标X:{{  }}<br>
         驱动内坐标Y:{{  }}<br>
         电机减速比:{{  }}<br>
@@ -8,7 +8,7 @@
         最大转速:{{  }}<br>
     </el-dialog>
 
-    <el-dialog v-model="dialogVisible2" title="左轮" custom-class="custom-dialog">
+    <el-dialog v-model="dialogVisible2" title="左轮" custom-class="custom-dialog2" :modal="false">
         驱动内坐标X:{{  }}<br>
         驱动内坐标Y:{{  }}<br>
         电机减速比:{{  }}<br>

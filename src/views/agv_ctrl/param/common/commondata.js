@@ -25,9 +25,9 @@ export const jsondata = ref({
     com3: false,
     com4: false,
   },
-  can1: {},
-  can2: {},
-  can3: {},
+  can1: {can_pos:[],can_open:[],can_guide:[],can_BMS:[],can_io:[],can_manual:[],can_rfid:[]},
+  can2: {can_pos:[],can_open:[],can_guide:[],can_BMS:[],can_io:[],can_manual:[],can_rfid:[]},
+  can3: {can_pos:[],can_open:[],can_guide:[],can_BMS:[],can_io:[],can_manual:[],can_rfid:[]},
   OperatingParam: {
     manualparm: {
       setSpeed: [[0, 1], [2, 0], [4, 0], [6, 0], [8, 0]],

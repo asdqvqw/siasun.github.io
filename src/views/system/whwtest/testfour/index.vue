@@ -46,7 +46,9 @@
     <agvdevice></agvdevice>
 
     <ELECTOR></ELECTOR>
-
+    <div v-if="shouldPause">
+      <event></event>
+    </div>
     <!-- <statistics></statistics> -->
 
     <agvnav></agvnav>
@@ -70,6 +72,7 @@ import infobox from './Info_box.vue'
 import agvdevice from './AGV_device.vue'
 import agvnav from './AGV_Nav.vue'
 import ELECTOR from './AGV_ELE.vue'
+import event from './event.vue'
 import statistics from './statistics.vue'
 import screen from './dialog_info/screen_info.vue'
 import wheelinfo from './dialog_info/wheel_info.vue'
@@ -700,7 +703,7 @@ onMounted(() => {
      background-image: url('./img/1-1-bg.png');
      background-color: #001034cb;
      /* 修改弹窗背景色 */
-     animation: dialogSlideIn 0.3s ease-out forwards;
+     /* animation: dialogSlideIn 0.3s ease-out forwards; */
      width: 40%;
      height: 42.5%;
      right: 0%;
@@ -711,7 +714,7 @@ onMounted(() => {
      transform-origin: top left;
  }
 
- @keyframes dialogSlideIn {
+ /* @keyframes dialogSlideIn {
      from {
          opacity: 0;
          transform: translateX(100%);
@@ -721,7 +724,7 @@ onMounted(() => {
          opacity: 1;
          transform: translateX(0);
      }
- }
+ } */
 
  .custom-dialog .el-dialog__body {
      color: #f0e7e7;
@@ -755,8 +758,8 @@ onMounted(() => {
     background-color: #001034cb;
     /* 修改弹窗背景色 */
     animation: dialogSlideIn 1s ease-out forwards;
-    width: 50%;
-    height: 52.5%;
+    width: 30%;
+    height:32.5%;
     right: 10%;
     bottom: -10%;
     background-size: 100%;
@@ -846,5 +849,18 @@ onMounted(() => {
     color: #ddb4b4;
     text-align: center;
     margin: 0 auto;
+}
+
+
+</style>
+
+
+<style>
+.kk-dialog-class {
+  pointer-events: none;
+}
+ 
+.el-dialog {
+  pointer-events: auto;
 }
 </style>

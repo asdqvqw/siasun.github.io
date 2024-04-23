@@ -202,7 +202,7 @@
                     </el-table-column>
                 </el-table> -->
 
-                <el-button @click="handlesevorONE" type="primary">限位开关1</el-button>
+                <!-- <el-button @click="handlesevorONE" type="primary">限位开关1</el-button>
                 <el-dialog :title="title6" v-model="sevorone" :visible="sevorone" width="600px"
                     :close-on-click-modal="false" class="edit-data-dialog">
                     <div>
@@ -249,9 +249,10 @@
 
                     </div>
 
-                </el-dialog>&nbsp;<br>
+                </el-dialog>&nbsp;<br> -->
 
             </div>
+
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button @click="handleAddRow">确定</el-button>
@@ -273,14 +274,6 @@ import IO10 from './IO.vue'
 import { flag } from '@/views/agv_ctrl/param/common/commondata.js'
 import { showIndexsteer } from './AGVselect.js'
 
-function handleInputChange(index, event, MeParm) {
-    MeParm[index] = parseFloat(event);
-}
-
-const Meparmname = ref(['电机减速比', '码盘线数', '最大角度(度)'])
-const Separmname = ref(['CAN端口号', 'CAN-POS编号'])
-const coddistname = ref(['CAN端口号', '码盘模块编号', '码盘最大码', '零位码盘值'])
-const home_offset = ref(['零位偏差索引'])
 
 const props = defineProps({
     steer: {
@@ -309,6 +302,7 @@ const sevorzero = ref(false);
 //     childValue.value[index] = parseInt(row.value);
 // };
 
+
 const handlesevorONE = () => {
     flag.value = !flag.value;
     sevorone.value = true;
@@ -317,17 +311,22 @@ const handlesevorTWO = () => {
     flag.value = !flag.value;
     sevortwo.value = true;
 };
+
+
+const handlesevorone = () => {
+    sevorone.value = false;
+};
+
+const handlesevortwo = () => {
+
+    sevortwo.value = false;
+};
 const handlesevorZERO = () => {
     flag.value = !flag.value;
     sevorzero.value = true;
 };
-const handlesevorone = () => {
-    sevorone.value = false;
-};
-const handlesevortwo = () => {
-    sevortwo.value = false;
-};
 const handlesevorzero = () => {
+
     sevorzero.value = false;
 };
 

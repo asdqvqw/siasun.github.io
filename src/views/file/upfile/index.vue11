@@ -1,0 +1,70 @@
+<template>
+    <div class="page-container main-view">
+        <div class="table-box content-container page-content-box">
+            <div
+                @dragover.prevent
+                @drop="handleFileDrop"
+                @click="openFileInput"
+                style="border: 2px dashed #ccc; padding: 20px; text-align: center; cursor: pointer;"
+            >
+                <input
+                    type="file"
+                    ref="fileInput"
+                    style="display: none;"
+                    @change="handleFileInputChange"
+                />
+                <p>将文件拖放到此处上传或点击选择文件</p>
+            </div>
+        </div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue';
+  import axios from 'axios';
+  
+  const fileInput = ref(null);
+  
+  const handleFileDrop = (event) => {
+      event.preventDefault();
+      const files = event.dataTransfer.files;
+      if (files.length > 0) {
+          handleFileUpload(files[0]);
+      }
+  };
+  
+  const openFileInput = () => {
+      fileInput.value.click();
+  };
+  
+  const handleFileInputChange = (event) => {
+      const files = event.target.files;
+      if (files.length > 0) {
+          handleFileUpload(files[0]);
+      }
+  };
+  
+  const handleFileUpload = async (file) => {
+    if (!file) return;
+  
+    axios({
+        method: 'post',
+        url: '/api/upload',
+        data: file,
+        headers: {
+            'Content-Type': file.type,
+            'X-File-Name': file.name, // 添加自定义请求头，携带文件名
+        }
+    })
+        .then((res) => {
+            console.log('File uploaded successfully:', res.data);
+        })
+        .catch((error) => {
+            console.error('Error uploading file:', error);
+        })
+        .finally(() => {
+            // 可以在此处执行其他操作
+        });
+  };
+  </script>
+  

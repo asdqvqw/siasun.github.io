@@ -1,5 +1,9 @@
 
 <template>
+          <div class="page-container main-view">
+
+<div class="table-box content-container page-content-box">
+
     <el-row style="margin: 100px 30px 30px 30px" :gutter="10">
       <el-col :xs="15" :sm="15" :md="15" :lg="8" :xl="8">
         <el-row>
@@ -139,6 +143,7 @@
         </el-row>
       </el-col>
     </el-row>
+    </div></div>
   </template>
   
   <script setup>

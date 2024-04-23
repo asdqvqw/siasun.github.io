@@ -108,9 +108,17 @@ export const constantRoutes = [
                 },
             },
             {
-                path: 'nav/index',
-                component: () => import('@/views/agv_monitor/nav/index.vue'),
-                name: 'nav',
+                path: 'update/index',
+                component: () => import('@/views/agv_monitor/update/index.vue'),
+                name: 'update',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'statistics/index',
+                component: () => import('@/views/agv_monitor/statistics/index.vue'),
+                name: 'statistics',
                 meta: { 
                     isMenu:true,
                 },
@@ -164,9 +172,33 @@ export const constantRoutes = [
                 },
             },
             {
-                path: 'test/index',
-                component: () => import('@/views/agv_ctrl/test/index.vue'),
-                name: 'test',
+                path: 'checkIO/index',
+                component: () => import('@/views/agv_ctrl/checkIO/index.vue'),
+                name: 'checkio',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'downloadfile/index',
+                component: () => import('@/views/file/downloadfile/index.vue'),
+                name: 'downloadfile',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'upfile/index',
+                component: () => import('@/views/file/upfile/index.vue'),
+                name: 'updatafile',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'updatajson/index',
+                component: () => import('@/views/file/updatajson/index.vue'),
+                name: 'updatajson',
                 meta: { 
                     isMenu:true,
                 },

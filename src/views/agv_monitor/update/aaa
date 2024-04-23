@@ -1,0 +1,176 @@
+<template>
+  <div class="page-container main-view">
+    <div class="table-box content-container page-content-box">
+
+      <div v-if="jsondata.item">
+        <div v-if="currentItemIndex_Y <= jsondata.item.length - 1" class="container" >
+          <h2>{{ jsondata.item[currentItemIndex_Y].name }}</h2>
+          <!-- <div v-for="(value, key) in parsedata[currentItemIndex_Y].itemObject" :key="key">
+            {{ key }}: {{ value }}
+          </div> -->
+          <el-table v-if="currentItemIndex_Y <= jsondata.item.length - 1" :data="getTableData" border >
+            <el-table-column prop="key" label="Key" ></el-table-column>
+            <el-table-column prop="value" label="Value"></el-table-column>
+          </el-table>
+        </div>
+
+
+
+        <div v-if="currentItemIndex_Y + 1 <= jsondata.item.length - 1" style="width:24%">
+          <h2>{{ jsondata.item[currentItemIndex_Y + 1].name }}</h2>
+          <!-- <div v-for="(value, key) in parsedata[currentItemIndex_Y + 1].itemObject" :key="key">
+            {{ key }}: {{ value }}
+          </div> -->
+          <el-table v-if="currentItemIndex_Y <= jsondata.item.length - 1" :data="getTableData2" border>
+            <el-table-column prop="key" label="Key"></el-table-column>
+            <el-table-column prop="value" label="Value"></el-table-column>
+          </el-table>
+        </div>
+
+        <div v-if="currentItemIndex_Y + 2 <= jsondata.item.length - 1" style="width:24%">
+          <h2>{{ jsondata.item[currentItemIndex_Y + 2].name }}</h2>
+          <!-- <div v-for="(value, key) in parsedata[currentItemIndex_Y + 2].itemObject" :key="key">
+            {{ key }}: {{ value }}
+          </div> -->
+          <el-table v-if="currentItemIndex_Y <= jsondata.item.length - 1" :data="getTableData3" border>
+            <el-table-column prop="key" label="Key"></el-table-column>
+            <el-table-column prop="value" label="Value"></el-table-column>
+          </el-table>
+        </div>
+        <div v-if="currentItemIndex_Y + 3 <= jsondata.item.length - 1" style="width:24%">
+          <h2>{{ jsondata.item[currentItemIndex_Y + 3].name }}</h2>
+          <!-- <div v-for="(value, key) in parsedata[currentItemIndex_Y + 3].itemObject" :key="key">
+            {{ key }}: {{ value }}
+          </div> -->
+          <el-table v-if="currentItemIndex_Y <= jsondata.item.length - 1" :data="getTableData4" border>
+            <el-table-column prop="key" label="Key"></el-table-column>
+            <el-table-column prop="value" label="Value"></el-table-column>
+          </el-table>
+        </div>
+      </div>
+
+      <el-button @click="prevItem">＜</el-button>
+      <el-button @click="nextItem">＞</el-button><br>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+const jsondata = ({
+  item: [
+    {
+      name: "check",
+      mac: "asd",
+      nodefine: 1,
+      vvv: "CombinEquipment",
+      ma2c: "asd",
+      no2define: 1,
+      vv2v: "CombinEquipment",
+    },
+    {
+      name: "CombinEquipment",
+      json: "4234"
+    },
+    {
+      name: "ffffffff",
+      json: true
+    },
+    {
+      name: "你好",
+      mac: "asd",
+      nodefine: 1
+    },
+    {
+      name: "CombinEquipment2",
+      json: "4234"
+    },
+    {
+      name: "ffffffff3",
+      json: "4234"
+    }
+  ],
+})
+const parsedata = ref([])
+const parse = () => {
+  //item
+  const items = jsondata.item;
+  for (const item of items) {
+    const itemName = item.name;
+    let itemObject = {};
+    // 遍历item对象中的键值对
+    for (const key in item) {
+      if (key !== "name") {
+        let keyvalue = item[key];
+        if (keyvalue === true) {
+          keyvalue = '触发';
+        }
+        itemObject[key] = keyvalue;
+
+      }
+    }
+    parsedata.value.push({ itemName, itemObject });
+
+  }
+  console.log(parsedata.value)
+}
+parse();
+
+const currentItemIndex_Y = ref(0)
+const prevItem = () => {
+  if (currentItemIndex_Y.value > 0) {
+    currentItemIndex_Y.value = currentItemIndex_Y.value - 4;
+  }
+};
+const nextItem = () => {
+  if (currentItemIndex_Y.value < jsondata.item.length - 1) {
+    currentItemIndex_Y.value = currentItemIndex_Y.value + 4;
+  }
+};
+const getTableData = computed(() => {
+  const currentIndex = currentItemIndex_Y.value;
+  if (currentIndex <= jsondata.item.length - 1) {
+    const itemObject = parsedata.value[currentIndex].itemObject;
+    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
+  }
+  return [];
+});
+
+const getTableData2 = computed(() => {
+  const currentIndex = currentItemIndex_Y.value+1;
+  if (currentIndex <= jsondata.item.length - 1) {
+    const itemObject = parsedata.value[currentIndex].itemObject;
+    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
+  }
+  return [];
+});
+
+const getTableData3 = computed(() => {
+  const currentIndex = currentItemIndex_Y.value+2;
+  if (currentIndex <= jsondata.item.length - 1) {
+    const itemObject = parsedata.value[currentIndex].itemObject;
+    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
+  }
+  return [];
+});
+
+const getTableData4 = computed(() => {
+  const currentIndex = currentItemIndex_Y.value+3;
+  if (currentIndex <= jsondata.item.length - 1) {
+    const itemObject = parsedata.value[currentIndex].itemObject;
+    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
+  }
+  return [];
+});
+</script>
+<style>
+.container {
+  width: 24%;
+  border: 4px solid #615e5e;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+</style>
+
+

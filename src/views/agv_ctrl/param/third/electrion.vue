@@ -6,7 +6,7 @@
 
                 <div class="left">
 
-                    <el-button type="primary" @click="handlecheck" >
+                    <el-button type="info" @click="handlecheck" >
                         查看设备
                     </el-button>
                     <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" 
@@ -17,7 +17,7 @@
                     &nbsp;
 
                     
-                    <el-button type="info" @click="handleExpand11" plain >
+                    <el-button type="info" @click="handleExpand11"  >
                         查看
                     </el-button>
                     <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible"

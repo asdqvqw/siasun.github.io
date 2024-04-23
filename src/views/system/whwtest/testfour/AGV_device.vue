@@ -1,14 +1,16 @@
 <template>
 
   <el-button class="EXButtonDEV" @click="clickbutton" v-show="!importflag">车体设备</el-button>
-  <el-dialog v-model="dialogVisible" title="车体设备" custom-class="custom-dialog">
-    转盘纵向开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.turn_axis.bZero?'触发':'未触发' }}<br>
-    转盘横向开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.turn_axis.bLevel?'触发':'未触发' }}<br>
+  <el-dialog v-model="dialogVisible" title="车体设备" custom-class="custom-dialog" :modal="false" draggable 
+  :close-on-click-modal="false" modal-class="kk-dialog-class">
+    转盘纵向开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.turn_axis.bZero?'🔴':'🟢' }}<br>
+    转盘横向开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.turn_axis.bLevel?'🔴':'🟢' }}<br>
     转盘位置:{{ parsedLogData[currentCoordinateIndex].trunpan.toFixed(3) }}<br>
-    
-    举升高位开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.lifter_axis.bTop?'触发':'未触发' }}<br>
-    举升零位开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.lifter_axis.bBottom?'触发':'未触发' }}<br>
+    <br>
+    举升高位开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.lifter_axis.bTop?'🔴':'🟢' }}<br>
+    举升零位开关：{{ parsedLogData[currentCoordinateIndex].logJson.equipmentInfo.rack.lifter_axis.bBottom?'🔴':'🟢' }}<br>
     举升位置：{{ parsedLogData[currentCoordinateIndex].lifter.toFixed(3)}}<br>
+    <br>
     当前设备状态：{{ Net_equ_uEquipmentState }}<br>
     当前设备任务号：{{ Net_equ_uEquipmentTaskID }}<br>
     当前设备任务状态：{{ Net_equ_uEquipmentTaskState }}<br>

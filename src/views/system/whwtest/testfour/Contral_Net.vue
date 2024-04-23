@@ -2,18 +2,21 @@
 
   <el-button class="EXButton" @click="clickbutton" v-show="!importflag">控制台</el-button>
 
-  <el-dialog v-model="dialogVisible" title="控制台" custom-class="custom-dialog">
+  <el-dialog v-model="dialogVisible" title="控制台" custom-class="custom-dialog" :modal="false" draggable 
+  :close-on-click-modal="false" modal-class="kk-dialog-class">
 
     开始节点：{{ Net_Info_uFromNode }}<br>
     目标节点：{{ Net_Info_uToNode }}<br>
+    <br>
     当前进度量：{{ Net_Info_sProgress }}<br>
-    当前设置速度：{{ Net_Info_CurSpeed }}<br>
+    控制台设置速度：{{ Net_Info_CurSpeed }}<br>
+    <br>
     货物状态：{{ Net_Info_usCargoState }}<br>
-
-
     工作状态：{{ Net_Info_WorkState }}<br>
+    <br>
     1级故障码:{{ Net_Info_EventState }}<br>
     2级故障码:{{ Net_Info_EventDetail }}<br>
+    <br>
     电池状态：{{ Net_Info_usBatterState }}<br>
     任务状态：{{ Net_Info_TaskState }}<br>
     任务号：{{ Net_Info_TaskID }}<br>

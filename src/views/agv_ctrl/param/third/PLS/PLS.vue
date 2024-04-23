@@ -1,6 +1,6 @@
 <template>
     <div>
-        
+
         <el-table :data="tableDataCrtlPLS" style="width: 100%">
             <el-table-column prop="name" label="">
                 <template #default="scope">
@@ -79,6 +79,10 @@
 
 
                     </el-form-item>
+
+
+
+
                     <el-form-item label="切区类型">
 
                         <el-select v-model="newRow.CUTtype" placeholder="请选择">
@@ -172,7 +176,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { flag,  flagex, newRow, newRowEX } from './plsdata.js';
+import { flag, flagex, newRow, newRowEX } from './plsdata.js';
 import IO from './IO.vue';
 import IO1 from './IO.vue';
 import IO2 from './IO.vue';
@@ -232,15 +236,16 @@ const dialogVisible = ref(false);
 const dialogVisibleEX = ref(false);
 
 const addNewRow = () => {
+    tableDataCrtlTYPE.value = [];
     newRow.value.name = 'No name';
     newRow.value.type = 0;
     newRow.value.CUTtype = 0;
     newRow.value.port = '';
     newRow.value.ip = '';
-    newRow.value.near = [0,2,2,2,0];
+    newRow.value.near = [0, 2, 2, 2, 0];
     newRow.value.area = [];
-    newRow.value.mid = [0,2,2,2,0];
-    newRow.value.far = [0,2,2,2,0];
+    newRow.value.mid = [0, 2, 2, 2, 0];
+    newRow.value.far = [0, 2, 2, 2, 0];
     newRow.value.editingIndex = -1;
     dialogVisible.value = true;
 };
@@ -281,9 +286,9 @@ const reedit = (index) => {
 
     tableDataCrtlTYPE.value = tableDataCrtlPLS.value[index].area;
 
-    console.log('111',newRow.value.near)
-    console.log('222',newRow.value.mid)
-    console.log('333',newRow.value.far)
+    console.log('111', newRow.value.near)
+    console.log('222', newRow.value.mid)
+    console.log('333', newRow.value.far)
     newRow.value.editingIndex = index; // 设置编辑索引
     dialogVisible.value = true;
 
@@ -309,11 +314,14 @@ const reeditEX = (index) => {
 
 const handleAddRow = (bool) => {
     if (newRow.value.name) {
+
         if (newRow.value.editingIndex !== -1) {
+
+
             // 编辑模式下更新数据
             tableDataCrtlPLS.value[newRow.value.editingIndex].name = newRow.value.name;
             tableDataCrtlPLS.value[newRow.value.editingIndex].type = newRow.value.type;
-            
+
             delete tableDataCrtlPLS.value[newRow.value.editingIndex].near;
             delete tableDataCrtlPLS.value[newRow.value.editingIndex].mid;
             delete tableDataCrtlPLS.value[newRow.value.editingIndex].far;
@@ -327,25 +335,32 @@ const handleAddRow = (bool) => {
                 if (newRow.value.mid.value !== undefined) {
                     console.log('mid', newRow.value.mid.value)
                     tableDataCrtlPLS.value[newRow.value.editingIndex].mid = newRow.value.mid.value;
-
-                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].mid = [0,2,2,2,0];
-                    console.log('mid') }
+                    newRow.value.mid = tableDataCrtlPLS.value[newRow.value.editingIndex].mid;
+                } else {
+                    tableDataCrtlPLS.value[newRow.value.editingIndex].mid = [0, 2, 2, 2, 0];
+                    console.log('mid')
+                }
 
 
                 if (newRow.value.near.value !== undefined) {
                     console.log('near', newRow.value.near.value)
                     tableDataCrtlPLS.value[newRow.value.editingIndex].near = newRow.value.near.value;
+                    newRow.value.near = tableDataCrtlPLS.value[newRow.value.editingIndex].near;
+                    console.log('4444', newRow.value.near)
 
-                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].near = [0,2,2,2,0];
-                    console.log('near')}
+                } else {
+                    tableDataCrtlPLS.value[newRow.value.editingIndex].near = [0, 2, 2, 2, 0];
+                    console.log('near')
+                }
 
-
+                console.log('222222222222222', tableDataCrtlPLS.value[newRow.value.editingIndex].near)
 
                 if (newRow.value.far.value !== undefined) {
                     console.log('far', newRow.value.far.value)
                     tableDataCrtlPLS.value[newRow.value.editingIndex].far = newRow.value.far.value;
-
-                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].far = [0,2,2,2,0] ;
+                    newRow.value.far = tableDataCrtlPLS.value[newRow.value.editingIndex].far;
+                } else {
+                    tableDataCrtlPLS.value[newRow.value.editingIndex].far = [0, 2, 2, 2, 0];
                     console.log('far')
                 }
 
@@ -353,11 +368,13 @@ const handleAddRow = (bool) => {
                     console.log('area', newRow.value.area.value)
                     tableDataCrtlPLS.value[newRow.value.editingIndex].area = newRow.value.area.value;
 
-                } else { tableDataCrtlPLS.value[newRow.value.editingIndex].area = [] ;
+                } else {
+                    tableDataCrtlPLS.value[newRow.value.editingIndex].area = [];
                     console.log('area')
                 }
                 tableDataCrtlPLS.value[newRow.value.editingIndex].area = tableDataCrtlTYPE.value;
-                tableDataCrtlTYPE.value = [];
+
+                // tableDataCrtlTYPE.value = [];
 
 
             } else {
@@ -368,19 +385,21 @@ const handleAddRow = (bool) => {
 
 
             jsondata.value.PLS = tableDataCrtlPLS;
-
         } else {
+
+
+            // 新增模式下添加数据
+            console.log('666', newRow.value.near.value)
+            if (newRow.value.near.value !== undefined) {
+                newRow.value.near = newRow.value.near.value;
+            }
+            if (newRow.value.mid.value !== undefined) {
+                newRow.value.mid = newRow.value.mid.value;
+            }
+            if (newRow.value.far.value !== undefined) {
+                newRow.value.far = newRow.value.far.value;
+            }
             if (bool) {
-                // 新增模式下添加数据
-                if (newRow.value.near.value !== undefined) {
-                    newRow.value.near = newRow.value.near.value;
-                }
-                if (newRow.value.mid.value !== undefined) {
-                    newRow.value.mid = newRow.value.mid.value;
-                }
-                if (newRow.value.far.value !== undefined) {
-                    newRow.value.far = newRow.value.far.value;
-                }
                 newRow.value.area = tableDataCrtlTYPE.value;
                 tableDataCrtlTYPE.value = [];
                 const newRowData = { ...newRow.value };
@@ -400,6 +419,8 @@ const handleAddRow = (bool) => {
                 jsondata.value.PLS = tableDataCrtlPLS;
 
             }
+
+
 
         }
         if (bool) { dialogVisible.value = false; }

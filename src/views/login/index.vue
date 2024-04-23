@@ -33,9 +33,9 @@ export default defineComponent({
         const route = useRoute();
         const dataContainer = reactive({
             form: {
-                name:'',
-                password:'',
-                captchaText:'',
+                name:'siasun',
+                password:'123456',
+                captchaText:'pass',
             },
             loading:false,
             captchaSvg:'',
@@ -95,7 +95,7 @@ export default defineComponent({
                 const data = res.data || {};
                 dataContainer.captchaId = data.id;
                 dataContainer.captchaSvg = data.svg;
-                dataContainer.form.captchaText = '';
+                dataContainer.form.captchaText = 'pass';
             }).catch(()=>{
                 messageError('验证码获取失败');
             }).finally(()=>{

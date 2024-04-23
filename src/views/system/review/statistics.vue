@@ -2,13 +2,15 @@
 
     <el-button class="EXButtonstatistics" @click="clickbutton" v-show="!importflag">统计</el-button>
 
-    <el-dialog title="统计" v-model="dialogVisible" custom-class="custom-dialog">
+    <el-dialog title="统计" v-model="dialogVisible" custom-class="custom-dialog" style="width: 80%; height: 70%;"
+        :modal="false" draggable :close-on-click-modal="false" modal-class="kk-dialog-class">
         <tong></tong>
     </el-dialog>
 
     <el-button class="EXButtonreseve" @click="clickbuttona" v-show="!importflag">预留</el-button>
 
-    <el-dialog title="预留" v-model="dialogVisiblea" custom-class="custom-dialog">
+    <el-dialog title="预留" v-model="dialogVisiblea" custom-class="custom-dialog" :modal="false" draggable
+        :close-on-click-modal="false" modal-class="kk-dialog-class">
 
 
         <el-button @click="prevItem">＜</el-button>
@@ -28,7 +30,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { parsedLogData, currentCoordinateIndex,importflag } from './sharedata.js'
+import { parsedLogData, currentCoordinateIndex, importflag } from './sharedata.js'
 import tong from './components/bbb_Aqw.vue';
 const dialogVisible = ref(false);
 let currentItemIndex_Y = ref(0);
@@ -38,19 +40,19 @@ const clickbutton = () => {
 
 const dialogVisiblea = ref(false);
 const clickbuttona = () => {
-    console.log('11111',parsedLogData.value)
+    console.log('11111', parsedLogData.value)
     dialogVisiblea.value = true;
 };
 
 const prevItem = () => {
-  if (currentItemIndex_Y.value > 0) {
-    currentItemIndex_Y.value--;
-  }
+    if (currentItemIndex_Y.value > 0) {
+        currentItemIndex_Y.value--;
+    }
 };
 const nextItem = () => {
-  if (currentItemIndex_Y.value < parsedLogData.value[currentCoordinateIndex.value].parsedItems.length - 1) {
-    currentItemIndex_Y.value++;
-  }
+    if (currentItemIndex_Y.value < parsedLogData.value[currentCoordinateIndex.value].parsedItems.length - 1) {
+        currentItemIndex_Y.value++;
+    }
 };
 </script>
 
@@ -71,6 +73,7 @@ const nextItem = () => {
     top: 420px;
     /* clip-path: polygon(90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%, 10% 0%); */
 }
+
 .EXButtonreseve {
     background-image: url('./img/button.gif');
     background-size: 100%;
@@ -86,7 +89,4 @@ const nextItem = () => {
     top: 480px;
     /* clip-path: polygon(90% 0%, 100% 25%, 100% 75%, 90% 100%, 10% 100%, 0% 75%, 0% 25%, 10% 0%); */
 }
-
 </style>
-
-

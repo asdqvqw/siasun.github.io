@@ -1,14 +1,13 @@
 <template>
 
-  <el-button  @click="prevItem">＜</el-button>
+  <el-button @click="prevItem">＜</el-button>
   {{ jsondatatitle }}
-  <el-button @click="nextItem">＞</el-button><br>
-
-  <el-input type="number" v-model="dataZoomStart" @input="updateDataZoom" :min="0" style="width: 30%;"></el-input>
-  <el-input type="number" v-model="dataZoomEnd" @input="updateDataZoom" :max="100" style="width: 30%;"></el-input>
+  <el-button @click="nextItem">＞</el-button>&nbsp;&nbsp;&nbsp;
+  范围:<el-input type="number" v-model="dataZoomStart" @input="updateDataZoom" :min="0" style="width: 30%; "></el-input>
+  一<el-input type="number" v-model="dataZoomEnd" @input="updateDataZoom" :max="100" style="width: 30%;"></el-input>
   <br>
 
-    <div id="chart-container"></div>
+  <div id="chart-container"></div>
 
 </template>
 
@@ -18,6 +17,7 @@ import * as echarts from 'echarts';
 import { data } from '../sharedata';
 let jsondatatitle = ref('');
 let intex = 0;
+let chartInstance = null;
 const startPosition = ref('');
 const endPosition = ref('');
 let jsondata = [];
@@ -56,8 +56,12 @@ const updateDataZoom = () => {
   chart.setOption(option);
 };
 const updateChart = () => {
+  if (chartInstance) {
+    chartInstance.dispose();
+  }
+
   const chartContainer = document.getElementById('chart-container');
-  const chart = echarts.init(chartContainer);
+  chartInstance = echarts.init(chartContainer);
 
 
   const startDateTime = new Date(startPosition.value);
@@ -70,48 +74,21 @@ const updateChart = () => {
 
 
   let filteredData;
-  if (hasValidDateRange) {
 
-    //const startYear = startDateTime.getFullYear().toString();
-    const startMonth = (startDateTime.getMonth() + 1).toString().padStart(2, '0');
-    const startDay = startDateTime.getDate().toString().padStart(2, '0');
-    const startHour = startDateTime.getHours().toString().padStart(2, '0');
-    const startMinute = startDateTime.getMinutes().toString().padStart(2, '0');
+  filteredData = jsondata;
 
-    const startTimeString =/* startYear +*/ startMonth + startDay + startHour + startMinute + '00000';
-  
-
-    //const endYear = endDateTime.getFullYear().toString();
-    const endMonth = (endDateTime.getMonth() + 1).toString().padStart(2, '0');
-    const endDay = endDateTime.getDate().toString().padStart(2, '0');
-    const endHour = endDateTime.getHours().toString().padStart(2, '0');
-    const endMinute = endDateTime.getMinutes().toString().padStart(2, '0');
-
-    const endTimeString =/* endYear + */ endMonth + endDay + endHour + endMinute + '99999';
-
-
-
-    jsondata.forEach(item => {
-      item.logDateTimea = item.logDateTime.substring(5).replace(/\D/g, '');
-    });
-    console.log(jsondata[1].logDateTime, jsondata[1].logDateTimea);
-
-
-
-    //开始结束
-    let startIndex = parseInt(startTimeString);
-    let endIndex = parseInt(endTimeString);
-
-    filteredData = jsondata.filter(item => {
-      const logDateTime = item.logDateTimea;
-      return logDateTime >= startIndex && logDateTime <= endIndex;
-    });
-  } else {
-
-    filteredData = jsondata;
-  }
   const xData = filteredData.map(item => item.logDateTime);
-  const yData = filteredData.map(item => item.StatisticsData[intex].value);
+  const yData = [];
+  for (let i = 0; i < filteredData.length; i++) {
+    const lines = filteredData[i].StatisticsData[intex].value.map(line => line.value);
+    for (let j = 0; j < lines.length; j++) {
+      if (!yData[j]) {
+        yData[j] = [];
+      }
+      yData[j].push(lines[j]);
+    }
+  }
+  console.log('3333333333333', yData)
 
   const option = {
     xAxis: {
@@ -121,17 +98,20 @@ const updateChart = () => {
     yAxis: {
       type: 'value',
     },
-    series: [
-      {
-        type: 'line',
-        data: yData,
-      },
-    ],
+    series: yData.map((line, index) => ({
+      type: 'line',
+      name: filteredData[0].StatisticsData[intex].value[index].name,
+      data: line,
+    })),
     tooltip: {
       trigger: 'axis',
       formatter: (params) => {
-        const { name, value } = params[0];
-        return `时间: ${name}<br/>取值: ${value}<br/>`;
+        let tooltipContent = `时间: ${params[0].name}<br/>`;
+        for (let i = 0; i < params.length; i++) {
+          const { seriesName, value } = params[i];
+          tooltipContent += `${seriesName}: ${value}<br/>`;
+        }
+        return tooltipContent;
       },
     },
     dataZoom: [
@@ -142,25 +122,25 @@ const updateChart = () => {
     ],
   };
 
-  chart.on('dataZoom', ({ start, end }) => {
+  chartInstance.on('dataZoom', ({ start, end }) => {
     const startIndex = Math.round(start * (xData.length - 1));
     const endIndex = Math.round(end * (xData.length - 1));
     const zoomedXData = xData.slice(startIndex, endIndex + 1);
-    const zoomedYData = yData.slice(startIndex, endIndex + 1);
+    const zoomedYData = yData.map(line => line.slice(startIndex, endIndex + 1));
     // 根据缩放后的数据更新图表
-    chart.setOption({
+    chartInstance.setOption({
       xAxis: { data: zoomedXData },
-      series: [{ data: zoomedYData }],
+      series: yData.map((line, index) => ({ data: zoomedYData[index] })),
     });
   });
 
 
-  chart.setOption(option);
-  chart.setOption({
+  chartInstance.setOption(option);
+  chartInstance.setOption({
     toolbox: {
       feature: {
         saveAsImage: {
-          name: 'chart',
+          name: 'chartInstance',
           title: '保存图表',
           pixelRatio: 2,
         },
@@ -173,16 +153,15 @@ const updateChart = () => {
 
 onMounted(() => {
   jsondata = data.parsedLogData_b;
-updateChart();
+  updateChart();
 });
 </script>
 
 <style>
-
 #chart-container {
-  width: 600px;
-  height: 250px;
-  position: center;
+  width: 1200px;
+  height: 400px;
+  position: absolute;
+  margin-left: -3%;
 }
-
 </style>

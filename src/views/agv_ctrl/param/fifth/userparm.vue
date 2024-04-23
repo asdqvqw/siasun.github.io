@@ -5,19 +5,20 @@
             <div class="table-box content-container page-content-box">
 
                 <div class="left">
-                    <el-button type="primary" @click="handlecheck" >
+                    <el-button type="info" @click="handlecheck">
                         查看设备
                     </el-button>
-                    <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" 
-                    width="900px" @close="checkdevice = false">
+                    <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" width="900px"
+                        @close="checkdevice = false">
                         <checkbox></checkbox>
                     </el-dialog>
 
                     &nbsp;
-                    <el-button type="info" @click="handleExpand11" plain>
+                    <el-button type="info" @click="handleExpand11">
                         查看
                     </el-button>
-                    <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible" @close="dialogVisible = false">
+                    <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible"
+                        @close="dialogVisible = false">
                         <pre>{{ formattedJsondata }}</pre>
                     </el-dialog>
                 </div>
@@ -68,7 +69,9 @@
 
                 <hr class="hengxian2">
 
-                <el-button type="success" @click="nexatstep">导出</el-button>
+                <el-button type="success" @click="nexatstep">导出到本地</el-button>
+                <hr class="kongge">
+                <el-button type="success" @click="updataAGV">同步到AGV</el-button>
                 <hr class="kongge">
                 <hr class="kongge">
                 <el-button type="primary" @click="returnstep">返回</el-button>
@@ -84,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref ,computed} from 'vue';
+import { ref, computed } from 'vue';
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 import { OTHERPARM } from '@/views/agv_ctrl/param/common/commondata.js'
 import functionch from './function/function.vue'
@@ -98,7 +101,7 @@ const functionc = ref(false);
 const otherc = ref(false);
 
 const handleCtrlStatusChange = (index, row) => {
-  jsondata.value.other[row.key] = parseInt(row.value);
+    jsondata.value.other[row.key] = parseInt(row.value);
 };
 const formattedJsondata = computed(() => {
     return JSON.stringify(jsondata.value, null, 2);
@@ -119,13 +122,44 @@ const afterstep = () => {
 const returnstep = () => {
     router.push('/main/param/index');
 };
+
+
+import axios from 'axios'
+const updataAGV = () => {
+
+    let userList = {
+        data:{
+            file:'SystemParm.json',
+            value: jsondata.value
+        },
+        group: 'siasun',
+        account: 'test',
+        password: '123456'
+    }
+    console.log(userList)
+
+    axios({
+        method: 'post',
+        url: '/api/ctrl/jsoneditor',//这里是请求地址
+        data: JSON.stringify(userList),
+    }).then((res) => {
+         ElMessage.success('请求成功')
+
+    }).catch(error => {
+         ElMessage.error('请求失败')
+    }).finally(() => {
+        
+    })
+}
+
+
 const nexatstep = () => {
     const jsonDataToExport = JSON.stringify(jsondata.value);
     const blob = new Blob([jsonDataToExport], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'parm.json';
+    a.download = 'SystemParm.json';
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);

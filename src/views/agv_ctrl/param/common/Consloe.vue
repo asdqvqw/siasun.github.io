@@ -27,7 +27,7 @@
         <el-button type="primary" @click="addNewRow">添加新数据</el-button>
 
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="800px"
-            :close-on-click-modal="false" class="edit-data-dialog">
+            :close-on-click-modal="false" class="edit-data-dialog" draggable>
             <el-form ref="form" :model="newRow" label-width="80px">
                 <el-form-item label="名称">
                     <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>

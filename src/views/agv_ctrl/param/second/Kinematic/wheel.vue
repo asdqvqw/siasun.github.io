@@ -3,7 +3,7 @@
         <el-button type="primary" @click="addNewRow">驱动轮</el-button>
 
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="800px"
-            :close-on-click-modal="false" class="edit-data-dialog">
+            :close-on-click-modal="false" class="edit-data-dialog" >
 
             <div>
                 <!-- <el-button @click="handlesevor" type="primary">伺服使能位</el-button>

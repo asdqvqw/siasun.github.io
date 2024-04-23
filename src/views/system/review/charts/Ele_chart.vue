@@ -1,6 +1,6 @@
 <template>
 
-    <div class="chart" id="main2" :style="{ width: 700 + 'px', height: 300 + 'px' }"
+    <div class="chart" id="main2" :style="{ width: 450 + 'px', height: 200 + 'px' }"
         ref="main2">
 
     </div>

@@ -19,6 +19,12 @@
               <el-option label="11" value="11"></el-option>
               <el-option label="12" value="12"></el-option>
               <el-option label="13" value="13"></el-option>
+              <el-option label="14" value="14"></el-option>
+              <el-option label="15" value="15"></el-option>
+              <el-option label="16" value="16"></el-option>
+              <el-option label="17" value="17"></el-option>
+              <el-option label="18" value="18"></el-option>
+              <el-option label="19" value="19"></el-option>
             </el-select>
           </template>
         </el-table-column>

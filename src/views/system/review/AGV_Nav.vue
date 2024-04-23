@@ -1,15 +1,22 @@
 <template>
   <el-button class="EXButtonNAV" @click="clickbutton" v-show="!importflag">导航</el-button>
-  <el-dialog v-model="dialogVisible" title="导航" custom-class="custom-dialog" @opened="openDialog">
+  <el-dialog v-model="dialogVisible" title="导航" custom-class="custom-dialog" @opened="openDialog" :modal="false"
+    draggable :close-on-click-modal="false" modal-class="kk-dialog-class">
+    导航软件版本：{{ nav_sversion }}<br>
+    导航环境模型版本：{{ nav_mversion }}<br>
+    <br>
     目标位置:{{ targetCoordinates }} <br>
     当前位置：{{ CCtargetCoordinates }}<br>
     理论位置：{{ nav_pos }}<br>
+    <br>
     左右偏差：{{ nav_LR }}<br>
     角度偏差：{{ (nav_thi * 180 / Math.PI).toFixed(3) }}<br>
-    导航软件版本：{{ nav_sversion }}<br>
-    导航环境模型版本：{{ nav_mversion }}<br>
+    <br>
     发送速度：{{ }}<br>
     发送舵角：{{ }}<br>
+    <br>
+
+
 
     <div class="bingzhuang" id="main1" style="width: 300px; height: 300px;"></div>
   </el-dialog>
@@ -20,7 +27,7 @@ import { ref } from 'vue';
 import * as echarts from 'echarts';
 import {
   targetCoordinates, CCtargetCoordinates, nav_pos,
-  nav_LR, nav_thi, nav_sversion, nav_mversion,importflag
+  nav_LR, nav_thi, nav_sversion, nav_mversion, importflag
 } from './sharedata.js';
 
 const dialogVisible = ref(false);

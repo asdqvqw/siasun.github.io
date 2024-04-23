@@ -4,7 +4,7 @@
             <el-table-column prop="name" label="名称">
                 <template #default="scope">
                     <el-button type="text" @click="reedit(scope.$index)">{{ tableDataCrtl[scope.$index].name
-                    }}</el-button>
+                        }}</el-button>
                 </template>
             </el-table-column>
 
@@ -41,9 +41,11 @@
                 <el-option label="普通驱动类型" :value=0></el-option>
                 <el-option label="差速驱动类型" :value=1></el-option>
             </el-select><br>
-            <el-checkbox v-model="newRow.use_wheel" @change="updatashowIndex">安装有驱动轮</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <el-checkbox v-model="newRow.use_wheel"
+                @change="updatashowIndex">安装有驱动轮</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             驱动伺服类型
-            <el-select v-model="newRow.wheel.servo_type" placeholder="请选择" :disabled="!newRow.use_wheel" @change="updatashowIndex">
+            <el-select v-model="newRow.wheel.servo_type" placeholder="请选择" :disabled="!newRow.use_wheel"
+                @change="updatashowIndex">
                 <el-option label="普通MCU" :value=0></el-option>
                 <el-option label="差速MCU" :value=1></el-option>
                 <el-option label="Elmo伺服" :value=2></el-option>
@@ -52,9 +54,11 @@
                 <el-option label="AMC伺服" :value=5></el-option>
             </el-select><br>
 
-            <el-checkbox v-model="newRow.use_steer" @change="updatashowIndexsteer">安装有转舵机构</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <el-checkbox v-model="newRow.use_steer"
+                @change="updatashowIndexsteer">安装有转舵机构</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             驱动伺服类型
-            <el-select v-model="newRow.steer.servo_type" placeholder="请选择" :disabled="!newRow.use_steer" @change="updatashowIndexsteer">
+            <el-select v-model="newRow.steer.servo_type" placeholder="请选择" :disabled="!newRow.use_steer"
+                @change="updatashowIndexsteer">
                 <el-option label="普通MCU" :value=0></el-option>
                 <el-option label="差速MCU" :value=1></el-option>
                 <el-option label="Elmo伺服" :value=2></el-option>
@@ -68,13 +72,65 @@
                 <div v-if="newRow.use_wheel">
                     <wheel :wheel="newRow.wheel" @change="changedata"></wheel>
                 </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                
                 <div v-if="newRow.use_steer">
                     <steer :steer="newRow.steer" @change="changedata"></steer>
+                    <br>
+                    <el-button @click="handlesevorONE" type="primary">限位开关1</el-button>
+                    <el-dialog title="限位开关1" v-model="sevorone" :visible="sevorone" width="600px"
+                        :close-on-click-modal="false" class="edit-data-dialog">
+                        <div>
+                            <IO8 :wheel="newRow.steer.unclockwise_limit_switch"></IO8>
+                        </div>
+
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="sevorone = false">取 消</el-button>
+                            <el-button @click="handlesevorone">确定</el-button>
+
+                        </div>
+
+                    </el-dialog>&nbsp;
+
+                    <el-button @click="handlesevorTWO" type="primary">限位开关2</el-button>
+                    <el-dialog title="限位开关2" v-model="sevortwo" :visible="sevortwo" width="600px"
+                        :close-on-click-modal="false" class="edit-data-dialog">
+                        <div>
+                            <IO9 :wheel="newRow.steer.clockwise_limit_switch"></IO9>
+
+                        </div>
+
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="sevortwo = false">取 消</el-button>
+                            <el-button @click="handlesevortwo">确定</el-button>
+
+                        </div>
+
+                    </el-dialog>&nbsp;
+
+
+
+                    <el-button @click="handlesevorZERO" type="primary">零位开关</el-button>
+                    <el-dialog title="零位开关" v-model="sevorzero" :visible="sevorzero" width="600px"
+                        :close-on-click-modal="false" class="edit-data-dialog">
+                        <div>
+                            <IO10 :wheel="newRow.steer.zero_limit_switch"></IO10>
+
+                        </div>
+
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="sevorzero = false">取 消</el-button>
+                            <el-button @click="handlesevorzero">确定</el-button>
+
+                        </div>
+
+                    </el-dialog>&nbsp;<br>
+
                 </div>
                 <br><br>
             </div>
 
-            
+
             <!-- <pre>{{ tableDataCrtl }}</pre> -->
 
             <div slot="footer" class="dialog-footer">
@@ -86,20 +142,54 @@
         </el-dialog>
     </div>
 </template>
-  
+
 <script setup>
 import { ref, computed } from 'vue'
 import wheel from './wheel.vue';
 import steer from './steer.vue';
 import { tableDataCrtl } from '@/views/agv_ctrl/param/common/commondata.js'
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
-import { showIndex,showIndexsteer } from './AGVselect.js'
+import { showIndex, showIndexsteer } from './AGVselect.js'
+import { flag } from '@/views/agv_ctrl/param/common/commondata.js'
+import IO8 from './IO.vue'
+import IO9 from './IO.vue'
+import IO10 from './IO.vue'
+const sevorone = ref(false);
+const sevortwo = ref(false);
+const sevorzero = ref(false);
+const handlesevorONE = () => {
+    flag.value = !flag.value;
+    sevorone.value = true;
+};
 
-const updatashowIndexsteer = () =>{
+const handlesevorone = () => {
+    changedata();
+    sevorone.value = false;
+};
+
+const handlesevorTWO = () => {
+    flag.value = !flag.value;
+    sevortwo.value = true;
+};
+const handlesevortwo = () => {
+    changedata();
+    sevortwo.value = false;
+};
+
+const handlesevorZERO = () => {
+    flag.value = !flag.value;
+    sevorzero.value = true;
+};
+const handlesevorzero = () => {
+    changedata();
+    sevorzero.value = false;
+};
+
+const updatashowIndexsteer = () => {
     showIndexsteer.value = newRow.value.steer.servo_type;
 }
 
-const updatashowIndex = () =>{
+const updatashowIndex = () => {
     showIndex.value = newRow.value.wheel.servo_type;
 }
 const title = '驱动单元';
@@ -115,62 +205,62 @@ const newRow = ref({
     wheel: {
         install_dir: 0,
         servo_type: 0,
-        wheel_x:0,
-        wheel_y:0,
-        axis:{
-            unit_dis:0,
-            ratio:0,
-            encoder:0,
-            acc_vel:0,
-            vel:0,
-            max_poserr_limit:0,
-            max_rpm:0,
-            Target:0
+        wheel_x: 0,
+        wheel_y: 0,
+        axis: {
+            unit_dis: 0,
+            ratio: 0,
+            encoder: 0,
+            acc_vel: 0,
+            vel: 0,
+            max_poserr_limit: 0,
+            max_rpm: 0,
+            Target: 0
         },
-        servo:{
-            canport_id:0,
-            canposunit_id:0,
-            canopenunit_id:0,
-            can_id:0
+        servo: {
+            canport_id: 0,
+            canposunit_id: 0,
+            canopenunit_id: 0,
+            can_id: 0
         },
         // MeParm: [0, 0, 0.23, 21, 2700, 48],
         //SeParm: [0, 0],
-        wheel_check: [0,2,2,2,0],
+        wheel_check: [0, 2, 2, 2, 0],
 
     },
     steer: {
         install_dir: 0,
         servo_type: 0,
         use_absolute_encoder: false,
-        absolute_encoder_canport_id:0,
-        absolute_encoder_unit_id:0,
-        absolute_encoder_max:16777216,
-        absolute_encoder_zero:16777000,
+        absolute_encoder_canport_id: 0,
+        absolute_encoder_unit_id: 0,
+        absolute_encoder_max: 16777216,
+        absolute_encoder_zero: 16777000,
         // Coddist: [0, 0, 0.22, 1],
         // MeParm: [0, 0, 0.23],
         // SeParm: [0, 0],
         home_offset: 54,
         // sevorestu: [],
         // sevoreable: [],
-        axis:{
-            unit_dis:0,
-            ratio:0,
-            encoder:0,
-            acc_vel:0,
-            vel:0,
-            max_poserr_limit:0,
-            max_rpm:0,
-            Target:0
+        axis: {
+            unit_dis: 0,
+            ratio: 0,
+            encoder: 0,
+            acc_vel: 0,
+            vel: 0,
+            max_poserr_limit: 0,
+            max_rpm: 0,
+            Target: 0
         },
-        servo:{
-            canport_id:0,
-            canposunit_id:0,
-            canopenunit_id:0,
-            can_id:0
+        servo: {
+            canport_id: 0,
+            canposunit_id: 0,
+            canopenunit_id: 0,
+            can_id: 0
         },
-        unclockwise_limit_switch: [2,2,1,0,0],
-        clockwise_limit_switch: [2,2,1,1,0],
-        zero_limit_switch: [2,2,1,2,0],
+        unclockwise_limit_switch: [2, 2, 1, 0, 0],
+        clockwise_limit_switch: [2, 2, 1, 1, 0],
+        zero_limit_switch: [2, 2, 1, 2, 0],
     }
 });
 
@@ -183,7 +273,7 @@ const addNewRow = () => {
     newRow.value.use_wheel = false;
     newRow.value.use_steer = false;
     newRow.value.drive_type = 0;
-    
+
     newRow.value.steer.home_offset = 54;
     newRow.value.steer.use_absolute_encoder = false;
     newRow.value.steer.absolute_encoder_canport_id = 0;
@@ -193,9 +283,9 @@ const addNewRow = () => {
     newRow.value.steer.servo_type = 0;
     // newRow.value.steer.Coddist = [0, 0, 0.22, 1];
     newRow.value.steer.install_dir = 0;
-    newRow.value.steer.unclockwise_limit_switch = [2,2,1,0,0];
-    newRow.value.steer.clockwise_limit_switch = [2,2,1,1,0];
-    newRow.value.steer.zero_limit_switch = [2,2,1,2,0];
+    newRow.value.steer.unclockwise_limit_switch = [2, 2, 1, 0, 0];
+    newRow.value.steer.clockwise_limit_switch = [2, 2, 1, 1, 0];
+    newRow.value.steer.zero_limit_switch = [2, 2, 1, 2, 0];
 
     newRow.value.steer.axis.unit_dis = 6.28;
     newRow.value.steer.axis.encoder = 2500;
@@ -212,7 +302,7 @@ const addNewRow = () => {
 
     newRow.value.editingIndex = -1;
 
-    newRow.value.wheel.wheel_check = [0,2,2,2,0];
+    newRow.value.wheel.wheel_check = [0, 2, 2, 2, 0];
     newRow.value.wheel.install_dir = 0;
     newRow.value.wheel.wheel_x = 0;
     newRow.value.wheel.wheel_y = 0;
@@ -230,7 +320,7 @@ const addNewRow = () => {
     newRow.value.wheel.servo.canposunit_id = 0;
     newRow.value.wheel.servo.canopenunit_id = 0;
     newRow.value.wheel.servo.can_id = 11;
-    
+
 
     // newRow.value.wheel.MeParm = [0, 0, 0.23, 21, 2700, 48];
     //newRow.value.wheel.SeParm = [0, 0];
@@ -312,6 +402,8 @@ const reedit = (index) => {
     // newRow.value.steer.sevoreable = tableDataCrtl.value[index].steer.sevoreable;
 
     newRow.value.steer.unclockwise_limit_switch = tableDataCrtl.value[index].steer.unclockwise_limit_switch;
+    console.log('333333,', tableDataCrtl.value[index].steer.unclockwise_limit_switch)
+    console.log('2222222,', newRow.value.steer.unclockwise_limit_switch)
     newRow.value.steer.clockwise_limit_switch = tableDataCrtl.value[index].steer.clockwise_limit_switch;
     newRow.value.steer.zero_limit_switch = tableDataCrtl.value[index].steer.zero_limit_switch;
 
@@ -379,6 +471,7 @@ const handleAddRow = () => {
             // }
             if (newRow.value.steer.unclockwise_limit_switch.value !== undefined) {
                 tableDataCrtl.value[newRow.value.editingIndex].steer.unclockwise_limit_switch = newRow.value.steer.unclockwise_limit_switch.value;
+                console.log('111111111', tableDataCrtl.value[newRow.value.editingIndex].steer.unclockwise_limit_switch);
             }
             if (newRow.value.steer.clockwise_limit_switch.value !== undefined) {
                 tableDataCrtl.value[newRow.value.editingIndex].steer.clockwise_limit_switch = newRow.value.steer.clockwise_limit_switch.value;
@@ -444,79 +537,115 @@ const handleAddRow = () => {
 };
 
 const changedata = () => {
-    tableDataCrtl.value[newRow.value.editingIndex].name = newRow.value.name;
-    tableDataCrtl.value[newRow.value.editingIndex].install_x = newRow.value.install_x;
-    tableDataCrtl.value[newRow.value.editingIndex].install_y = newRow.value.install_y;
-    tableDataCrtl.value[newRow.value.editingIndex].use_wheel = newRow.value.use_wheel;
-    tableDataCrtl.value[newRow.value.editingIndex].use_steer = newRow.value.use_steer;
-    tableDataCrtl.value[newRow.value.editingIndex].drive_type = newRow.value.drive_type;
-    // tableDataCrtl.value[newRow.value.editingIndex].wheel.MeParm = newRow.value.wheel.MeParm;
-    //tableDataCrtl.value[newRow.value.editingIndex].wheel.SeParm = newRow.value.wheel.SeParm;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.install_dir = newRow.value.wheel.install_dir;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.wheel_x = newRow.value.wheel.wheel_x;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.wheel_y = newRow.value.wheel.wheel_y;
-    
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.unit_dis = newRow.value.wheel.axis.unit_dis;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.encoder = newRow.value.wheel.axis.encoder;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.max_rpm = newRow.value.wheel.axis.max_rpm;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.Target = newRow.value.wheel.axis.Target;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.max_poserr_limit = newRow.value.wheel.axis.max_poserr_limit;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.vel = newRow.value.wheel.axis.vel;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.acc_vel = newRow.value.wheel.axis.acc_vel;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.ratio = newRow.value.wheel.axis.ratio;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.servo.canport_id = newRow.value.wheel.servo.canport_id;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.servo.canposunit_id = newRow.value.wheel.servo.canposunit_id;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.servo.canopenunit_id = newRow.value.wheel.servo.canopenunit_id;
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.servo.can_id = newRow.value.wheel.servo.can_id;
+    if (newRow.value.editingIndex !== -1) {
+        // 编辑模式下更新数据
+        tableDataCrtl.value[newRow.value.editingIndex].name = newRow.value.name;
+        tableDataCrtl.value[newRow.value.editingIndex].install_x = newRow.value.install_x;
+        tableDataCrtl.value[newRow.value.editingIndex].install_y = newRow.value.install_y;
+        tableDataCrtl.value[newRow.value.editingIndex].use_wheel = newRow.value.use_wheel;
+        tableDataCrtl.value[newRow.value.editingIndex].use_steer = newRow.value.use_steer;
+        tableDataCrtl.value[newRow.value.editingIndex].drive_type = newRow.value.drive_type;
+        // tableDataCrtl.value[newRow.value.editingIndex].wheel.MeParm = newRow.value.wheel.MeParm;
+        //tableDataCrtl.value[newRow.value.editingIndex].wheel.SeParm = newRow.value.wheel.SeParm;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.install_dir = newRow.value.wheel.install_dir;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.wheel_x = newRow.value.wheel.wheel_x;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.wheel_y = newRow.value.wheel.wheel_y;
 
-    tableDataCrtl.value[newRow.value.editingIndex].steer.axis.unit_dis = newRow.value.steer.axis.unit_dis;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.axis.encoder = newRow.value.steer.axis.encoder;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.axis.max_rpm = newRow.value.steer.axis.max_rpm;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.axis.Target = newRow.value.steer.axis.Target;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.axis.max_poserr_limit = newRow.value.steer.axis.max_poserr_limit;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.axis.vel = newRow.value.steer.axis.vel;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.axis.acc_vel = newRow.value.steer.axis.acc_vel;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.axis.ratio = newRow.value.steer.axis.ratio;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.servo.canport_id = newRow.value.steer.servo.canport_id;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.servo.canposunit_id = newRow.value.steer.servo.canposunit_id;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.servo.canopenunit_id = newRow.value.steer.servo.canopenunit_id;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.servo.can_id = newRow.value.steer.servo.can_id;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.unit_dis = newRow.value.wheel.axis.unit_dis;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.encoder = newRow.value.wheel.axis.encoder;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.max_rpm = newRow.value.wheel.axis.max_rpm;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.Target = newRow.value.wheel.axis.Target;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.max_poserr_limit = newRow.value.wheel.axis.max_poserr_limit;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.vel = newRow.value.wheel.axis.vel;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.acc_vel = newRow.value.wheel.axis.acc_vel;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.axis.ratio = newRow.value.wheel.axis.ratio;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.servo.canport_id = newRow.value.wheel.servo.canport_id;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.servo.canposunit_id = newRow.value.wheel.servo.canposunit_id;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.servo.canopenunit_id = newRow.value.wheel.servo.canopenunit_id;
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.servo.can_id = newRow.value.wheel.servo.can_id;
 
 
-    tableDataCrtl.value[newRow.value.editingIndex].wheel.servo_type = newRow.value.wheel.servo_type;
-    if (newRow.value.wheel.wheel_check.value !== undefined) {
-        tableDataCrtl.value[newRow.value.editingIndex].wheel.wheel_check = newRow.value.wheel.wheel_check.value;
+
+        tableDataCrtl.value[newRow.value.editingIndex].steer.axis.unit_dis = newRow.value.steer.axis.unit_dis;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.axis.encoder = newRow.value.steer.axis.encoder;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.axis.max_rpm = newRow.value.steer.axis.max_rpm;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.axis.Target = newRow.value.steer.axis.Target;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.axis.max_poserr_limit = newRow.value.steer.axis.max_poserr_limit;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.axis.vel = newRow.value.steer.axis.vel;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.axis.acc_vel = newRow.value.steer.axis.acc_vel;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.axis.ratio = newRow.value.steer.axis.ratio;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.servo.canport_id = newRow.value.steer.servo.canport_id;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.servo.canposunit_id = newRow.value.steer.servo.canposunit_id;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.servo.canopenunit_id = newRow.value.steer.servo.canopenunit_id;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.servo.can_id = newRow.value.steer.servo.can_id;
+
+
+
+        tableDataCrtl.value[newRow.value.editingIndex].wheel.servo_type = newRow.value.wheel.servo_type;
+        if (newRow.value.wheel.wheel_check.value !== undefined) {
+            tableDataCrtl.value[newRow.value.editingIndex].wheel.wheel_check = newRow.value.wheel.wheel_check.value;
+        }
+        // if (newRow.value.steer.sevorestu.value !== undefined) {
+        //     tableDataCrtl.value[newRow.value.editingIndex].steer.sevorestu = newRow.value.steer.sevorestu.value;
+        // }
+        // if (newRow.value.steer.sevoreable.value !== undefined) {
+        //     tableDataCrtl.value[newRow.value.editingIndex].steer.sevoreable = newRow.value.steer.sevoreable.value;
+        // }
+        if (newRow.value.steer.unclockwise_limit_switch.value !== undefined) {
+            tableDataCrtl.value[newRow.value.editingIndex].steer.unclockwise_limit_switch = newRow.value.steer.unclockwise_limit_switch.value;
+            console.log('111111111', tableDataCrtl.value[newRow.value.editingIndex].steer.unclockwise_limit_switch);
+        }
+        if (newRow.value.steer.clockwise_limit_switch.value !== undefined) {
+            tableDataCrtl.value[newRow.value.editingIndex].steer.clockwise_limit_switch = newRow.value.steer.clockwise_limit_switch.value;
+        }
+        if (newRow.value.steer.zero_limit_switch.value !== undefined) {
+            tableDataCrtl.value[newRow.value.editingIndex].steer.zero_limit_switch = newRow.value.steer.zero_limit_switch.value;
+        }
+
+
+        tableDataCrtl.value[newRow.value.editingIndex].steer.home_offset = newRow.value.steer.home_offset;
+        // tableDataCrtl.value[newRow.value.editingIndex].steer.MeParm = newRow.value.steer.MeParm;
+        // tableDataCrtl.value[newRow.value.editingIndex].steer.SeParm = newRow.value.steer.SeParm;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.use_absolute_encoder = newRow.value.steer.use_absolute_encoder;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.absolute_encoder_canport_id = newRow.value.steer.absolute_encoder_canport_id;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.absolute_encoder_unit_id = newRow.value.steer.absolute_encoder_unit_id;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.absolute_encoder_max = newRow.value.steer.absolute_encoder_max;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.absolute_encoder_zero = newRow.value.steer.absolute_encoder_zero;
+        // tableDataCrtl.value[newRow.value.editingIndex].steer.Coddist = newRow.value.steer.Coddist;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.servo_type = newRow.value.steer.servo_type;
+        tableDataCrtl.value[newRow.value.editingIndex].steer.install_dir = newRow.value.steer.install_dir;
+
+
+
+
+    } else {
+        // 新增模式下添加数据
+        if (newRow.value.wheel.wheel_check.value !== undefined) {
+            newRow.value.wheel.wheel_check = newRow.value.wheel.wheel_check.value;
+        }
+
+        // if (newRow.value.steer.sevorestu.value !== undefined) {
+        //     newRow.value.steer.sevorestu = newRow.value.steer.sevorestu.value;
+        // }
+
+        // if (newRow.value.steer.sevoreable.value !== undefined) {
+        //     newRow.value.steer.sevoreable = newRow.value.steer.sevoreable.value;
+        // }
+
+        if (newRow.value.steer.unclockwise_limit_switch.value !== undefined) {
+            newRow.value.steer.unclockwise_limit_switch = newRow.value.steer.unclockwise_limit_switch.value;
+        }
+
+        if (newRow.value.steer.clockwise_limit_switch.value !== undefined) {
+            newRow.value.steer.clockwise_limit_switch = newRow.value.steer.clockwise_limit_switch.value;
+        }
+
+        if (newRow.value.steer.zero_limit_switch.value !== undefined) {
+            newRow.value.steer.zero_limit_switch = newRow.value.steer.zero_limit_switch.value;
+        }
+
+
     }
-    // if (newRow.value.steer.sevorestu.value !== undefined) {
-    //     tableDataCrtl.value[newRow.value.editingIndex].steer.sevorestu = newRow.value.steer.sevorestu.value;
-    // }
-    // if (newRow.value.steer.sevoreable.value !== undefined) {
-    //     tableDataCrtl.value[newRow.value.editingIndex].steer.sevoreable = newRow.value.steer.sevoreable.value;
-    // }
-    if (newRow.value.steer.unclockwise_limit_switch.value !== undefined) {
-        tableDataCrtl.value[newRow.value.editingIndex].steer.unclockwise_limit_switch = newRow.value.steer.unclockwise_limit_switch.value;
-    }
-    if (newRow.value.steer.clockwise_limit_switch.value !== undefined) {
-        tableDataCrtl.value[newRow.value.editingIndex].steer.clockwise_limit_switch = newRow.value.steer.clockwise_limit_switch.value;
-    }
-    if (newRow.value.steer.zero_limit_switch.value !== undefined) {
-        tableDataCrtl.value[newRow.value.editingIndex].steer.zero_limit_switch = newRow.value.steer.zero_limit_switch.value;
-    }
-
-
-
-    tableDataCrtl.value[newRow.value.editingIndex].steer.home_offset = newRow.value.steer.home_offset;
-    // tableDataCrtl.value[newRow.value.editingIndex].steer.MeParm = newRow.value.steer.MeParm;
-    // tableDataCrtl.value[newRow.value.editingIndex].steer.SeParm = newRow.value.steer.SeParm;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.use_absolute_encoder = newRow.value.steer.use_absolute_encoder;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.absolute_encoder_canport_id = newRow.value.steer.absolute_encoder_canport_id;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.absolute_encoder_unit_id = newRow.value.steer.absolute_encoder_unit_id;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.absolute_encoder_max = newRow.value.steer.absolute_encoder_max;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.absolute_encoder_zero = newRow.value.steer.absolute_encoder_zero;
-    // tableDataCrtl.value[newRow.value.editingIndex].steer.Coddist = newRow.value.steer.Coddist;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.servo_type = newRow.value.steer.servo_type;
-    tableDataCrtl.value[newRow.value.editingIndex].steer.install_dir = newRow.value.steer.install_dir;
-
 
     jsondata.value.Kinematic.drive = tableDataCrtl;
 };
@@ -527,7 +656,6 @@ const deleteRow = (index) => {
 };
 </script>
 
-    
 
 
 
@@ -535,8 +663,9 @@ const deleteRow = (index) => {
 
 
 
-  
-  
+
+
+
 <style lang="scss" scoped>
 .edit-data-dialog {
     .dialog-container {

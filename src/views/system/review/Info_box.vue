@@ -6,9 +6,7 @@
         车体软件版本：{{ }}<br>
         车号：{{ }}<br>
         模式：{{ agvmode }}<br>
-        事件：{{ event_name }}<br>
-        原因：{{ event_detail }}<br>
-        建议：{{ event_advise }}<br>
+
 
 
     </div>
@@ -17,7 +15,7 @@
 <script setup>
 import {
     infoTextVisible, infoTextX, infoTextY, agvmode,
-    event_name, event_detail, event_advise,parsedLogData,currentCoordinateIndex
+    parsedLogData,currentCoordinateIndex
 } from './sharedata.js'
 let infoText = 'AGV状态'
 </script>

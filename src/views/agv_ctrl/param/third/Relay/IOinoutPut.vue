@@ -121,7 +121,7 @@
 
             <div v-if="selected5">
                 输入点对应位:
-                <el-input v-model="selectedcan" type="number" @change="generateJSON">
+                <el-input v-model="selectedcan" @change="generateJSON">
                 </el-input>
                 <br>
                 信号极性:
@@ -154,7 +154,8 @@ const selectedcan = ref('1');
 const selectedcan1 = ref('1');
 const selectedcan2 = ref('1');
 const selectedcan3 = ref('1');
-
+const decimalOutput = ref('');
+const hexOutput = ref('');
 
 const props = defineProps({
     wheel: {
@@ -185,7 +186,10 @@ const putJSON = () => {
             servoabled.value = true;
             selected.value = props.wheel[0].toString();
             handleChange();
-            selectedcan.value = props.wheel[1].toString();
+            const decimal = parseInt(props.wheel[1], 10);
+            hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+            selectedcan.value = hexOutput.value.toString();
+            //selectedcan.value = props.wheel[1].toString();
             selectedcan1.value = props.wheel[2].toString();
         }else if (props.wheel[0] === 0) {
             servoabled.value = false;
@@ -218,7 +222,9 @@ const generateJSON = () => {
         } else if (selected.value === "3") {
             props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value)]
         } else if (selected.value === "5") {
-            props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value)]
+            const decimal = parseInt(selectedcan.value, 16);
+        decimalOutput.value = isNaN(decimal) ? '' : decimal.toString();
+            props.wheel.value = [parseInt(selected.value), parseInt(decimalOutput.value), parseInt(selectedcan1.value)]
         }
 
     }

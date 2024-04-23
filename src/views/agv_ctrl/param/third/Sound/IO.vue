@@ -129,7 +129,7 @@
 
         <div v-if="selected5">
             输入点对应位:
-            <el-input v-model="selectedcan" type="number" @change="generateJSON">
+            <el-input v-model="selectedcan"  @change="generateJSON">
             </el-input>
             <br>
             信号极性:
@@ -162,7 +162,8 @@ const selectedcan1 = ref('1');
 const selectedcan2 = ref('1');
 const selectedcan3 = ref('1');
 
-
+const decimalOutput = ref('');
+const hexOutput = ref('');
 
 // const props = defineProps({
 //     wheel: {
@@ -187,7 +188,9 @@ const generateJSON = () => {
     } else if (selected.value === "3") {
         newRow.value.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value)]
     } else if (selected.value === "5") {
-        newRow.value.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value)]
+        const decimal = parseInt(selectedcan.value, 16);
+        decimalOutput.value = isNaN(decimal) ? '' : decimal.toString();
+        newRow.value.value = [parseInt(selected.value), parseInt(decimalOutput.value), parseInt(selectedcan1.value)]
     }
     // }
     //  else {
@@ -233,7 +236,10 @@ const putJSON = () => {
         } else if (newRow.value.value.value[0] === 5) {
             selected.value = newRow.value.value.value[0].toString();
             // servoabled.value = true;
-            selectedcan.value = newRow.value.value.value[1].toString();
+            const decimal = parseInt(newRow.value.value.value[1], 10);
+            hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+            selectedcan.value = hexOutput.value.toString();
+            //selectedcan.value = newRow.value.value.value[1].toString();
             selectedcan1.value = newRow.value.value.value[2].toString();
             handleChange();
         }
@@ -261,7 +267,10 @@ const putJSON = () => {
             } else if (newRow.value.value[0] === 5) {
                 selected.value = newRow.value.value[0].toString();
                 // servoabled.value = true;
-                selectedcan.value = newRow.value.value[1].toString();
+                const decimal = parseInt(newRow.value.value[1], 10);
+            hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
+            selectedcan.value = hexOutput.value.toString();
+               // selectedcan.value = newRow.value.value[1].toString();
                 selectedcan1.value = newRow.value.value[2].toString();
                 handleChange();
             }

@@ -3,6 +3,9 @@
   <el-button  @click="prevItem">＜</el-button>
   {{ jsondatatitle }}
   <el-button @click="nextItem">＞</el-button><br>
+  <!-- <input id="start" type="datetime-local" v-model="startPosition" style="width: 200px;" /> —
+  <input id="end" type="datetime-local" v-model="endPosition" style="width: 200px;" />
+  <el-button class="pause-n-button" @click="updateChart">更新图表</el-button><br> -->
 
   <el-input type="number" v-model="dataZoomStart" @input="updateDataZoom" :min="0" style="width: 30%;"></el-input>
   <el-input type="number" v-model="dataZoomEnd" @input="updateDataZoom" :max="100" style="width: 30%;"></el-input>

@@ -36,6 +36,7 @@ import {
 import {deepCopyObj} from "@/common/OtherTools";
 import {toggleFullScreen} from "@/common/OtherTools";
 import {guid} from "@/common/Guid";
+import {timer_agv,timer_from,timer_statistics} from "@/timer.js"
 import tagDataStore from "./common/TagData";
 
 export default defineComponent({
@@ -256,6 +257,7 @@ export default defineComponent({
          * 跳转到该标签的地址里，注意是完整地址
          *  */
         function handleTagClick(item){
+
             if(!item || !item.fullPath) return;
             router.push(item.fullPath);
         }
@@ -264,6 +266,18 @@ export default defineComponent({
          * 删除后跳转到一个最近的标签，使用标签记录
          *  */
         function handleTagRemove(tag){
+            if(tag.path === '/main/update/index')
+            {
+                clearTimeout(timer_from.value);
+            }
+            if(tag.path === '/main/form/index')
+            {
+                clearTimeout(timer_agv.value);
+            }
+            if(tag.path === '/main/statistics/index')
+            {
+                clearTimeout(timer_statistics.value);
+            }
             let tagList = dataContainer.tagList;
             let activeSign = dataContainer.activeSign;
             /** 还剩最后一个标签的话不用删除 */
@@ -486,7 +500,7 @@ export default defineComponent({
                     class="logo"
                     :src="dataContainer.img.img_1" fit="cover" /> -->
                 <div class="name">
-                    <img src="@/assets/logo.png" style="width: 20%; height: 20%;"> 新松机器人 
+                    <img src="@/assets/siasun.png" style="width: 110%; height: 100%; margin-top: 15%; margin-left: -5%;"> 新松机器人 
                 </div>
             </div>
             <div class="right">

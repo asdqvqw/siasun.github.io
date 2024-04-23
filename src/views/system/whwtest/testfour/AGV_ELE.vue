@@ -2,7 +2,8 @@
 
 
   <el-button class="EXButtonELE" @click="clickbutton" v-show="!importflag">电器模块</el-button>
-  <el-dialog v-model="dialogVisible" title="电器模块" custom-class="custom-dialog">
+  <el-dialog v-model="dialogVisible" title="电器模块" custom-class="custom-dialog" :modal="false" draggable 
+  :close-on-click-modal="false" modal-class="kk-dialog-class">
     保险杠状态：{{ ele_safe_bHardBumper }}<br>
     急停触发：{{ ele_safe_bEmgStop }}<br>
     pls状态：{{ ele_safe_nPlsTrig }}<br><br>
