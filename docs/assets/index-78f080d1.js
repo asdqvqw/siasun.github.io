@@ -1,1 +1,0 @@
-import{_ as e,o as t,c as o,a as c}from"./index-df7e4a51.js";const n={},s={class:"page-container main-view"},a=c("div",{class:"table-box content-container page-content-box"}," 啊啊啊啊 ",-1),_=[a];function r(i,d){return t(),o("div",s,_)}const f=e(n,[["render",r]]);export{f as default};
