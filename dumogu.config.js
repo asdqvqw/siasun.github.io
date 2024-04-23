@@ -9,9 +9,9 @@ const isProd = process.env.NODE_ENV === 'production';
 let configDev = {
     name:'新松 - 后台管理',
     title:'新松机器人',
-    baseApiURL:'https://s.dumogu.top/api',
-    routeBasePath:'/',
-    biuldBasePath:'/',
+    baseApiURL:'/api',
+    routeBasePath:'./',
+    biuldBasePath:'./',
 };
 
 /** 生产环境配置 */
