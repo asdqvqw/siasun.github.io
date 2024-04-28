@@ -25,7 +25,7 @@ const fetchFakeMsg = () => {
   drawPainting(fakeMsg.value)
   timer_bettery.value = setTimeout(() => {
     fetchFakeMsg();
-  }, 20000);
+  }, 5000);
 }
 onMounted(fetchFakeMsg)
 

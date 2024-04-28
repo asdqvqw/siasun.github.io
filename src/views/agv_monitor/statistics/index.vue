@@ -3,7 +3,7 @@
         <div class="table-box content-container page-content-box"
             style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
-            <h2 style="margin-top: 1%; margin-left: 1%;">统计分析</h2>
+            <h2 style="margin-top: 1%; margin-left: 1%;">统计</h2>
             <div class="hengxian"></div>
             <div class="box">
                 <el-button @click="prevItem" type="info" style="width: 10%; margin-left: 1%;" :icon="ArrowLeft"></el-button>

@@ -3,7 +3,7 @@
         <div class="table-box content-container page-content-box"
             style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
-            <h2 style="margin-top: 1%; margin-left: 1%;">变量分析</h2>
+            <h2 style="margin-top: 1%; margin-left: 1%;">分析</h2>
             <div class="hengxian"></div>
 
             <div class="box">
@@ -226,6 +226,8 @@ const update = () => {
                     type: 'line',
                     name: line.name,
                     data: yData[index],
+                    smooth: true, //是否平滑
+
                 };
             }),
         legend: {
@@ -249,11 +251,7 @@ const update = () => {
             },
         ],
     };
-    console.log('2333333', seriesList.value.filter(series => series.checked).map((line, index) => ({ // 过滤出选中的数据系列
-        type: 'line',
-        name: line.name,
-        data: yData[index],
-    })))
+
     chartInstance.setOption(option);
 
 }
