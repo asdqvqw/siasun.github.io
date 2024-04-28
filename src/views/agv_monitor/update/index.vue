@@ -1,33 +1,43 @@
 <template>
   <div class="page-container main-view">
-    <div class="table-box content-container page-content-box">
+    <div class="table-box content-container page-content-box"
+      style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
-      <h1 style="margin-top: 20px; margin-left: 20px;">调试数据</h1>
+      <h2 style="margin-top: 1%; margin-left: 1%;">变量</h2>
+      <div class="hengxian"></div>
       <br>
+
       <div v-if="jsondata.item" class="flex-container">
         <div v-for="(item, index) in jsondata.item.slice(currentItemIndex_Y, currentItemIndex_Y + 4)" :key="index"
           class="container">
-          <h2>{{ item.name }}</h2>
-          <el-table :data="getTableData(currentItemIndex_Y+index)" border >
-            <el-table-column prop="key" label="字段" width="90%" ></el-table-column>
+          <h2>{{ '👉' + item.name }}</h2>
+          <el-table :data="getTableData(currentItemIndex_Y + index)" border>
+            <el-table-column prop="key" label="💫字段" width="90%"></el-table-column>
             <el-table-column prop="value" label="内容"></el-table-column>
           </el-table>
-          
+
         </div>
+
         
+        <div>
+          <br>
+          <el-button @click="prevItem" class="buttonAA">＜</el-button>
+          <br>
+          <br>
+          <el-button @click="nextItem" class="buttonAA">＞</el-button>
+        </div>
+
+
       </div>
-      <br>
-      <div >
-        <el-button @click="prevItem" class="buttonAA">＜</el-button>
-        <el-button @click="nextItem" class="buttonAA">＞</el-button><br>
-      </div>
+
+
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import  {timer_from} from '@/timer.js'
+import { timer_from } from '@/timer.js'
 const jsondata = ref({
   item: [
     {
@@ -69,7 +79,7 @@ const jsondata = ref({
 })
 
 
-  
+
 
 const parsedata = ref([])
 const parse = () => {
@@ -85,8 +95,7 @@ const parse = () => {
         let keyvalue = item[key];
         if (keyvalue === true) {
           keyvalue = '是';
-        }else if(keyvalue === false)
-        {
+        } else if (keyvalue === false) {
           keyvalue = '否';
         }
         itemObject[key] = keyvalue;
@@ -114,7 +123,7 @@ const nextItem = () => {
 const getTableData = (index) => {
   if (index <= jsondata.value.item.length - 1) {
     const itemObject = parsedata.value[index].itemObject;
-    console.log('11111',Object.entries(itemObject).map(([key, value]) => ({ key, value })))
+    console.log('11111', Object.entries(itemObject).map(([key, value]) => ({ key, value })))
     return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
 
   }
@@ -135,8 +144,8 @@ const fetchVelocity1 = () => {
     data: JSON.stringify(userList)
   })
     .then((res) => {
-      responseData.value = res.data 
-      jsondata.value.item =  responseData.value;
+      responseData.value = res.data
+      jsondata.value.item = responseData.value;
       parse();
     })
     .catch((error) => {
@@ -146,7 +155,7 @@ const fetchVelocity1 = () => {
 
     })
 
-    timer_from.value = setTimeout(fetchVelocity1, 400);
+  timer_from.value = setTimeout(fetchVelocity1, 400);
 }
 
 onMounted(() => {
@@ -156,45 +165,66 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-
-
 .container {
-  width: 24%;
-  background-color: #909c96;
+  width: 22%;
   border-style: ridge;
   border-width: 2px;
-  border-radius: 10px;
-  margin-left: 5px;
+  border-radius: 20px;
+  margin-top: -1%;
+  margin-left: 1%;
   overflow: auto;
+  border: 1px solid #706c6c;
+  box-shadow: 4px 4px 10px rgba(83, 81, 81, 0.3);
+  padding: 20px;
+  text-align: center;
+  background-image: linear-gradient(to bottom right, #a9a59d, #c0ddcb17);
 }
 
 .flex-container {
   display: flex;
-  height: 70%;
+  height: 60%;
+  border: 5px double #8d8a8a;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  text-align: center;
+  width: 90%;
+  border-radius: 10px;
+  margin-left: 2%;
+  background-image: linear-gradient(to bottom right, #3a3d3d95, #c6e0d017);
 }
 
 .buttonAA {
-  margin-left: 70%;
+  margin-left: 50%;
   width: 10%;
-  border-radius: 50px;
-  background-color: #909c96;
+  border-radius: 25px;
+  background-image: linear-gradient(to bottom right, #2c323295, #d5eedf17);
+}
+
+.hengxian {
+  border: none;
+  border-top: 2px solid #ccc;
+  margin: 20px 0;
 }
 </style>
 
 <style lang="scss" scoped>
-::v-deep .el-table{
-    background:rgba(255,255,255,0)
+::v-deep .el-table {
+  background: rgba(255, 255, 255, 0)
 }
-::v-deep .el-table_expanded-cell{
-    background:rgba(255,255,255,0)
+
+::v-deep .el-table_expanded-cell {
+  background: rgba(255, 255, 255, 0)
 }
-::v-deep .el-table th{
-    background:rgba(255, 255, 255, 0)
+
+::v-deep .el-table th {
+  background: rgba(255, 255, 255, 0)
 }
-::v-deep .el-table tr{
-    background:rgba(255,255,255,0)
+
+::v-deep .el-table tr {
+  background: rgba(255, 255, 255, 0)
 }
-::v-deep .el-table td{
-    background:rgba(255,255,255,0)
+
+::v-deep .el-table td {
+  background: rgba(255, 255, 255, 0)
 }
 </style>

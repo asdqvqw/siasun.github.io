@@ -121,7 +121,7 @@ const allApi = {
       },
       {
         title: "监测",
-        iconName: "svg:cog-fill.svg",
+        iconName: "svg:laptop.svg",
         childs: [
           {
             name: "form",
@@ -132,24 +132,16 @@ const allApi = {
             showTagIcon: true,
           },
           {
-            name: "motion",
-            title: "电气",
-            isCache: true,
-            content: "",
-            iconName: "svg:poweroff.svg",
-            showTagIcon: true,
-          },
-          {
             name: "statistics",
-            title: "统计分析",
+            title: "统计",
             isCache: true,
             content: "",
-            iconName: "svg:paper-plane.svg",
+            iconName: "svg:chart-line.svg",
             showTagIcon: true,
           },
           {
             name: "update",
-            title: "变量查看",
+            title: "变量",
             isCache: true,
             content: "",
             iconName: "svg:alignleft-fill.svg",
@@ -160,7 +152,15 @@ const allApi = {
             title: "日志",
             isCache: true,
             content: "",
-            iconName: "svg:user-group-fill.svg",
+            iconName: "svg:database.svg",
+            showTagIcon: true,
+          },
+          {
+            name: "motion",
+            title: "分析",
+            isCache: true,
+            content: "",
+            iconName: "svg:chart-bar.svg",
             showTagIcon: true,
           },
           // {
@@ -193,10 +193,10 @@ const allApi = {
           },
           {
             name: "checkio",
-            title: "检查IO",
+            title: "IO测试",
             isCache: true,
             content: "",
-            iconName: "svg:user-fill.svg",
+            iconName: "svg:switch.svg",
             showTagIcon: true,
           },
           {
@@ -204,7 +204,7 @@ const allApi = {
             title: "离线任务",
             isCache: true,
             content: "",
-            iconName: "svg:user-group-fill.svg",
+            iconName: "svg:tag.svg",
             showTagIcon: true,
           },
 
@@ -220,7 +220,7 @@ const allApi = {
             title: "任务",
             isCache: true,
             content: "",
-            iconName: "svg:laptop.svg",
+            iconName: "svg:tag-fill.svg",
             showTagIcon: true,
           },
           {
@@ -228,7 +228,7 @@ const allApi = {
             title: "配置参数",
             isCache: true,
             content: "",
-            iconName: "svg:sort-line.svg",
+            iconName: "svg:chart-relation.svg",
             showTagIcon: true,
           },
         ],
@@ -251,7 +251,7 @@ const allApi = {
             title: "json文件",
             isCache: true,
             content: "",
-            iconName: "svg:tag.svg",
+            iconName: "svg:friendship.svg",
             showTagIcon: true,
           },
           {
@@ -267,44 +267,83 @@ const allApi = {
             title: "上传",
             isCache: true,
             content: "",
-            iconName: "svg:plus-square.svg",
+            iconName: "svg:upload.svg",
             showTagIcon: true,
           },
 
         ],
       },
       {
-        title: "平台文档",
+        title: "文档",
         iconName: "svg:aligncenter-fill.svg",
         childs: [
+          {
+            name: "huojia",
+            title: "货架车调试文档",
+            isCache: true,
+            content: "",
+            iconName: "svg:comment-lines.svg",
+            showTagIcon: true,
+          },
+          {
+            name: "mrc05",
+            title: "mrc05说明",
+            isCache: true,
+            content: "",
+            iconName: "svg:comment-lines.svg",
+            showTagIcon: true,
+          },
           {
             path: `/main/iframe/shuoming?src=${encodeURIComponent(
               "https://asdqvqw.github.io/whwtest.github.io/"
             )}`,
-            title: "说明",
-            content: "",
+            title: "平台说明",
+            content: "需联网",
             iconName: "svg:laptop-check.svg",
             showTagIcon: true,
             isCache: true,
           },
+          // {
+          //   title: "VUE3文档(外联)",
+          //   iconName: "svg:friendship.svg",
+          //   isLink: true,
+          //   path: "https://cn.vuejs.org/guide/introduction.html",
+          // },
+          // {
+          //   path: `/main/iframe/vue?src=${encodeURIComponent(
+          //     "https://cn.vuejs.org/guide/introduction.html"
+          //   )}`,
+          //   title: "VUE3文档(内嵌)",
+          //   content: "",
+          //   iconName: "img:vue.svg",
+          //   showTagIcon: true,
+          //   isCache: true,
+          // },
+
+
+        ],
+      },
+      {
+        title: "工具",
+        iconName: "svg:gallery-view.svg",
+        content: "需联网",
+        childs: [
           {
-            title: "VUE3文档(外联)",
-            iconName: "svg:friendship.svg",
-            isLink: true,
-            path: "https://cn.vuejs.org/guide/introduction.html",
-          },
-          {
-            path: `/main/iframe/vue?src=${encodeURIComponent(
-              "https://cn.vuejs.org/guide/introduction.html"
-            )}`,
-            title: "VUE3文档(内嵌)",
-            content: "",
-            iconName: "img:vue.svg",
-            showTagIcon: true,
+            name: "websockettest",
+            title: "websocket测试",
             isCache: true,
+            content: "",
+            iconName: "svg:sort-line.svg",
+            showTagIcon: true,
           },
-
-
+          {
+            name: "toolsvg",
+            title: "toolbox",
+            isCache: true,
+            content: "",
+            iconName: "svg:collection-fill.svg",
+            showTagIcon: true,
+          },
         ],
       },
       // {

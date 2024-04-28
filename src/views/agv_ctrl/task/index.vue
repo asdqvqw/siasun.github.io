@@ -1,4 +1,8 @@
 <template>
+    <div class="page-container main-view">
+
+<div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
+
     <div class="demo1">
       <el-row>
         <el-col :span="12">
@@ -22,6 +26,8 @@
         </el-col>
       </el-row>
     </div>
+  </div>
+</div>
   </template>
   
   <script>

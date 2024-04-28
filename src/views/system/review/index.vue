@@ -157,29 +157,44 @@ const parseLog = (content) => {
     const realy = logJson.navInfo.fRealY.toFixed(3);
     const realz = 0;
     const realthita = (logJson.navInfo.fRealThita * 180 / Math.PI).toFixed(3);
-    const trunpan = logJson.equipmentInfo.rack.turn_axis.fAxisPosition / 1000;
-    const lifter = logJson.equipmentInfo.rack.lifter_axis.fAxisPosition;
-    const agvType = logJson.uAgvType;
-    // //item
-    const items = logJson.item;
-    const parsedItems = [];
-    for (const item of items) {
-      const itemName = item.name;
-      let itemObject = {};
-      // 遍历item对象中的键值对
-      for (const key in item) {
-        if (key !== "name") {
-          const value = item[key];
-          itemObject[key] = value;
-
-        }
-      }
-      parsedItems.push({ itemName, itemObject });
+    let trunpan = '';
+    let lifter = '';
+ 
+    if (logJson.equipmentInfo.rack !== undefined) {
+      trunpan = logJson.equipmentInfo.rack.turn_axis.fAxisPosition / 1000;
+      lifter = logJson.equipmentInfo.rack.lifter_axis.fAxisPosition;
     }
-    //end
-    const StatisticsData = logJson.statistics;
-    //  , parsedItems, StatisticsData
-    //
+
+    let agvType = '';
+    if (logJson.uAgvType !== undefined) {
+      agvType = logJson.uAgvType;
+    }
+    let parsedItems = [];
+    if (logJson.item !== undefined) {
+      // //item
+      const items = logJson.item;
+      //  parsedItems = [];
+      for (const item of items) {
+        const itemName = item.name;
+        let itemObject = {};
+        // 遍历item对象中的键值对
+        for (const key in item) {
+          if (key !== "name") {
+            const value = item[key];
+            itemObject[key] = value;
+
+          }
+        }
+        parsedItems.push({ itemName, itemObject });
+      }
+    }
+    let StatisticsData = '';
+    if (logJson.statistics !== undefined) {
+
+      StatisticsData = logJson.statistics;
+    }
+
+
     parsedLogData.value.push({ logDateTime, logJson, realx, realy, realthita, realz, agvType, parsedItems, trunpan, lifter, StatisticsData });
     parsedLogDatabak.push({ logDateTime, logJson, realx, realy, realthita, realz, agvType, parsedItems, trunpan, lifter, StatisticsData });
   }
@@ -694,22 +709,22 @@ onMounted(() => {
 
 
 <style>
- .custom-dialog {
-     background-image: url('./img/1-1-bg.png');
-     background-color: #001034cb;
-     /* 修改弹窗背景色 */
-     /* animation: dialogSlideIn 0.3s ease-out forwards; */
-     width: 40%;
-     height: 42.5%;
-     right: 0%;
-     bottom: -10%;
-     background-size: 100%;
-     background-position: top left;
-     overflow: auto;
-     transform-origin: top left;
- }
+.custom-dialog {
+  background-image: url('./img/1-1-bg.png');
+  background-color: #001034cb;
+  /* 修改弹窗背景色 */
+  /* animation: dialogSlideIn 0.3s ease-out forwards; */
+  width: 40%;
+  height: 42.5%;
+  right: 0%;
+  bottom: -10%;
+  background-size: 100%;
+  background-position: top left;
+  overflow: auto;
+  transform-origin: top left;
+}
 
- /* @keyframes dialogSlideIn {
+/* @keyframes dialogSlideIn {
      from {
          opacity: 0;
          transform: translateX(100%);
@@ -721,23 +736,23 @@ onMounted(() => {
      }
  } */
 
- .custom-dialog .el-dialog__body {
-     color: #f0e7e7;
- }
+.custom-dialog .el-dialog__body {
+  color: #f0e7e7;
+}
 
- .custom-dialog .el-dialog__header {
-     background-image: url('./img/headerbg.png');
-     background-size: 100%;
-     background-color: #eaeaea00;
-     background-position: center;
-     height: 10%;
- }
+.custom-dialog .el-dialog__header {
+  background-image: url('./img/headerbg.png');
+  background-size: 100%;
+  background-color: #eaeaea00;
+  background-position: center;
+  height: 10%;
+}
 
- .custom-dialog .el-dialog__header .el-dialog__title {
-     color: #ddb4b4;
-     text-align: center;
-     margin: 0 auto;
- }
+.custom-dialog .el-dialog__header .el-dialog__title {
+  color: #ddb4b4;
+  text-align: center;
+  margin: 0 auto;
+}
 </style>
 
 
@@ -749,104 +764,102 @@ onMounted(() => {
 
 <style>
 .custom-dialog2 {
-    background-image: url('./img/1-1-bg.png');
-    background-color: #001034cb;
-    /* 修改弹窗背景色 */
-    animation: dialogSlideIn 1s ease-out forwards;
-    width: 30%;
-    height:32.5%;
-    right: 10%;
-    bottom: -10%;
-    background-size: 100%;
-    background-position: top left;
-    overflow: auto;
-    transform-origin: top left;
-    transform: scale(0) translateX(100%);
+  background-image: url('./img/1-1-bg.png');
+  background-color: #001034cb;
+  /* 修改弹窗背景色 */
+  animation: dialogSlideIn 1s ease-out forwards;
+  width: 30%;
+  height: 32.5%;
+  right: 10%;
+  bottom: -10%;
+  background-size: 100%;
+  background-position: top left;
+  overflow: auto;
+  transform-origin: top left;
+  transform: scale(0) translateX(100%);
 }
 
 
 @keyframes dialogSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .custom-dialog2 .el-dialog__body {
-    color: #f0e7e7;
+  color: #f0e7e7;
 
 }
 
 .custom-dialog2 .el-dialog__header {
-    background-image: url('./img/headerbg.png');
-    background-size: 100%;
-    background-color: #eaeaea00;
-    background-position: center;
-    height: 10%;
+  background-image: url('./img/headerbg.png');
+  background-size: 100%;
+  background-color: #eaeaea00;
+  background-position: center;
+  height: 10%;
 }
 
 .custom-dialog2 .el-dialog__header .el-dialog__title {
-    color: #ddb4b4;
-    text-align: center;
-    margin: 0 auto;
+  color: #ddb4b4;
+  text-align: center;
+  margin: 0 auto;
 }
 </style>
 
 <style>
 .custom-dialog3 {
-    background-image: url('./img/1-1-bg.png');
-    background-color: #001034cb;
-    /* 修改弹窗背景色 */
-    animation: dialogPopUp 0.3s ease-out forwards;
-    width: 40%;
-    height: 42.5%;
-    position: fixed;
-    right: 10%;
-    bottom: 10%;
-    background-size: 100%;
-    background-position: top left;
-    overflow: auto;
-    transform-origin: bottom right;
-    opacity: 0;
-    transform: scale(0) translateX(100%);
+  background-image: url('./img/1-1-bg.png');
+  background-color: #001034cb;
+  /* 修改弹窗背景色 */
+  animation: dialogPopUp 0.3s ease-out forwards;
+  width: 40%;
+  height: 42.5%;
+  position: fixed;
+  right: 10%;
+  bottom: 10%;
+  background-size: 100%;
+  background-position: top left;
+  overflow: auto;
+  transform-origin: bottom right;
+  opacity: 0;
+  transform: scale(0) translateX(100%);
 }
 
 @keyframes dialogPopUp {
-    from {
-        opacity: 0;
-        transform: scale(0);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .custom-dialog3 .el-dialog__body {
-    color: #f0e7e7;
+  color: #f0e7e7;
 }
 
 .custom-dialog3 .el-dialog__header {
-    background-image: url('./img/headerbg.png');
-    background-size: 100%;
-    background-color: #eaeaea00;
-    background-position: center;
-    height: 10%;
+  background-image: url('./img/headerbg.png');
+  background-size: 100%;
+  background-color: #eaeaea00;
+  background-position: center;
+  height: 10%;
 }
 
 .custom-dialog3 .el-dialog__header .el-dialog__title {
-    color: #ddb4b4;
-    text-align: center;
-    margin: 0 auto;
+  color: #ddb4b4;
+  text-align: center;
+  margin: 0 auto;
 }
-
-
 </style>
 
 
@@ -854,7 +867,7 @@ onMounted(() => {
 .kk-dialog-class {
   pointer-events: none;
 }
- 
+
 .el-dialog {
   pointer-events: auto;
 }

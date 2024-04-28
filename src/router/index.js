@@ -116,6 +116,38 @@ export const constantRoutes = [
                 },
             },
             {
+                path: 'huojia/index',
+                component: () => import('@/views/docx/huojia/index.vue'),
+                name: 'huojia',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'mrc05/index',
+                component: () => import('@/views/docx/mrc05/index.vue'),
+                name: 'mrc05',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'websockettest/index',
+                component: () => import('@/views/tools/websockettest/index.vue'),
+                name: 'websockettest',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'toolsvg/index',
+                component: () => import('@/views/tools/toolsvg/index.vue'),
+                name: 'toolsvg',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
                 path: 'statistics/index',
                 component: () => import('@/views/agv_monitor/statistics/index.vue'),
                 name: 'statistics',

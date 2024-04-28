@@ -32,7 +32,8 @@ const wheelRef = ref(null);
 
 
 import axios from 'axios'
-let firstload = 0;
+import { ElMessage } from "element-plus";
+const firstload = ref(false);
 const responseData = ref(null) // 创建响应式变量
 const fetchVelocity1 = () => {
   let userList = {
@@ -52,9 +53,35 @@ const fetchVelocity1 = () => {
         parsedLogData.value = responseData.value;
         coordinateHistory.value.push(parsedLogData.value);
         drawlin();
-        if (firstload === 0) {
+        if (!firstload.value) {
+          firstload.value = true;
           switch (parsedLogData.value.uAgvType) {
             case 0:
+              gltfLoader.load(
+                './main/test.glb',
+                (gltf) => {
+                  car = gltf.scene;
+                  // 设置模型的位置、缩放等属性
+                  // car.position.set(0, 0, 0);
+                  car.scale.set(1, 0.6, 0.7);
+                  car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+                  scene.add(car);
+                  animateWheel2();
+                  animatelight();
+                  animateWheel();
+
+                },
+                (xhr) => {
+                  console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+                },
+                (error) => {
+                  console.error('Error loading model:', error);
+                }
+              );
+              break;
+
+
+            default:
               gltfLoader.load(
                 './main/test.glb',
                 (gltf) => {
@@ -68,7 +95,7 @@ const fetchVelocity1 = () => {
                   animateWheel2();
                   animatelight();
                   animateWheel();
-                  firstload = 1;
+
                 },
                 (xhr) => {
                   console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
@@ -77,9 +104,10 @@ const fetchVelocity1 = () => {
                   console.error('Error loading model:', error);
                 }
               );
+              ElMessage.error('无匹配模型，加载默认货架车');
               break;
-            default:
-              return 0;
+
+
           }
         }
       }
@@ -122,27 +150,6 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-// gltfLoader.load(
-//   './main/test.glb',
-//   (gltf) => {
-//     car = gltf.scene;
-//     // 设置模型的位置、缩放等属性
-//    // car.position.set(0, 0, 0);
-//     car.scale.set(1, 0.6, 0.7);
-
-//     car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
-//     scene.add(car);
-//     animateWheel2();
-//     animatelight();
-//     animateWheel();
-//   },
-//   (xhr) => {
-//     console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-//   },
-//   (error) => {
-//     console.error('Error loading model:', error);
-//   }
-// );
 
 renderer.setClearColor(0xffffff);
 //网格大小

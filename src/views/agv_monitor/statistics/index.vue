@@ -1,29 +1,34 @@
 <template>
     <div class="page-container main-view">
-        <div class="table-box content-container page-content-box">
+        <div class="table-box content-container page-content-box"
+            style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
-            <h3 style="margin-top: 1%; margin-left: 1%;">统计分析</h3>
+            <h2 style="margin-top: 1%; margin-left: 1%;">统计分析</h2>
             <div class="hengxian"></div>
-            <div>
-                <el-button @click="prevItem" type="primary" style="width: 30%; margin-left: 5%;">＜</el-button>
-                &nbsp;{{ '表名：' + jsondatatitle + '🎈' }}
-                <el-button @click="nextItem" type="primary" style="width: 30%; margin-left: 1%; ">＞</el-button>
+            <div class="box">
+                <el-button @click="prevItem" type="info" style="width: 10%; margin-left: 1%;" :icon="ArrowLeft"></el-button>
+                &nbsp;{{ '🎈' + jsondatatitle }}
+                <el-button @click="nextItem" type="info" style="width: 10%; margin-left: 1%; " :icon="ArrowRight"></el-button>
 
-                <el-button @click="gooncheck" type="success" style="width: 15%;">{{ flag2 ? '继续' : '暂停' }}</el-button>
+
+                &nbsp;&nbsp;&nbsp;
+
+                范围：&nbsp;&nbsp;&nbsp;&nbsp;<el-input type="number" v-model="dataZoomStart" @input="updateDataZoom"
+                    :min="0" style="width: 10%; "></el-input>
+                &nbsp;&nbsp;&nbsp;一&nbsp;&nbsp;&nbsp;<el-input type="number" v-model="dataZoomEnd"
+                    @input="updateDataZoom" :max="100" style="width: 10%;"></el-input>
+
+
+
+                &nbsp;&nbsp;&nbsp;
+                <el-button @click="gooncheck" type="info" style="width: 15%;" :icon="Setting">{{ flag2 ? '继续' : '暂停' }}</el-button>
 
 
             </div>
             <br>
-            <div style="margin-left: 5%;">
-                范围：&nbsp;&nbsp;&nbsp;&nbsp;<el-input type="number" v-model="dataZoomStart" @input="updateDataZoom" :min="0"
-                    style="width: 30%; "></el-input>
-                    &nbsp;&nbsp;&nbsp;一&nbsp;&nbsp;&nbsp;<el-input type="number" v-model="dataZoomEnd" @input="updateDataZoom" :max="100"
-                    style="width: 30%;"></el-input>
-
-                <br>
+            <div class="box2">
+                <div id="chart-container"></div>
             </div>
-            <div id="chart-container"></div>
-
         </div>
     </div>
 </template>
@@ -33,6 +38,13 @@ import { onMounted, ref } from 'vue';
 import * as echarts from 'echarts';
 import { timer_statistics } from '@/timer.js'
 let jsondatatitle = ref('');
+
+import {
+    ArrowRight,
+    ArrowLeft,
+    Setting
+} from '@element-plus/icons-vue'
+
 let intex = 0;
 let chartInstance = null;
 const startPosition = ref('');
@@ -164,7 +176,7 @@ const updateChart = () => {
                     title: '保存图表',
                     pixelRatio: 2,
                 },
-                magicType: { type: ['bar', 'line', 'stack','tiled'] },
+                magicType: { type: ['bar', 'line', 'stack', 'tiled'] },
             },
         },
     });
@@ -236,7 +248,7 @@ const fetchVelocity1 = () => {
     }
     axios({
         method: 'post',
-        url: '/api/data/cout',
+        url: '/api/data/statistics',
         data: JSON.stringify(userList)
     })
         .then((res) => {
@@ -284,5 +296,26 @@ onMounted(() => {
     border: none;
     border-top: 2px solid #ccc;
     margin: 20px 0;
+}
+
+.box {
+    border: 5px double #8d8a8a;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    text-align: center;
+    width: 90%;
+    border-radius: 10px;
+    margin-left: 2%;
+    background-image: linear-gradient(to bottom right, #3a3d3d95, #c6e0d017);
+}
+
+.box2 {
+    border: 5px double #8d8a8a;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    height: 65%;
+    background-image: linear-gradient(to bottom right, #bec2c295, #c6e0d017);
 }
 </style>

@@ -1,12 +1,14 @@
 <template>
     <div class="page-container main-view">
-        <div class="table-box content-container page-content-box">
+        <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
+            <h2 style="margin-top: 1%; margin-left: 1%;">管理</h2>
+            <div class="hengxian"></div>
 
             <div style="display: flex; align-items: center;">
                 <el-input v-model="filename" style="width: 70%; margin-right: 4%; margin-left: 2%;
-                margin-top: 2%;" placeholder="文件名.."></el-input>
-                <el-button @click="listfile" type="primary" style="width: 15%; margin-top: 2%;">搜索</el-button>
+                margin-top: 0%;" placeholder="🤪文件名.."></el-input>
+                <el-button @click="listfile" type="primary" style="width: 15%; margin-top: 0%;" :icon="Search">搜索</el-button>
             </div>
             <br>
             <el-table :data="filelist">
@@ -19,7 +21,7 @@
                 <el-table-column prop="size" label="文件大小"></el-table-column>
                 <el-table-column label="操作">
                     <template #default="{ row }">
-                        <el-button type="success" @click="handleContextMenuClick($event, row)">下载</el-button>
+                        <el-button type="success" @click="handleContextMenuClick($event, row)" :icon="Download">下载</el-button>
                         <!-- <el-button type="success" @click="handleContextMenuClick($event, row)">下载</el-button> -->
                     </template>
                     
@@ -39,6 +41,11 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import {
+    Search,
+    Download
+} from '@element-plus/icons-vue'
+
 import { ArrayCamera } from 'three';
 const responseData = ref(null) // 创建响应式变量
 const downloadUrl = ref(null);
@@ -127,6 +134,13 @@ const handleContextMenuClick = (event, row) => {
 </script>
 
 <style lang="scss" scoped>
+.hengxian {
+    border: none;
+    border-top: 2px solid #ccc;
+    margin: 20px 0;
+}
+
+
 .main-view {
     display: flex;
     flex-direction: column;

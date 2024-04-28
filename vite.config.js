@@ -14,7 +14,7 @@ const pathResolve = (dir) => {
 };
 // https://vitejs.dev/config/
 export default defineConfig(({
-    mode,
+    mode, 
 })=>{
     const prod = process.env.NODE_ENV === 'production';
     let base = dumoguConfig.biuldBasePath;
@@ -59,7 +59,7 @@ export default defineConfig(({
         plugins: plugins,
         build: { 
             /** 指定输出路径 */
-            outDir:'dist',
+            outDir:'web_root',
             //   关闭文件计算
             reportCompressedSize: false,
             //   关闭生成map文件 可以达到缩小打包体积

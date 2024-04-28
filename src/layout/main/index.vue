@@ -19,6 +19,7 @@ import {userData} from "@/store/User";
 import {publicData} from "@/store/Public";
 import {sysMeluList} from "@/router/Common";
 import img_1 from "@/assets/logo.png";
+import img_2 from "@/assets/siasun.png";
 import {
     deleteCurrentTag,
     refreshCurrentTag,
@@ -36,7 +37,7 @@ import {
 import {deepCopyObj} from "@/common/OtherTools";
 import {toggleFullScreen} from "@/common/OtherTools";
 import {guid} from "@/common/Guid";
-import {timer_agv,timer_from,timer_statistics} from "@/timer.js"
+import {timer_agv,timer_from,timer_statistics,timer_statistics2,timer_bettery} from "@/timer.js"
 import tagDataStore from "./common/TagData";
 
 export default defineComponent({
@@ -55,6 +56,7 @@ export default defineComponent({
         const dataContainer = reactive({
             img:{
                 img_1,
+                img_2,
             },
             userInfo:toRef(userDataStore,'userInfo'),
             tagList:toRef(tagDataStore,'tagList'),
@@ -272,11 +274,16 @@ export default defineComponent({
             }
             if(tag.path === '/main/form/index')
             {
+                clearTimeout(timer_bettery.value);
                 clearTimeout(timer_agv.value);
             }
             if(tag.path === '/main/statistics/index')
             {
                 clearTimeout(timer_statistics.value);
+            }
+            if(tag.path === '/main/motion/index')
+            {
+                clearTimeout(timer_statistics2.value);
             }
             let tagList = dataContainer.tagList;
             let activeSign = dataContainer.activeSign;
@@ -495,13 +502,12 @@ export default defineComponent({
                     'left':true,
                     'hidden':!dataContainer.showMenu,
                 }">
-                <!-- <el-image 
+                <el-image style="width: 100%;height: 100%;"
                     @click="toPath({path:'/'})"
-                    class="logo"
-                    :src="dataContainer.img.img_1" fit="cover" /> -->
-                <div class="name">
+                    :src="dataContainer.img.img_2"  />
+                <!-- <div class="name">
                      新松机器人  
-                </div>
+                </div> -->
             </div>
             <div class="right">
                 <Navbar
@@ -654,7 +660,7 @@ export default defineComponent({
             flex-direction: row;
             justify-content: flex-start;
             align-items: center;
-            background-color: #232425;
+            background-color: white;
             // color:#444954;
             color: #f0f0f0;
             transition: all 0.2s;
@@ -710,7 +716,7 @@ export default defineComponent({
             position: relative;
             z-index: 9;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.177);
-            background-color: #343638;
+            background-color: #353636;
             transition: width 0.2s;
             overflow: hidden;
             &.hidden{

@@ -2,7 +2,7 @@
     <div>
         <div class="page-container main-view">
 
-            <div class="table-box content-container page-content-box">
+            <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)"> 
 
                 <div class="left">
                     <el-button type="info" @click="handlecheck">
@@ -71,7 +71,7 @@
 
                 <el-button type="success" @click="nexatstep">导出到本地</el-button>
                 <hr class="kongge">
-                <!-- <el-button type="success" @click="updataAGV">同步到AGV</el-button> -->
+                <el-button type="success" @click="updataAGV">同步到AGV</el-button>
                 <hr class="kongge">
                 <hr class="kongge">
                 <el-button type="primary" @click="returnstep">返回</el-button>
@@ -124,33 +124,33 @@ const returnstep = () => {
 };
 
 
-// import axios from 'axios'
-// const updataAGV = () => {
+import axios from 'axios'
+const updataAGV = () => {
 
-//     let userList = {
-//         data:{
-//             file:'SystemParm.json',
-//             value: jsondata.value
-//         },
-//         group: 'siasun',
-//         account: 'test',
-//         password: '123456'
-//     }
-//     console.log(userList)
+    let userList = {
+        data:{
+            file:'SystemParm.json',
+            value: jsondata.value
+        },
+        group: 'siasun',
+        account: 'test',
+        password: '123456'
+    }
+    console.log(userList)
 
-//     axios({
-//         method: 'post',
-//         url: '/api/ctrl/jsoneditor',//这里是请求地址
-//         data: JSON.stringify(userList),
-//     }).then((res) => {
-//          ElMessage.success('请求成功')
+    axios({
+        method: 'post',
+        url: '/api/ctrl/jsoneditor',//这里是请求地址
+        data: JSON.stringify(userList),
+    }).then((res) => {
+         ElMessage.success('请求成功')
 
-//     }).catch(error => {
-//          ElMessage.error('请求失败')
-//     }).finally(() => {
+    }).catch(error => {
+         ElMessage.error('请求失败')
+    }).finally(() => {
         
-//     })
-// }
+    })
+}
 
 
 const nexatstep = () => {

@@ -2,7 +2,7 @@
     <div>
         <div class="page-container main-view">
 
-            <div class="table-box content-container page-content-box">
+            <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
                 <div class="left">
 
@@ -15,9 +15,9 @@
                         本地导入
                     </el-button>
 
-                    <!-- <el-button type="primary" @click="syncAgvParm">
+                    <el-button type="primary" @click="syncAgvParm">
                         从AGV同步参数
-                    </el-button> -->
+                    </el-button>
 
                     <el-button type="info" @click="handlecheck">
                         查看设备
@@ -160,35 +160,35 @@ const handleExport = () => {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
 };
-// import axios from 'axios'
-// const responseData = ref(null) // 创建响应式变量
-// const syncAgvParm = () => {
-//     let userList = {
-//         data:'SystemParm.json',
-//         group: 'siasun',
-//         account: 'test',
-//         password: '123456'
-//     }
+import axios from 'axios'
+const responseData = ref(null) // 创建响应式变量
+const syncAgvParm = () => {
+    let userList = {
+        data:'SystemParm.json',
+        group: 'siasun',
+        account: 'test',
+        password: '123456'
+    }
 
-//     axios({
-//         method: 'post',
-//         url: '/api/data/jsoneditor',
-//         data: JSON.stringify(userList)
-//     })
-//         .then((res) => {
-//             ElMessage.success('请求成功')
-//             responseData.value = res.data
-//             // console.log('responseData',responseData.value)
-//             jsondata.value = responseData.value;
-//             syncdata();
-//         })
-//         .catch((error) => {
-//             ElMessage.error('请求失败')
-//         })
-//         .finally(() => {
-//             // 可以在此处执行其他操作
-//         })
-// }
+    axios({
+        method: 'post',
+        url: '/api/data/jsoneditor',
+        data: JSON.stringify(userList)
+    })
+        .then((res) => {
+            ElMessage.success('请求成功')
+            responseData.value = res.data
+            // console.log('responseData',responseData.value)
+            jsondata.value = responseData.value;
+            syncdata();
+        })
+        .catch((error) => {
+            ElMessage.error('请求失败')
+        })
+        .finally(() => {
+            // 可以在此处执行其他操作
+        })
+}
 
 const syncdata = () => {
     tableDataCrtlnet.value = jsondata.value.network;

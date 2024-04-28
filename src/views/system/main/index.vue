@@ -2,8 +2,10 @@
     <DefinScrollbar 
         height="100%"
         :showUpBt="true">
-        <div class="page-container main-view">
-            <div class="container">
+        <div class="page-container main-view" >
+            <div class="container" 
+            style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)"
+            >
                 <h3>               
                     新松机器人 
                 </h3>

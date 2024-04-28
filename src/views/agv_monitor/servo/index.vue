@@ -1,10 +1,14 @@
 <template>
     <div class="page-container main-view">
-        <div class="table-box content-container page-content-box">
+        <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
+
+            <h2 style="margin-top: 1%; margin-left: 1%;">日志</h2>
+            <div class="hengxian"></div>
 
             <div class="box">
 
-                <el-button type="success" style="margin-top: 2%;  width: 90%;" @click="downloadFile">读取黑匣子</el-button>
+                <el-button type="success" style="margin-top: 2%;  width: 90%;"
+                    @click="downloadFile">🕶️读取黑匣子</el-button>
                 <a ref="downloadLink" style="display: none" :href="downloadUrl" download></a>
             </div>
 
@@ -13,17 +17,17 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 const responseData = ref(null) // 创建响应式变量
 const downloadUrl = ref(null);
 
 const downloadFile = () => {
     let userList = {
-    group: 'siasun',
-    account: 'test',
-    password: '123456'
-  }
+        group: 'siasun',
+        account: 'test',
+        password: '123456'
+    }
 
     axios({
         method: 'get',
@@ -61,13 +65,23 @@ const downloadFile = () => {
 
 <style scoped>
 .box {
-    border: 3px dashed #939393;
+
     padding: 20px;
     text-align: center;
-    cursor: pointer;
+    
     width: 70%;
     margin-left: 12%;
     height: 10%;
     margin-top: 10%;
+    border: 5px double #8d8a8a;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+
+    background-image: linear-gradient(to bottom right, #3a3d3d95, #c6e0d017);
+}
+
+.hengxian {
+    border: none;
+    border-top: 2px solid #ccc;
+    margin: 20px 0;
 }
 </style>

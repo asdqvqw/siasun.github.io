@@ -8,9 +8,8 @@
       </div>
       <div class="better" v-if="!isSmall">
         <div class="dianchi">
-          电量百分比：{{ parsedLogData.electricalModule.sensor.battmetr.fCapPercent.toFixed(2)
-          }}<br>
-          电池状态：{{ parsedLogData.electricalModule.sensor.battmetr.sState }}<br>
+          <betters ></betters>
+
         </div>
 
 
@@ -47,6 +46,7 @@ import {
   parsedLogData, color
 } from '../commondata.js'
 import manual from './manualbox.vue'
+import betters from './BatteryDisplay.vue'
 
 
 //手动控制

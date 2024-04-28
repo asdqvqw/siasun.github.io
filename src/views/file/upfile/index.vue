@@ -1,6 +1,7 @@
 <template>
   <div class="page-container main-view">
-    <div class="table-box content-container page-content-box">
+    <div class="table-box content-container page-content-box"
+      style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
       <br>
       <h2>✅上传文件到AGV:</h2>
 
@@ -8,9 +9,10 @@
       <div @dragover.prevent @drop="handleFileDrop" @click="openFileInput"
         style="border: 4px dashed #ccc; padding: 20px; text-align: center; cursor: pointer;  width:70%; margin-left: 10%;">
         <input type="file" ref="fileInput" style="display: none;" @change="handleFileInputChange" multiple />
-        <p><h4>将文件拖放到此处上传或点击选择文件</h4><br>
-          ❗注意无法上传文件夹和文件名带中文的文件。<br>
-      
+        <p>
+        <h4>将文件拖放到此处上传或点击选择文件</h4><br>
+        ❗注意无法上传文件夹和文件名带中文的文件。<br>
+
         </p>
         <ul v-if="filesToUpload.length > 0">
           <li v-for="(file, index) in filesToUpload" :key="index">
@@ -19,11 +21,27 @@
         </ul>
       </div>
       <br>
-      <el-button type="primary" @click="uploadFiles" style="margin-top: 10px; width:80%; margin-left: 8%;">上传文件</el-button>
+      <el-button type="primary" @click="commit"
+        style="margin-top: 10px; width:80%; margin-left: 8%;">上传文件</el-button>
+
+      <el-dialog title="⛔" v-model="dialogVisible" :visible="dialogVisible" :close-on-click-modal="false"
+        style="text-align: center; width: 20%;">
+        <br>
+        是否提交？
+        <br><br>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button @click="uploadFiles">确定</el-button>
+
+        </div>
+
+      </el-dialog>
+
+
       <br>
       <br>
       <br>
-      
+
       <div>
         <updataweb></updataweb>
       </div>
@@ -39,6 +57,10 @@ import updataweb from './web.vue'
 const fileInput = ref(null);
 const filesToUpload = ref([]);
 
+const dialogVisible = ref(false);
+const commit = () =>{
+    dialogVisible.value = true;
+}
 const handleFileDrop = (event) => {
   event.preventDefault();
   const items = event.dataTransfer.items;
@@ -88,6 +110,7 @@ const uploadFiles = async () => {
   }
   // 清空上传队列
   filesToUpload.value = [];
+  dialogVisible.value = false;
 };
 
 const handleFileUpload = async (file) => {

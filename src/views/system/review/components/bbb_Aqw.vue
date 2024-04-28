@@ -67,6 +67,8 @@ const updateChart = () => {
   const startDateTime = new Date(startPosition.value);
   const endDateTime = new Date(endPosition.value);
 
+  if(jsondata[0].StatisticsData[intex] === undefined)
+  {return;}
   //整个json
   jsondatatitle.value = jsondata[0].StatisticsData[intex].name;
   // 检查用户是否输入了起始和结束日期时间

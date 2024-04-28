@@ -2,7 +2,7 @@
     <div>
         <div class="page-container main-view">
 
-            <div class="table-box content-container page-content-box">
+            <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
                 <div class="left">
 

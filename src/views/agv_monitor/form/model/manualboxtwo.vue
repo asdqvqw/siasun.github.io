@@ -32,7 +32,27 @@
             :icon="Setting">反向</el-button>
         <el-button @mousedown="redown" @mouseup="reup" style="margin-left: 0%;" type="primary"
             :icon="Check">复位</el-button>
+
+
+
+
+        <div style="margin-left: 48%; margin-top: -20%;">
+            <h4>手控类型</h4><br>
+
+            <el-select v-model="typeValue" placeholder="手控工具切换">
+                <el-option label="手控盒" :value=1></el-option>
+                <el-option label="手柄" :value=2></el-option>
+            </el-select>
+            <el-button @click="settype" style="margin-left: 2%;" type="primary" :icon="Setting">设置</el-button>
+        </div>
+
+
+
+
     </div>
+    <br><br>
+
+
     <br><br>
 </template>
 
@@ -44,6 +64,34 @@ import {
     Setting,
     Check,
 } from '@element-plus/icons-vue'
+
+//type
+const typeValue = ref();
+
+const settype = () => {
+    var userList = {
+        type: 'manualtype',
+        data: typeValue.value
+    }
+    console.log(JSON.stringify(userList));
+    axios({
+        method: 'post',
+        url: '/api/ctrl/manualdata',
+        data: JSON.stringify(userList),
+    }).then((res) => {
+        ElMessage.success('设置成功')
+    }).catch(error => {
+        // ElMessage.error('请求失败')
+    }).finally(() => {
+    })
+
+
+}
+
+
+
+
+
 const actValue = ref(0);
 //五米
 const fivestart = () => {
@@ -139,7 +187,7 @@ const frontdown = () => {
 }
 
 const frontup = () => {
-    
+
     clearTimeout(timer.value)
     var userList = {
         type: 'equipment',
@@ -188,7 +236,7 @@ const backdown = () => {
 }
 
 const backup = () => {
-    
+
     clearTimeout(timer2.value)
 
     var userList = {
@@ -241,7 +289,7 @@ const redown = () => {
 }
 
 const reup = () => {
-    
+
     clearTimeout(timer3.value)
 
     var userList = {

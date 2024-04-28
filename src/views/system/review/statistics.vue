@@ -16,11 +16,15 @@
         <el-button @click="prevItem">＜</el-button>
         <el-button @click="nextItem">＞</el-button><br>
 
+
+
         <div class="parsedItemsdata" v-if="parsedLogData[currentCoordinateIndex].parsedItems">
-            <h2>{{ parsedLogData[currentCoordinateIndex].parsedItems[currentItemIndex_Y].itemName }}</h2>
-            <div v-for="(value, key) in parsedLogData[currentCoordinateIndex].parsedItems[currentItemIndex_Y].itemObject"
-                :key="key">
-                {{ key }}: {{ value }}
+            <div v-if="parsedLogData[currentCoordinateIndex].parsedItems[currentItemIndex_Y] !== undefined">
+                <h2>{{ parsedLogData[currentCoordinateIndex].parsedItems[currentItemIndex_Y].itemName }}</h2>
+                <div v-for="(value, key) in parsedLogData[currentCoordinateIndex].parsedItems[currentItemIndex_Y].itemObject"
+                    :key="key">
+                    {{ key }}: {{ value }}
+                </div>
             </div>
         </div>
 
