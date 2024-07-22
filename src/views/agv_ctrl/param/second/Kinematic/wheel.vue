@@ -74,7 +74,7 @@
 
                 <el-button @click="handlesevorHOT" type="primary">过热检测</el-button>
                 <el-dialog :title="title5" v-model="sevorhot" :visible="sevorhot" width="600px"
-                    :close-on-click-modal="false" class="edit-data-dialog">
+                    :close-on-click-modal="false" class="edit-data-dialog" style="height: 40%;">
                     <div>
                         <IO5 :wheel="wheel.wheel_check"></IO5>
 

@@ -1,6 +1,6 @@
 <template>
     <div>
-      <el-table :data="CANPOS" style="width: 100%">
+      <el-table :data="CANPOS" style="width: 100%" class="datatableCANpos">
         <el-table-column prop="ID" label="单元编号">
           <template #default="scope">
             <el-select v-model="scope.row.ID" placeholder="请选择">
@@ -74,3 +74,10 @@ jsondata.value.can1 = {
     }
 }
 </style>
+
+<style>
+
+.datatableCANpos .el-table__body tr:nth-child(2n) {
+  background-color: #ada7a757;
+    /* 隔行背景色 */
+}</style>

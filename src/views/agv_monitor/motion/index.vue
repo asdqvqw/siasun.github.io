@@ -8,7 +8,7 @@
 
             <div class="box">
 
-                范围：&nbsp;&nbsp;&nbsp;&nbsp;<el-input type="number" v-model="dataZoomStart" @input="updateDataZoom"
+                范围(100%):&nbsp;&nbsp;&nbsp;&nbsp;<el-input type="number" v-model="dataZoomStart" @input="updateDataZoom"
                     :min="0" style="width: 10%; "></el-input>
                 &nbsp;&nbsp;&nbsp;一&nbsp;&nbsp;&nbsp;<el-input type="number" v-model="dataZoomEnd"
                     @input="updateDataZoom" :max="100" style="width: 10%;"></el-input>
@@ -23,7 +23,8 @@
                     筛选
                 </el-button>
 
-                <el-dialog v-model="dialogVisible" title="筛选" :visible="dialogVisible" @close="dialogVisible = false">
+                <el-dialog v-model="dialogVisible" title="筛选" :visible="dialogVisible" @close="dialogVisible = false"
+                 >
                     <div class="box2">
 
                         <el-input v-model="keyword" placeholder="请输入关键字" clearable></el-input>
@@ -201,8 +202,10 @@ const update = () => {
     filteredData = jsondata.value;
     const xData = filteredData.map(item => item.logDateTime);
     const yData = [];
+
     for (let i = 0; i < filteredData.length; i++) {
         const lines = filteredData[i].StatisticsData.map(line => line.value);
+
         for (let j = 0; j < lines.length; j++) {
             if (!yData[j]) {
                 yData[j] = [];
@@ -210,6 +213,7 @@ const update = () => {
             yData[j].push(lines[j]);
         }
     }
+
     const option = {
         xAxis: {
             type: 'category',
@@ -222,6 +226,7 @@ const update = () => {
             .filter(series => series.checked) // 过滤出选中的数据系列
             .map(line => {
                 const index = seriesList.value.findIndex(series => series.name === line.name); // 查找 line.name 在 seriesList 中的索引
+
                 return {
                     type: 'line',
                     name: line.name,
@@ -231,7 +236,7 @@ const update = () => {
                 };
             }),
         legend: {
-            show: false
+            show: true
         },
         tooltip: {
             trigger: 'axis',
@@ -274,9 +279,7 @@ const fetchVelocity1 = () => {
         .then((res) => {
             responseData.value = res.data;
             const now = new Date();
-            const newData = { logDateTime: now.toLocaleString(), StatisticsData: responseData };
-
-
+            const newData = { logDateTime: now.toLocaleString(), StatisticsData: responseData.value };
             if (jsondata.value.length === 0) {
                 jsondata.value.push(newData);
                 seriesList.value = responseData.value.map(data => ({
@@ -287,6 +290,8 @@ const fetchVelocity1 = () => {
                 // 否则，根据之前的 checkbox 状态更新数据
                 const prevSeriesList = seriesList.value;
                 jsondata.value.push(newData);
+ 
+
                 seriesList.value = responseData.value.map((data, index) => ({
                     name: data.name,
                     checked: index < prevSeriesList.length ? prevSeriesList[index].checked : true, // 保持之前 checkbox 的状态
@@ -324,8 +329,8 @@ onMounted(() => {
 
 <style scoped>
 #chart-container {
-    width: 1230px;
-    height: 400px;
+    width: 100%;
+    height: 67%;
     position: absolute;
     margin-left: -3%;
 }

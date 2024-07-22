@@ -1,0 +1,94 @@
+<template>
+  <div>
+    <h1>任务列表</h1>
+    {{tasks}}
+    <div v-for="(task, taskIndex) in tasks" :key="`task-${taskIndex}`">
+      <h2>任务 {{ task.id }}</h2>
+      <div>
+        <button @click="addTaskList(task)">添加任务</button>
+      </div>
+      <div v-for="(taskItem, taskItemIndex) in task.taskList" :key="`task-item-${taskItemIndex}`">
+        <h3>任务步骤 {{ taskItemIndex + 1 }}</h3>
+        <div>
+          <label>主要任务:</label>
+          <input v-model="taskItem.main" />
+        </div>
+        <div>
+          <label>例外情况:</label>
+          <ul>
+            <li v-for="(exception, exceptionIndex) in taskItem.exceptions" :key="`exception-${exceptionIndex}`">
+              <input v-model="taskItem.exceptions[exceptionIndex]" />
+              <button @click="removeException(taskItem, exceptionIndex)">删除</button>
+            </li>
+            <li>
+              <!-- <input :disabled="true" v-model="newException" /> -->
+              <button @click="addException(taskItem)">添加</button>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <label>跳转条件:</label>
+          <div v-for="(jump, jumpIndex) in taskItem.jump" :key="`jump-${jumpIndex}`">
+            <label>条件:</label>
+            <input v-model.number="jump.condition" />
+            <label>跳转索引:</label>
+            <input v-model.number="jump.index" />
+            <button @click="removeJump(taskItem, jumpIndex)">删除</button>
+          </div>
+          <button @click="addJump(taskItem)">添加跳转</button>
+        </div>
+      </div>
+    </div>
+    <button @click="addTask">添加任务</button>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const tasks = ref([
+ 
+]);
+
+const newException = ref('');
+
+function addTask() {
+  tasks.value.push({
+    id: tasks.value.length + 1,
+    taskList: [],
+  });
+}
+
+function addTaskList(task) {
+  task.taskList.push({
+    main: 'StartLoadTune',
+    exceptions: ['eEmgbtnPressed'],
+    jump: [
+      {
+        condition: 2,
+        index: 8,
+      },
+    ],
+  });
+}
+
+function addException(taskItem) {
+  taskItem.exceptions.push(newException.value);
+  newException.value = '';
+}
+
+function removeException(taskItem, index) {
+  taskItem.exceptions.splice(index, 1);
+}
+
+function addJump(taskItem) {
+  taskItem.jump.push({
+    condition: 0,
+    index: 0,
+  });
+}
+
+function removeJump(taskItem, index) {
+  taskItem.jump.splice(index, 1);
+}
+</script>

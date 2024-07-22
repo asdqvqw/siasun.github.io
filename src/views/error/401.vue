@@ -44,7 +44,7 @@ export default defineComponent({
             </div>
             <router-link 
                 class="bt"
-                to="/main/index">
+                to="/main/param/index">
                 返回首页
             </router-link>
         </div>

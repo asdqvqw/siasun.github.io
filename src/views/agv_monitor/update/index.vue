@@ -5,13 +5,11 @@
 
       <h2 style="margin-top: 1%; margin-left: 1%;">变量</h2>
       <div class="hengxian"></div>
-      <br>
-
       <div v-if="jsondata.item" class="flex-container">
         <div v-for="(item, index) in jsondata.item.slice(currentItemIndex_Y, currentItemIndex_Y + 4)" :key="index"
           class="container">
           <h2>{{ '👉' + item.name }}</h2>
-          <el-table :data="getTableData(currentItemIndex_Y + index)" border>
+          <el-table :data="getTableData(currentItemIndex_Y + index)" border class="custom-tablebianliang">
             <el-table-column prop="key" label="💫字段" width="90%"></el-table-column>
             <el-table-column prop="value" label="内容"></el-table-column>
           </el-table>
@@ -93,11 +91,6 @@ const parse = () => {
     for (const key in item) {
       if (key !== "name") {
         let keyvalue = item[key];
-        if (keyvalue === true) {
-          keyvalue = '是';
-        } else if (keyvalue === false) {
-          keyvalue = '否';
-        }
         itemObject[key] = keyvalue;
 
       }
@@ -173,16 +166,16 @@ onMounted(() => {
   margin-top: -1%;
   margin-left: 1%;
   overflow: auto;
-  border: 1px solid #706c6c;
-  box-shadow: 4px 4px 10px rgba(83, 81, 81, 0.3);
+  border: 1px solid #797474;
+  box-shadow: 4px 4px 10px rgba(103, 102, 102, 0.3);
   padding: 20px;
   text-align: center;
-  background-image: linear-gradient(to bottom right, #a9a59d, #c0ddcb17);
+  background-image: linear-gradient(to top right, #d2d2d2, #c3c3c3);
 }
 
 .flex-container {
   display: flex;
-  height: 60%;
+  height: 70%;
   border: 5px double #8d8a8a;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
   padding: 20px;
@@ -190,7 +183,9 @@ onMounted(() => {
   width: 90%;
   border-radius: 10px;
   margin-left: 2%;
-  background-image: linear-gradient(to bottom right, #3a3d3d95, #c6e0d017);
+  margin: 0 auto;
+  background-image: linear-gradient(to top right, #e4e4e4, #f1f5f2);
+
 }
 
 .buttonAA {
@@ -227,4 +222,15 @@ onMounted(() => {
 ::v-deep .el-table td {
   background: rgba(255, 255, 255, 0)
 }
+
+
 </style>
+
+<style>
+
+.custom-tablebianliang .el-table__body tr:nth-child(2n) {
+    background-color: #768aaa67;
+    /* 隔行背景色 */
+}
+</style>
+

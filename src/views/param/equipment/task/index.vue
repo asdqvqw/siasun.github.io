@@ -1,0 +1,557 @@
+<template>
+  <div class="page-container main-view">
+    <div class="table-box content-container page-content-box" style="
+        background-image: linear-gradient(
+          to bottom right,
+          #d0dcdc95,
+          #d5eedf17
+        );
+      ">
+
+      <div id="blockly-div" style="
+                height: 100%;
+                width: 100%;
+              ">
+
+        <div class="button-container" style="
+            position: absolute;
+            top: 5%;
+            right: 5%;
+            z-index :100;
+          ">
+
+          <el-button type="danger" @click="exportJSON">
+            同步js与xml到AGV
+          </el-button>
+          <el-button type="success" @click="saveBlocks">
+            保存js与xml到本地
+          </el-button>
+          <el-button type="primary" @click="loadBlocks">
+            在本地加载xml
+          </el-button>
+          <el-button type="primary" @click="loadBlocksfromAGV">
+            在AGV加载xml
+          </el-button>
+          <el-button type="info" @click="checkcode">
+            查看代码
+          </el-button>
+          <el-dialog v-model="dialogVisible" title="代码" :visible="dialogVisible" @close="dialogVisible = false">
+            <DefinScrollbar height="100%" :showUpBt="true">
+              <pre>{{ code }}</pre>
+            </DefinScrollbar>
+          </el-dialog>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</template>
+
+<script setup>
+/* eslint-disable */
+import { ref, onMounted } from 'vue'
+import Blockly from 'blockly';
+import { javascriptGenerator } from 'blockly/javascript';
+import { jsondata, code } from '../common.js'
+import * as hans from 'blockly/msg/zh-hans';
+import axios from 'axios'
+import './config';
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
+//const jsondata = {"tool":[{"test":1},{"test":2}]};
+Blockly.setLocale(hans);
+
+
+jsondata.value.IO.input.forEach((item) => {
+
+  Blockly.Blocks[item.name + 'input'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'input',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setOutput(true, null)
+      this.appendDummyInput()
+        .appendField(item.key + '触发')
+    }
+  };
+  javascriptGenerator[item.name + 'input'] = function (block) {
+    return ['getBool("Input", "' + item.name + '",false)', javascriptGenerator.ORDER_ATOMIC]
+  };
+
+  Blockly.Blocks[item.name + 'InputIsExist'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'InputIsExist',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setOutput(true, null)
+      this.appendDummyInput()
+        .appendField(item.key + '是否存在')
+    }
+  };
+  javascriptGenerator[item.name + 'InputIsExist'] = function (block) {
+    return ['getBool("InputIsExist", "' + item.name + '",false)', javascriptGenerator.ORDER_ATOMIC]
+  };
+
+}
+);
+//自定义积木
+jsondata.value.servo.kinco.forEach((item) => {
+
+  Blockly.Blocks[item.name + 'MoveAt'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'MoveAt',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.appendDummyInput()
+        .appendField(item.key + '设置速度')
+        .appendField(new Blockly.FieldNumber(0), "VALUE");
+    }
+  };
+  javascriptGenerator[item.name + 'MoveAt'] = function (block) {
+    var code = block.getFieldValue('VALUE')
+    return 'setDouble("MoveAt", "' + item.name + '", ' + code + ');\n'
+  };
+
+
+
+  Blockly.Blocks[item.name + 'FindError'] = {
+    init: function () {
+      this.jsonInit({
+        type: Object.keys(item)[0] + 'FindError',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setOutput(true, null);
+      this.appendDummyInput()
+        .appendField(item.key + '获取错误')
+    }
+  };
+  javascriptGenerator[item.name + 'FindError'] = function (block) {
+    return ['getInt("FindError", "' + item.name + '",0)', javascriptGenerator.ORDER_ATOMIC]
+  };
+
+
+  Blockly.Blocks[item.name + 'ServoClear'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'ServoClear',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.appendDummyInput()
+        .appendField(item.key + '伺服清错')
+    }
+  };
+  javascriptGenerator[item.name + 'ServoClear'] = function (block) {
+    return 'setBool("ServoClear", "' + item.name + '",true);\n'
+  };
+
+  Blockly.Blocks[item.name + 'Lock'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'Lock',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.appendDummyInput()
+        .appendField(item.key + '抱闸')
+    }
+  };
+  javascriptGenerator[item.name + 'Lock'] = function (block) {
+    return 'setBool("Lock", "' + item.name + '",true);\n'
+  };
+
+
+  Blockly.Blocks[item.name + 'SetHomemodeStart'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'SetHomemodeStart',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.appendDummyInput()
+        .appendField(item.key + '复位标志位')
+    }
+  };
+  javascriptGenerator[item.name + 'SetHomemodeStart'] = function (block) {
+    return 'setBool("SetHomemodeStart", "' + item.name + '",false);\n'
+  };
+
+  Blockly.Blocks[item.name + 'GoHome'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'GoHome',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setOutput(true, null);
+      this.appendDummyInput()
+        .appendField(item.key + '复位')
+    }
+  };
+  javascriptGenerator[item.name + 'GoHome'] = function (block) {
+    return ['getBool("GoHome", "' + item.name + '",false)', javascriptGenerator.ORDER_ATOMIC]
+  };
+
+  Blockly.Blocks[item.name + 'Normalvel'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'Normalvel',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setOutput(true, null);
+      this.appendDummyInput()
+        .appendField(item.key + '的速度')
+    }
+  };
+  javascriptGenerator[item.name + 'Normalvel'] = function (block) {
+    return ['getDouble("Normalvel", "' + item.name + '",0.0)', javascriptGenerator.ORDER_ATOMIC]
+  };
+
+  Blockly.Blocks[item.name + 'ServoPos'] = {
+    init: function () {
+      this.jsonInit({
+        type: item.name + 'ServoPos',
+        colour: 180,
+        tooltip: '',
+        helpUrl: ''
+      });
+      this.setOutput(true, null);
+      this.appendDummyInput()
+        .appendField(item.key + '的位置')
+    }
+  };
+  javascriptGenerator[item.name + 'ServoPos'] = function (block) {
+    return ['getDouble("ServoPos", "' + item.name + '",0.0)', javascriptGenerator.ORDER_ATOMIC]
+  };
+
+});
+
+const toolboxXml = `
+<xml id="toolbox" style="display: none">
+  <category name="伺服" colour="180">
+  ${jsondata.value.servo.kinco.map(item => `
+    <category name="${item.key}" colour="180">
+      <block type="${item.name + 'MoveAt'}"></block>
+      <block type="${item.name + 'Normalvel'}"></block>
+      <block type="${item.name + 'ServoPos'}"></block>
+      <block type="${item.name + 'FindError'}"></block>
+      <block type="${item.name + 'ServoClear'}"></block>
+      <block type="${item.name + 'Lock'}"></block>
+      <block type="${item.name + 'SetHomemodeStart'}"></block>
+      <block type="${item.name + 'GoHome'}"></block>
+    </category>
+  `).join('')}
+  </category>
+  <category name="传感器" colour="180">
+  ${jsondata.value.IO.input.map(item => `
+    <category name="${item.key}" colour="180">
+      <block type="${item.name + 'input'}"></block>
+      <block type="${item.name + 'InputIsExist'}"></block>
+    </category>
+  `).join('')}
+  </category>
+  <category name="控制" colour="180">
+      <block type="Return_Block"></block>
+      <block type="String_Block"></block>
+      <block type="Print_Block"></block>
+      <block type="Set_Block"></block>
+      <block type="Set2_Block"></block>
+      <block type="Get_Block"></block>
+      <block type="Get2_Block"></block>
+      <block type="Counter_Block"></block>
+    </category>
+      <category name="变量" colour="330">
+      <block type="GValue_Block"></block>
+      <block type="SValue_Block"></block>
+      <block type="GValue_Blockw"></block>
+      <block type="GValue_Blocke"></block>
+    </category>
+    <category name="逻辑" colour="180">
+          <block type="logic_compare"></block>
+          <block type="logic_operation"></block>
+          <block type="logic_boolean"></block>
+          <block type="logic_null"></block>
+          <block type="logic_ternary"></block>
+          <block type="controls_if"></block>
+          <block type="controls_ifelse"></block>
+        </category>
+
+        <category name="循环" colour="120">
+          <block type="controls_repeat_ext"></block>
+          <block type="controls_whileUntil"></block>
+          <block type="controls_for"></block>
+          <block type="controls_forEach"></block>
+          <block type="controls_flow_statements"></block>
+        </category>
+        <category name="数学" colour="230">
+          <block type="math_number"></block>
+          <block type="math_arithmetic"></block>
+          <block type="math_single"></block>
+          <block type="math_trig"></block>
+          <block type="math_constant"></block>
+          <block type="math_number_property"></block>
+          <block type="math_round"></block>
+          <block type="math_on_list"></block>
+          <block type="math_modulo"></block>
+          <block type="math_constrain"></block>
+          <block type="math_random_int"></block>
+          <block type="math_random_float"></block>
+        </category>
+
+        <category name="函数" colour="290" custom="PROCEDURE"></category>
+        <category name="列表" colour="260">
+            <block type="lists_create_empty"></block>
+            <block type="lists_create_with"></block>
+            <block type="lists_repeat"></block>
+            <block type="lists_length"></block>
+            <block type="lists_isEmpty"></block>
+            <block type="lists_indexOf"></block>
+            <block type="lists_getIndex"></block>
+            <block type="lists_setIndex"></block>
+            <block type="lists_getSublist"></block>
+            <block type="lists_split"></block>
+            <block type="lists_sort"></block>
+          </category>
+          <category name="文本" colour="160">
+          <block type="text_length"></block>
+          <block type="text_isEmpty"></block>
+          <block type="text_indexOf"></block>
+          <block type="text_charAt"></block>
+          <block type="text_getSubstring"></block>
+          <block type="text_changeCase"></block>
+          </category>
+        </category>
+
+
+</xml>
+`;
+const workspace = ref(null);
+
+
+
+const initBlockly = () => {
+  console.log('toolboxXml', toolboxXml);
+  workspace.value = Blockly.inject('blockly-div', {
+
+    toolbox: toolboxXml,
+    theme: Blockly.Theme.defineTheme('themeName', {
+      base: Blockly.Themes.Classic,
+      componentStyles: {
+        workspaceBackgroundColour: '#000000',
+        toolboxBackgroundColour: '#333',
+        toolboxForegroundColour: '#fff',
+        flyoutBackgroundColour: '#252526',
+        flyoutForegroundColour: '#ccc',
+        flyoutOpacity: 1,
+        scrollbarColour: '#797979',
+        insertionMarkerColour: '#fff',
+        insertionMarkerOpacity: 0.3,
+        scrollbarOpacity: 0.4,
+        cursorColour: '#d0d0d0',
+        blackBackground: '#333',
+      },
+      fontStyle: {
+        family: 'Georgia, serif',
+        size: 12,
+        text: {
+          fill: '#ffffff', // 设置为黑色
+        },
+      },
+    }),
+    grid: {
+      spacing: 30,
+      length: 2,
+      colour: '#ffffff',
+      snap: true,
+    },
+  });
+
+  workspace.value.addChangeListener(updateCode);
+};
+const dialogVisible = ref(false)
+const checkcode = () => {
+  dialogVisible.value = true;
+};
+
+
+
+
+const exportJSON = async () => {
+  if (code.value) {
+    const jsonBlob = new Blob([code.value], { type: 'application/javascript' });
+    const xml = Blockly.Xml.workspaceToDom(workspace.value);
+    const xmlText = Blockly.Xml.domToText(xml);
+    const xmlBlob = new Blob([xmlText], { type: 'text/xml' });
+
+    await Promise.all([
+      handleFileUpload(jsonBlob, 'task.js'),
+      handleFileUpload(xmlBlob, 'task.xml'),
+    ]);
+  }
+};
+const handleFileUpload = async (file, fileName) => {
+  if (!file) return;
+
+  try {
+    const response = await axios({
+      method: 'post',
+      url: '/api/upload',
+      data: file,
+      headers: {
+        'Content-Type': file.type,
+        'X-File-Name': fileName,
+      },
+    });
+    ElMessage.success(`${fileName} 上传成功`);
+    console.log(`${fileName} 上传成功:`, response.data);
+  } catch (error) {
+    ElMessage.error(`上传 ${fileName} 时出错:`, error);
+    console.error(`上传 ${fileName} 时出错:`, error);
+  }
+};
+
+const saveBlocks = () => {
+  if (code.value) {
+    const jsonBlob = new Blob([code.value], { type: 'application/js' });
+    const url = URL.createObjectURL(jsonBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'task.js';
+    link.click();
+    URL.revokeObjectURL(url);
+
+    const xml = Blockly.Xml.workspaceToDom(workspace.value);
+    const xmlText = Blockly.Xml.domToText(xml);
+    const link1 = document.createElement('a');
+    link1.href = 'data:text/xml;charset=utf-8,' + encodeURIComponent(xmlText);
+    link1.download = 'task.xml';
+    link1.click();
+  }
+
+
+};
+
+const loadBlocks = () => {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = '.xml';
+
+  fileInput.onchange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const fileName = file.name;
+
+      if (fileName === 'task.xml') {
+        const xmlText = reader.result;
+
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+
+        const workspace = Blockly.getMainWorkspace();
+        workspace.clear();
+
+        Blockly.Xml.domToWorkspace(xmlDoc.documentElement, workspace);
+
+        const metrics = workspace.getMetrics();
+        const x = metrics.contentWidth / 2 - metrics.viewWidth / 2;
+        const y = metrics.contentHeight / 2 - metrics.viewHeight / 2;
+        workspace.scroll(x, y);
+      } else {
+        alert(`只接受名为 task.xml 的文件`);
+      }
+    };
+
+    reader.readAsText(file);
+    ElMessage.success('完成');
+  };
+
+  fileInput.click();
+};
+
+
+const loadBlocksfromAGV = () => {
+
+  let userList = {
+    data: 'task.xml',
+    group: 'siasun',
+    account: 'test',
+    password: '123456'
+  }
+
+  axios({
+    method: 'post',
+    url: '/api/data/jsoneditor',
+    data: JSON.stringify(userList)
+  })
+    .then((res) => {
+      ElMessage.success('请求成功')
+      const xmlText = res.data;
+
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+
+      const workspace = Blockly.getMainWorkspace();
+      workspace.clear();
+
+      Blockly.Xml.domToWorkspace(xmlDoc.documentElement, workspace);
+
+      const metrics = workspace.getMetrics();
+      const x = metrics.contentWidth / 2 - metrics.viewWidth / 2;
+      const y = metrics.contentHeight / 2 - metrics.viewHeight / 2;
+      workspace.scroll(x, y);
+    })
+    .catch((error) => {
+      ElMessage.error('请求失败')
+    })
+    .finally(() => {
+      // 可以在此处执行其他操作
+    })
+
+
+};
+
+
+
+const updateCode = () => {
+  code.value = javascriptGenerator.workspaceToCode(workspace.value);
+  code.value = code.value.replace(/\/\/ 描述该功能\.\.\./g, '').trim();
+};
+
+onMounted(() => {
+  initBlockly();
+});
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.demo1 {
+
+  margin-top: 100px;
+}
+</style>

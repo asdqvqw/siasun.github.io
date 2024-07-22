@@ -66,16 +66,16 @@ const chelun = computed(() => {
 
     return [
         {
-            key: '驱动内坐标X', value: 0,
-            key2: '驱动内坐标Y', value2: 0
+            key: '驱动内坐标X', value: 362,
+            key2: '驱动内坐标Y', value2: 371
         },
         {
-            key: '电机减速比', value: 0,
-            key2: '车轮直径', value2: 0
+            key: '电机减速比', value: 2700,
+            key2: '车轮直径', value2: 30
         },
         {
             key: '码盘线束', value: 0,
-            key2: '最大转速', value2: 0
+            key2: '最大转速', value2: 2500
         }
     ]
 });

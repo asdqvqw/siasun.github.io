@@ -22,7 +22,8 @@
     任务号：{{ Net_Info_TaskID }}<br>
     动作key：{{ Net_Info_Key }}<br>
     heading:{{ Net_Info_Head }}<br>
-
+    动作码:{{ Net_Info_uTaskcode }}<br>
+    
   </el-dialog>
 
 
@@ -36,7 +37,7 @@ import { ref } from 'vue'
 import {
   Net_Info_uFromNode, Net_Info_uToNode, Net_Info_sProgress, Net_Info_CurSpeed, Net_Info_usCargoState, Net_Info_WorkState,
   Net_Info_EventState, Net_Info_EventDetail, Net_Info_usBatterState, Net_Info_TaskState, Net_Info_TaskID, Net_Info_Key,
-  Net_Info_Head,importflag
+  Net_Info_Head,importflag,Net_Info_uTaskcode
 } from './sharedata.js'
 
 

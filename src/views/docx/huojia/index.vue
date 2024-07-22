@@ -1,17 +1,21 @@
 <template>
-    <div class="page-container main-view">
-        <div class="table-box content-container page-content-box">
-            <div ref="preview">
-                <!-- 这里是显示文档内容的容器 -->
+    
+        <div class="page-container main-view">
+            <div class="table-box content-container page-content-box">
+                <DefinScrollbar height="100%" :showUpBt="true">
+                <div ref="preview">
+                    <!-- 这里是显示文档内容的容器 -->
+                </div>
+            </DefinScrollbar>
             </div>
         </div>
-    </div>
+
 </template>
 
 <script>
 import { renderAsync } from "docx-preview";
 import JSZip from "jszip"; // 导入 JSZip
-
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 window.JSZip = JSZip;
 export default {
     mounted() {

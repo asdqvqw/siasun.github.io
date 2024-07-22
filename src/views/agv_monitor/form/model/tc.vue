@@ -1,20 +1,22 @@
 <template>
     <div>
-        <el-button class="controlnav" type="info" @click="clickbutton"><span style="font-size: 18px;">
-                控制台</span></el-button>
+        <el-button class="controlnav" type="info" @click="clickbutton">
+                控制台</el-button>
 
-        <el-dialog v-model="dialogVisible" title="控制台信息" :modal="false" draggable :close-on-click-modal="false"
+        <el-dialog v-model="dialogVisible" title="控制台" :modal="false" draggable :close-on-click-modal="false"
             modal-class="kkk-dialog-class" custom-class="ele-dialog">
-
+            <DefinScrollbar :showUpBt="true">
+            <br>
             <el-table :data="tableData" border
-                style="width: 90%; margin-left: 5%;  background-color: rgba(255, 255, 255, 0.5);">
-                <el-table-column prop="key"></el-table-column>
+                style="width: 90%; margin-left: 5%;  background-color: rgba(255, 255, 255, 0.5);" class="datatabletc">
+                <el-table-column prop="key" label="控制台信息"></el-table-column>
                 <el-table-column prop="value"></el-table-column>
                 <el-table-column prop="key2"></el-table-column>
                 <el-table-column prop="value2"></el-table-column>
             </el-table>
 
-
+        </DefinScrollbar>
+           
         </el-dialog>
     </div>
 </template>
@@ -25,7 +27,7 @@ import { ref, computed } from 'vue'
 import {
     parsedLogData
 } from '../commondata.js'
-
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 const dialogVisible = ref(false);
 const clickbutton = () => {
     dialogVisible.value = true;
@@ -46,7 +48,7 @@ const Net_Info_TaskState = ref(0);
 const Net_Info_TaskID = ref(0);
 const Net_Info_Key = ref(0);
 const Net_Info_Head = ref(0);
-
+const Net_Info_TaskCode = ref(0);
 const tableData = computed(() => {
     //控制台
     Net_Info_Head.value = parsedLogData.value.tcInfo.sHeading;
@@ -235,7 +237,7 @@ const tableData = computed(() => {
     Net_Info_uToNode.value = parsedLogData.value.tcInfo.uToNode;
     Net_Info_sProgress.value = parsedLogData.value.tcInfo.sProgress;
 
-
+    Net_Info_TaskCode.value = parsedLogData.value.tcInfo.uTaskcode;
     return [
         { key: '开始节点', value: Net_Info_uFromNode.value, key2: '目标节点', value2: Net_Info_uToNode.value },
         {
@@ -247,6 +249,7 @@ const tableData = computed(() => {
         { key: '电池状态', value: Net_Info_usBatterState.value, key2: '', value2: '' },
         { key: '任务状态', value: Net_Info_TaskState.value, key2: '任务号', value2: Net_Info_TaskID.value },
         { key: '动作key', value: Net_Info_Key.value, key2: 'heading', value2: Net_Info_Head.value },
+        { key: '动作码', value: Net_Info_TaskCode.value, key2: '', value2: '' },
     ]
 });
 
@@ -255,12 +258,19 @@ const tableData = computed(() => {
 
 <style scoped>
 .controlnav {
-    background-color: rgba(255, 255, 255, 0.475);
+    /* background-color: rgba(255, 255, 255, 0.475);
     color: black;
     position: absolute;
     bottom: 3%;
     right: 23%;
-    width: 8%;
+    width: 8%; */
+    width: 100%;
+  right: 30%;
+ 
+  position: relative;
+  background-color: #424141d8;
+  color: rgb(241, 234, 234);
+  font-size: 12px;
 }
 </style>
 
@@ -284,5 +294,22 @@ const tableData = computed(() => {
 
 ::v-deep .el-table td {
     background: rgba(255, 255, 255, 0.326)
+}
+</style>
+
+
+<style scoped>
+
+.datatabletc {
+  font-size: 12px;
+}
+
+
+
+</style>
+<style>
+.datatabletc .el-table__body tr:nth-child(2n) {
+    background-color: #768aaa67;
+    /* 隔行背景色 */
 }
 </style>

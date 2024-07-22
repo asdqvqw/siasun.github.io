@@ -1,8 +1,8 @@
 {
-  "name": "dumogu-admin",
+  "name": "siasun",
   "private": true,
   "version": "0.0.6",
-  "description": "新松机器人",
+  "description": "Siasun",
   "author": "新松",
   "license": "MIT",
   "scripts": {
@@ -37,6 +37,7 @@
     "vite-plugin-ali-oss": "1.0.9",
     "vite-plugin-html": "3.2.1",
     "vue": "3.3.4",
+    "vue-i18n": "^10.0.0-beta.4",
     "vue-router": "4.2.5",
     "vuedraggable": "4.1.0"
   },

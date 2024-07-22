@@ -1,8 +1,23 @@
 
 import { ref } from 'vue';
 import * as THREE from "three";
+export const SystemParm = ref(null);
+export const equipmentParm = ref(null);
+export const flagclear = ref(false);
+export const fileInput = ref(null);
+export const carType = ref(null);
+export const NavData = ref({
+    Xpianyi: 0,
+    Ypianyi: 0,
+    Zpianyi: 0,
+    EX: 0,
+    EY: 0,
+    EZ: 0,
+  });
+export const pointss = ref(null);
 export const parsedLogData = ref(
     {
+        car_type:0,
         electricalModule:
         {
             kinematic:
@@ -92,9 +107,9 @@ export const parsedLogData = ref(
         nAgvState: 0,
         navInfo:
         {
-            fRealThita: 6.255185604095459,
-            fRealX: 0.0290000438690186,
-            fRealY: 0.090000003576278687,
+            fRealThita: 3.225185604095459,
+            fRealX: 1.0290000438690186,
+            fRealY: 1.090000003576278687,
             fThitaDev: 0.0,
             fXDev: 0.0,
             fmVersion: "172.32.128.0",
@@ -118,9 +133,12 @@ export const parsedLogData = ref(
             usKey: 65535,
             usTaskID: 65535
         },
-        uAgvType: 0
+        uAgvType: 0,
+        nAgvVersion: -1,
+        nAgvNum:-1
     }
 );
 
 export let color = ref(1);
 export const raycaster = new THREE.Raycaster();
+export const coordinateHistory = ref([]);

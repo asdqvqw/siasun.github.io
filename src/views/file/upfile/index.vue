@@ -21,26 +21,7 @@
         </ul>
       </div>
       <br>
-      <el-button type="primary" @click="commit"
-        style="margin-top: 10px; width:80%; margin-left: 8%;">上传文件</el-button>
-
-      <el-dialog title="⛔" v-model="dialogVisible" :visible="dialogVisible" :close-on-click-modal="false"
-        style="text-align: center; width: 20%;">
-        <br>
-        是否提交？
-        <br><br>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button @click="uploadFiles">确定</el-button>
-
-        </div>
-
-      </el-dialog>
-
-
-      <br>
-      <br>
-      <br>
+      <el-button type="primary" @click="commit" style="margin-top: 10px; width:80%; margin-left: 8%;">上传文件</el-button>
 
       <div>
         <updataweb></updataweb>
@@ -54,12 +35,18 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import updataweb from './web.vue'
+// import { ElMessage, ElMessageBox } from 'element-plus';
+
 const fileInput = ref(null);
 const filesToUpload = ref([]);
+import { ElMessage, ElMessageBox } from 'element-plus';
+const commit = () => {
+  ElMessageBox.confirm('是否提交文件', '提示').then(() => {
+    uploadFiles();
+  }).catch(() => {
+    return;
+  });
 
-const dialogVisible = ref(false);
-const commit = () =>{
-    dialogVisible.value = true;
 }
 const handleFileDrop = (event) => {
   event.preventDefault();
@@ -87,10 +74,12 @@ const handleFileDrop = (event) => {
 };
 
 const openFileInput = () => {
+  fileInput.value.value = null; // 重置文件输入框的值
   fileInput.value.click();
 };
 
 const handleFileInputChange = (event) => {
+  filesToUpload.value = [];
   const files = event.target.files;
   if (files.length > 0) {
     for (const file of files) {
@@ -110,7 +99,7 @@ const uploadFiles = async () => {
   }
   // 清空上传队列
   filesToUpload.value = [];
-  dialogVisible.value = false;
+  // dialogVisible.value = false;
 };
 
 const handleFileUpload = async (file) => {

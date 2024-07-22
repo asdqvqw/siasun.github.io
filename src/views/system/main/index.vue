@@ -50,7 +50,7 @@ import SvgIcon from "@/components/svgIcon/index.vue";
 import EchartContainer from "@/components/EchartContainer.vue";
 import DefinScrollbar from "@/components/DefinScrollbar.vue";
 import * as echarts from 'echarts';
-
+import gundongtiao from "@/views/agv_monitor/log/index.vue";
 export default defineComponent({
     components: {
         SvgIcon,
@@ -81,7 +81,7 @@ export default defineComponent({
                 xAxis: [
                     {
                         type: 'category',
-                        data: ['1h', '2h', '3h', '4h', '5h', '6h'],
+                        data: ['1', '2', '3', '4', '5', '6'],
                         boundaryGap: true,
                         axisTick: { show: false },
                     },
@@ -127,12 +127,12 @@ export default defineComponent({
                         itemStyle: { color: '#FF8000' },
                         // data中可以使用对象，value代表相应的值，另外可加入自定义的属性
                         data: [
-                            { value: 1, stationName: 's1' },
-                            { value: 3, stationName: 's2' },
-                            { value: 4, stationName: 's3' },
-                            { value: 9, stationName: 's4' },
-                            { value: 3, stationName: 's5' },
-                            { value: 2, stationName: 's6' },
+                            { value: 1000, stationName: 's1' },
+                            { value: 200, stationName: 's2' },
+                            { value: 500, stationName: 's3' },
+                            { value: 800, stationName: 's4' },
+                            { value: 400, stationName: 's5' },
+                            { value: 600, stationName: 's6' },
                         ],
                     },
                     {
@@ -160,12 +160,12 @@ export default defineComponent({
                             color: '#3bbc86',
                         },
                         data: [
-                            { value: 31, stationName: 's1' },
-                            { value: 36, stationName: 's2' },
-                            { value: 54, stationName: 's3' },
-                            { value: 24, stationName: 's4' },
-                            { value: 73, stationName: 's5' },
-                            { value: 22, stationName: 's6' },
+                            { value: 990, stationName: 's1' },
+                            { value: 201, stationName: 's2' },
+                            { value: 499, stationName: 's3' },
+                            { value: 780, stationName: 's4' },
+                            { value: 399, stationName: 's5' },
+                            { value: 610, stationName: 's6' },
                         ],
                     },
                     {
@@ -182,12 +182,12 @@ export default defineComponent({
                             borderRadius: [30, 30, 0, 0],
                         },
                         data: [
-                            { value: 11, stationName: 's1' },
-                            { value: 34, stationName: 's2' },
-                            { value: 54, stationName: 's3' },
-                            { value: 39, stationName: 's4' },
-                            { value: 63, stationName: 's5' },
-                            { value: 24, stationName: 's6' },
+                            { value: 10, stationName: 's1' },
+                            { value: 1, stationName: 's2' },
+                            { value: 1, stationName: 's3' },
+                            { value: 20, stationName: 's4' },
+                            { value: 1, stationName: 's5' },
+                            { value: 10, stationName: 's6' },
                         ],
                     },
                 ],
@@ -195,6 +195,11 @@ export default defineComponent({
             EchartContainerRef_1.value.initData({
                 tooltip: {
                     trigger: 'item'
+                },
+                title: {
+                    text: '占用',
+                    x: 'left',
+                    textStyle: { fontSize: '15', color: "#000" },
                 },
                 legend: {
                     top: '5%',
@@ -226,11 +231,11 @@ export default defineComponent({
                         show: false
                     },
                     data: [
-                        { value: 1048, name: 'Search Engine' },
-                        { value: 735, name: 'Direct' },
-                        { value: 580, name: 'Email' },
-                        { value: 484, name: 'Union Ads' },
-                        { value: 300, name: 'Video Ads' }
+                        { value: 631, name: 'CAN1' },
+                        { value: 179, name: 'CAN2' },
+                        { value: 190, name: 'CAN3' },
+                        // { value: 484, name: 'Union Ads' },
+                        // { value: 300, name: 'Video Ads' }
                     ]
                     }
                 ]
@@ -238,7 +243,7 @@ export default defineComponent({
             EchartContainerRef_2.value.initData({
                 backgroundColor: '',
                 title: {
-                    text: '其他表格',
+                    text: '其他',
                     x: 'left',
                     textStyle: { fontSize: '15', color: "#000000" },
                 },
@@ -246,12 +251,12 @@ export default defineComponent({
                 tooltip: { trigger: 'axis' },
                 legend: { data: ['CAN1', 'CAN2'], right: 0 },
                 xAxis: {
-                    data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
                 },
                 yAxis: [
                     {
                         type: 'value',
-                        name: '价格',
+                        name: '占用',
                         splitLine: { show: true, lineStyle: { type: 'dashed', color: '#f5f5f5' } },
                     },
                 ],

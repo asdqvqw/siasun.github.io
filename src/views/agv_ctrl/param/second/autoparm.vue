@@ -1,7 +1,7 @@
 <template>
     <div>
-        <el-table :data="AUTOPARM" style="width: 100%">
-            <el-table-column prop="name" label=" ">
+        <el-table :data="AUTOPARM" style="width: 100%" class="AUTOPARM">
+            <el-table-column prop="name" label="🔖 自动参数: ">
                 <template #default="scope">
                     <span>🔶{{ scope.row.name }}</span>
                 </template>
@@ -63,3 +63,10 @@ const handleLevelChange = (row) => {
 
 
 </script>
+
+<style>
+.AUTOPARM .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
+}
+</style>

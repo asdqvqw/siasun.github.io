@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table :data="MANUALPARMA" style="width: 100%">
+        <el-table :data="MANUALPARMA" style="width: 100%" class="MANUALPARMA">
             <el-table-column prop="manSpeLev" label="速度级别">
 
             </el-table-column>
@@ -29,9 +29,9 @@
             </el-table-column>
             
         </el-table>
-        
-        <br>
-        <el-table :data="MANUALRAPARM" style="width: 100%">
+<!--         
+        <br> -->
+        <el-table :data="MANUALRAPARM" style="width: 100%" class="MANUALPARMA">
             <el-table-column prop="manRadLev" label="转弯半径级别">
 
             </el-table-column>
@@ -120,4 +120,9 @@ watch(MANUALRAPARM.value, () => {
   
 
   
-<style lang="scss" scoped></style>
+<style>
+.MANUALPARMA .el-table__body tr:nth-child(3n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
+}
+</style>

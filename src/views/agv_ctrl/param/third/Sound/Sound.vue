@@ -1,28 +1,32 @@
 <template>
     <div>
-        <el-table :data="tableDataCrtlSound" style="width: 100%">
-            <el-table-column prop="name" label="">
+        <el-table :data="tableDataCrtlSound" style="width: 100%" class="tableDataCrtlSound">
+            <el-table-column prop="name" label="⚠️ 扬声器">
                 <template #default="scope">
                     <el-button type="text" @click="reedit(scope.$index)">{{ tableDataCrtlSound[scope.$index].name
                         }}</el-button>
                 </template>
             </el-table-column>
-
             <el-table-column label="">
+
+                <template #header>
+                    <el-button type="primary" @click="addNewRow">添加</el-button>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作">
 
                 <template #default="scope">
                     <el-button type="danger" @click="deleteRow(scope.$index)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <br>
 
-        <el-button type="primary" @click="addNewRow">添加</el-button>
+
 
 
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="1000px"
             :close-on-click-modal="false" class="edit-data-dialog">
-
+            <br>
             <el-form ref="form" :model="newRow" label-width="80px">
                 <el-form-item label="名称">
                     <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
@@ -32,26 +36,28 @@
                 </el-form-item>
 
                 <el-form-item label="开启时间">
-                    <el-input v-model.number="newRow.ontime" placeholder="开启时间(ms)" type="number" style="width: 50%"></el-input>
+                    <el-input v-model.number="newRow.ontime" placeholder="开启时间(ms)" type="number"
+                        style="width: 50%"></el-input>
                 </el-form-item>
 
 
                 <el-form-item label="关闭时间">
-                    <el-input v-model.number="newRow.offtime" placeholder="关闭时间(ms)" type="number" style="width: 50%"></el-input>
+                    <el-input v-model.number="newRow.offtime" placeholder="关闭时间(ms)" type="number"
+                        style="width: 50%"></el-input>
                 </el-form-item>
 
 
-<!-- {{ tableDataCrtlSound }} -->
+                <!-- {{ tableDataCrtlSound }} -->
 
             </el-form>
 
 
             <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button @click="handleAddRow">确定</el-button>
-
+                <el-button @click="dialogVisible = false" style="margin-left: 75%;">取 消</el-button>
+                <el-button type="primary" @click="handleAddRow">确定</el-button>
+                
             </div>
-
+            <br>
         </el-dialog>
     </div>
 </template>
@@ -61,8 +67,8 @@ import { ref, computed } from 'vue'
 import IO from './IO.vue'
 
 import { flag, newRow } from './sounddata.js';
- import { tableDataCrtlSound } from '@/views/agv_ctrl/param/common/commondata.js'
- import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
+import { tableDataCrtlSound } from '@/views/agv_ctrl/param/common/commondata.js'
+import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 
 
 const title = '声音';
@@ -144,5 +150,13 @@ const deleteRow = (index) => {
         padding: 15px 15px 0 15px;
         box-sizing: border-box;
     }
+}
+</style>
+
+
+<style>
+.tableDataCrtlSound .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
 }
 </style>

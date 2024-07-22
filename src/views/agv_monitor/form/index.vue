@@ -1,41 +1,180 @@
-<template>
-  <div class="home">
-    <div class="canvas-container" ref="canvasDom"></div>
-    <navcontrol></navcontrol>
-    <elecontrol></elecontrol>
-    <devcontrol></devcontrol>
-    <tccontrol></tccontrol>
-    <controlagv></controlagv>
-    <screen ref="screenRef" />
-    <wheelinfo ref="wheelRef" />
-  </div>
-</template>
-
 <script setup>
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
 import { timer_agv } from '@/timer.js'
-import { parsedLogData, color, raycaster } from './commondata.js'
-import navcontrol from './model/nav.vue'
-import elecontrol from './model/ele.vue'
+import {
+  parsedLogData, color, raycaster, fileInput, NavData, pointss, flagclear, coordinateHistory,
+  carType, SystemParm, equipmentParm
+} from './commondata.js'
+
 import controlagv from './model/conagv.vue'
-import devcontrol from './model/dev.vue'
-import tccontrol from './model/tc.vue'
-const coordinateHistory = ref([]);
+
+
 const gltfLoader = new GLTFLoader();
 import screen from './dialog_info/screen_info.vue'
 import wheelinfo from './dialog_info/wheel_info.vue'
+import navwindow from './model/nav.vue'
+import devwindow from './model/dev.vue'
+import elewindow from './model/ele.vue'
 const screenRef = ref(null);
+const navwindows = ref(null);
+const devwindows = ref(null);
+const elewindows = ref(null);
 const wheelRef = ref(null);
-
+const timer_readparam = ref(null);
+import { PCDLoader } from 'three/examples/jsm/loaders/PCDLoader.js';
 
 import axios from 'axios'
 import { ElMessage } from "element-plus";
 const firstload = ref(false);
 const responseData = ref(null) // 创建响应式变量
+
+// const readparam = () => {
+//   let userList = {
+//     data: 'SystemParm.json',
+//     group: 'siasun',
+//     account: 'test',
+//     password: '123456'
+//   }
+
+//   axios({
+//     method: 'post',
+//     url: '/api/data/jsoneditor',
+//     data: JSON.stringify(userList)
+//   })
+//     .then((res) => {
+//       // console.log('responseData',responseData.value)
+//       SystemParm.value = res.data;
+//       readparamequ();
+//       if (SystemParm.value.car_type !== null) {
+//         if (!firstload.value) {
+//           console.log('SystemParm.value:', SystemParm.value.car_type)
+//           firstload.value = true;
+//           carType.value = SystemParm.value.car_type;
+//           console.log('car_type:', carType.value)
+//           switch (carType.value) {
+//             case 0:
+//               gltfLoader.load(
+//                 './main/test.glb',
+//                 (gltf) => {
+//                   car = gltf.scene;
+//                   // 设置模型的位置、缩放等属性
+//                   // car.position.set(0, 0, 0);
+//                   // car.scale.set(1, 0.6, 0.7);
+//                   car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+//                   scene.add(car);
+//                   animateWheel2();
+//                   animatelight();
+//                   animateWheel();
+//                   const radius = 2; // 扇形半径
+//                   const startAngle = THREE.MathUtils.degToRad(0); // 起始角度
+//                   const endAngle = THREE.MathUtils.degToRad(plsangel); // 结束角度
+//                   const segments = 32; // 扇形分段数
+
+//                   // 创建扇形几何体
+//                   fanGeometry = new THREE.CircleGeometry(radius, segments, startAngle, endAngle);
+
+//                   // 创建扇形材质
+//                   const fanMaterial = new THREE.MeshBasicMaterial({
+//                     color: 0x00ff00, // 设置扇形颜色
+//                     transparent: true, // 启用透明度
+//                     opacity: 0.5 // 设置透明度
+//                   });
+
+//                   // 创建扇形网格
+//                   fanMesh = new THREE.Mesh(fanGeometry, fanMaterial);
+
+//                   // 设置扇形位置和朝向
+//                   fanMesh.position.set(car.position.x, car.position.y + 0.3, car.position.z - 0.1); // 放置在小车前方2个单位处
+//                   // 将扇形添加到场景中
+//                   scene.add(fanMesh);
+
+//                 },
+//                 (xhr) => {
+//                   // console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+//                 },
+//                 (error) => {
+//                   console.error('Error loading model:', error);
+//                 }
+//               );
+//               break;
+//             case 1:
+//               gltfLoader.load(
+//                 './main/v.glb',
+//                 (gltf) => {
+//                   car = gltf.scene;
+//                   // 设置模型的位置、缩放等属性
+//                   // car.position.set(0, 0, 0);
+//                   // car.scale.set(1, 0.6, 0.7);
+//                   car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+//                   scene.add(car);
+//                   animateWheelV();
+//                   animatelight();
+//                   animateWheel2();
+//                   console.log('4444444444444444')
+//                 },
+//                 (xhr) => {
+//                   // console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+//                 },
+//                 (error) => {
+//                   console.error('Error loading model:', error);
+//                 }
+//               );
+//               break;
+
+//             default:
+
+//               ElMessage.error('无匹配模型');
+//               break;
+
+
+//           }
+//           fetchVelocity1();
+//           clearTimeout(timer_readparam.value);
+//         }
+//       }
+
+//     })
+//     .catch((error) => {
+//       // ElMessage.error('请求失败')
+//     })
+//     .finally(() => {
+//       // 可以在此处执行其他操作
+//     })
+//   timer_readparam.value = setTimeout(readparam, 500)
+// }
+// const readparamequ = () => {
+//   let userList = {
+//     data: 'equipment.json',
+//     group: 'siasun',
+//     account: 'test',
+//     password: '123456'
+//   }
+
+//   axios({
+//     method: 'post',
+//     url: '/api/data/jsoneditor',
+//     data: JSON.stringify(userList)
+//   })
+//     .then((res) => {
+//       // console.log('responseData',responseData.value)
+//       equipmentParm.value = res.data;
+//       if (equipmentParm.value.IO === null) {
+//         ElMessage.error('equipment.json有误')
+//       }
+//     })
+//     .catch((error) => {
+//       ElMessage.error('equipment.json读取失败')
+//     })
+//     .finally(() => {
+//       // 可以在此处执行其他操作
+//     })
+// }
+
 const fetchVelocity1 = () => {
+
   let userList = {
     group: 'siasun',
     account: 'test',
@@ -52,10 +191,14 @@ const fetchVelocity1 = () => {
       if (responseData.value.status !== 204) {
         parsedLogData.value = responseData.value;
         coordinateHistory.value.push(parsedLogData.value);
-        drawlin();
+
+
         if (!firstload.value) {
           firstload.value = true;
-          switch (parsedLogData.value.uAgvType) {
+          carType.value = responseData.value.uAgvType;
+          console.log('json:', responseData.value)
+          console.log('car_type:', carType.value)
+          switch (carType.value) {
             case 0:
               gltfLoader.load(
                 './main/test.glb',
@@ -63,53 +206,83 @@ const fetchVelocity1 = () => {
                   car = gltf.scene;
                   // 设置模型的位置、缩放等属性
                   // car.position.set(0, 0, 0);
-                  car.scale.set(1, 0.6, 0.7);
+                  // car.scale.set(1, 0.6, 0.7);
                   car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
                   scene.add(car);
                   animateWheel2();
                   animatelight();
                   animateWheel();
+                  const radius = 2; // 扇形半径
+                  const startAngle = THREE.MathUtils.degToRad(0); // 起始角度
+                  const endAngle = THREE.MathUtils.degToRad(plsangel); // 结束角度
+                  const segments = 32; // 扇形分段数
+
+                  // 创建扇形几何体
+                  fanGeometry = new THREE.CircleGeometry(radius, segments, startAngle, endAngle);
+
+                  // 创建扇形材质
+                  const fanMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00ff00, // 设置扇形颜色
+                    transparent: true, // 启用透明度
+                    opacity: 0.5 // 设置透明度
+                  });
+
+                  // 创建扇形网格
+                  fanMesh = new THREE.Mesh(fanGeometry, fanMaterial);
+
+                  // 设置扇形位置和朝向
+                  fanMesh.position.set(car.position.x, car.position.y + 0.3, car.position.z - 0.1); // 放置在小车前方2个单位处
+                  // 将扇形添加到场景中
+                  scene.add(fanMesh);
 
                 },
                 (xhr) => {
-                  console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+                  // console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
                 },
                 (error) => {
                   console.error('Error loading model:', error);
                 }
               );
               break;
-
-
-            default:
+            case 1:
               gltfLoader.load(
-                './main/test.glb',
+                './main/v.glb',
                 (gltf) => {
                   car = gltf.scene;
                   // 设置模型的位置、缩放等属性
                   // car.position.set(0, 0, 0);
-                  car.scale.set(1, 0.6, 0.7);
-
+                  // car.scale.set(1, 0.6, 0.7);
                   car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
                   scene.add(car);
-                  animateWheel2();
+                  animateWheelV();
                   animatelight();
-                  animateWheel();
-
+                  animateWheel2();
+                  console.log('4444444444444444')
                 },
                 (xhr) => {
-                  console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+                  // console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
                 },
                 (error) => {
                   console.error('Error loading model:', error);
                 }
               );
-              ElMessage.error('无匹配模型，加载默认货架车');
+              break;
+
+            default:
+
+              ElMessage.error('无匹配模型');
               break;
 
 
           }
+
         }
+
+
+
+
+        drawlin();
+
       }
 
     })
@@ -120,15 +293,58 @@ const fetchVelocity1 = () => {
 
     })
 
-  timer_agv.value = setTimeout(fetchVelocity1, 500)
+  timer_agv.value = setTimeout(fetchVelocity1, 320)
 }
 
 onMounted(() => {
-  fetchVelocity1()
+  fetchVelocity1();
+  // readparam()
 })
+const plsangel = 60;
+// gltfLoader.load(
+//   './main/test.glb',
+//   (gltf) => {
+//     car = gltf.scene;
+//     // 设置模型的位置、缩放等属性
+//     // car.position.set(0, 0, 0);
+//     // car.scale.set(1, 0.6, 0.7);
+//     // car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+//     scene.add(car);
+//     animateWheel2();
+//     animatelight();
+//     animateWheel();
+//     const radius = 2; // 扇形半径
+//     const startAngle = THREE.MathUtils.degToRad(0); // 起始角度
+//     const endAngle = THREE.MathUtils.degToRad(plsangel); // 结束角度
+//     const segments = 32; // 扇形分段数
+
+//     // 创建扇形几何体
+//     fanGeometry = new THREE.CircleGeometry(radius, segments, startAngle, endAngle);
+
+//     // 创建扇形材质
+//     const fanMaterial = new THREE.MeshBasicMaterial({
+//       color: 0x00ff00, // 设置扇形颜色
+//       transparent: true, // 启用透明度
+//       opacity: 0.5 // 设置透明度
+//     });
+
+//     // 创建扇形网格
+//     fanMesh = new THREE.Mesh(fanGeometry, fanMaterial);
+
+//     // 设置扇形位置和朝向
+//     fanMesh.position.set(car.position.x, car.position.y + 0.3, car.position.z - 0.1); // 放置在小车前方2个单位处
+//     // 将扇形添加到场景中
+//     scene.add(fanMesh);
 
 
-
+//   },
+//   (xhr) => {
+//     console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+//   },
+//   (error) => {
+//     console.error('Error loading model:', error);
+//   }
+// );
 //光源
 const light1 = new THREE.DirectionalLight(0xffffff, 1);
 light1.position.set(0, 0, 10);
@@ -161,7 +377,7 @@ const render = () => {
   requestAnimationFrame(render);
 };
 
-let controls, gridHelper, car;
+let controls, gridHelper, car, fanMesh, fanGeometry;
 let canvasDom = ref(null);
 
 const mouse = new THREE.Vector2();
@@ -201,14 +417,62 @@ const moveCar = () => {
   if (car && parsedLogData.value !== undefined && !parsedLogData.value.status) {
     const nextCoord = parsedLogData.value;
     car.position.set(nextCoord.navInfo.fRealX.toFixed(3), 0, -nextCoord.navInfo.fRealY.toFixed(3));
-    const targetEuler = new THREE.Euler(0, THREE.MathUtils.degToRad((nextCoord.navInfo.fRealThita * 180 / Math.PI).toFixed(3)), 0, 'XYZ');
+
+
+
+    const targetEuler = new THREE.Euler(0, nextCoord.navInfo.fRealThita, 0, 'XYZ');
     const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
     car.setRotationFromQuaternion(targetQuaternion);
+    if (carType.value === 0) {
+      //pls扇形面积
+      const targetEuler1 = new THREE.Euler(THREE.MathUtils.degToRad(-90), 0, nextCoord.navInfo.fRealThita - THREE.MathUtils.degToRad((90 - (180 - plsangel) / 2)), 'XYZ');
+      const targetQuaternion1 = new THREE.Quaternion().setFromEuler(targetEuler1);
+      fanMesh.setRotationFromQuaternion(targetQuaternion1);
+      fanMesh.position.set(car.position.x, car.position.y + 0.3, car.position.z - 0.1); // 放置在小车前方2个单位处
+      changeRadius();
+
+    }
+
+
   }
 
 };
+//修改扇形半径
+const changeRadius = () => {
+  const radius = 1; // 扇形半径
+  const startAngle = THREE.MathUtils.degToRad(0); // 起始角度
+  const endAngle = THREE.MathUtils.degToRad(plsangel); // 结束角度
+  const segments = 32; // 扇形分段数
+  // 修改扇形半径
+  fanMesh.geometry.dispose();
+  fanGeometry.dispose();
+  fanGeometry = new THREE.CircleGeometry(radius, segments, startAngle, endAngle);
+  fanMesh.geometry = fanGeometry;
 
+  // 更新场景
+  scene.remove(fanMesh);
+  scene.add(fanMesh);
+};
 
+const animateWheelV = () => {
+  car.traverse((child) => {
+    if (child.name === 'upDown') {
+      // child.rotation.y = parsedLogData.value[currentCoordinateIndex.value].trunpan.toFixed(2);
+      child.position.y = parsedLogData.value.equipmentInfo.rack.lifter_axis.fAxisPosition * 1000;
+    }
+    if (child.name === 'leftwheel') {
+
+      child.rotation.z += parsedLogData.value.electricalModule.kinematic.drive[0].wheel.fServoSpeed.toFixed(5) * 0.5;
+    }
+    if (child.name === 'rightwheel') {
+
+      child.rotation.z += parsedLogData.value.electricalModule.kinematic.drive[1].wheel.fServoSpeed.toFixed(5) * 0.5;
+    }
+
+  });
+  //setTimeout(animateWheel, 200);
+  requestAnimationFrame(animateWheelV);
+};
 //动画
 const animateWheel2 = () => {
   car.traverse((child) => {
@@ -367,11 +631,19 @@ onMounted(() => {
   window.addEventListener('click', () => {
     wheelRef.value.handleMouseClickwheel(car);
   });
-
+  window.addEventListener('click', () => {
+    navwindows.value.handleMouseClicknav(car);
+  });
+  window.addEventListener('click', () => {
+    devwindows.value.handleMouseClickdev(car);
+  });
+  window.addEventListener('click', () => {
+    elewindows.value.handleMouseClickele(car);
+  });
   canvasDom.value.appendChild(renderer.domElement);
   //网格
   gridHelper = new THREE.GridHelper(size, size);
-  gridHelper.material.opacity = 0.3;
+  gridHelper.material.opacity = 0.8;
   gridHelper.material.transparent = true;
   scene.add(gridHelper);
 
@@ -388,8 +660,61 @@ onMounted(() => {
   render();
 });
 
+const handleFileInputChange = () => {
+  const files = fileInput.value.files;
+  const pcdLoader = new PCDLoader();
 
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    scene.remove(...scene.children.filter(obj => obj instanceof THREE.Points));
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const data = event.target.result;
+
+      pcdLoader.load(data, (points) => {
+        const material = new THREE.PointsMaterial({ color: 0xff0000, size: 0.02 });
+
+        points.material = material;
+
+        // 设置点云的欧拉角
+        points.rotation.set(-Math.PI / 2 + NavData.value.EX, NavData.value.EZ, -NavData.value.EY * (Math.PI / 180));
+
+        points.position.set(NavData.value.Xpianyi, NavData.value.Zpianyi, NavData.value.Ypianyi);
+        points.scale.set(1.0, 1.0, 1.0);
+        pointss.value = points;
+        scene.add(points);
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+watch(flagclear, () => {
+  scene.remove(...scene.children.filter(obj => obj instanceof THREE.Points));
+});
 </script>
+
+
+
+
+<template>
+  <div class="home">
+    <div class="canvas-container" ref="canvasDom"></div>
+    <!-- <navcontrol></navcontrol>
+    <elecontrol></elecontrol>
+    <devcontrol></devcontrol>
+    <tccontrol></tccontrol> -->
+    <controlagv></controlagv>
+    <screen ref="screenRef" />
+    <navwindow ref="navwindows" />
+    <devwindow ref="devwindows" />
+    <elewindow ref="elewindows" />
+    <wheelinfo ref="wheelRef" />
+    <input type="file" accept=".pcd" ref="fileInput" @change="handleFileInputChange" multiple style="display: none;" />
+  </div>
+</template>
+
+
 
 <style scoped>
 .home {
@@ -407,22 +732,25 @@ onMounted(() => {
 
 <style>
 .kkk-dialog-class {
+
   pointer-events: none;
 }
 
 .el-dialog {
   pointer-events: auto;
+
 }
 
 .el-dialog__body {
   overflow: auto;
-  height: 400px;
+  height: 200px;
   /* 根据需要设置高度 */
 }
 
 .ele-dialog {
-  height: 60%;
-  background-color: #f1f1f15d;
+  height: 40%;
+  width: 35%;
+  background-color: #f1f1f1;
 
 }
 
@@ -432,4 +760,20 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.315);
 
 }
+
+.eleee-dialog {
+  height: 40%;
+
+  background-color: #f1f1f1;
+
+}
+
+
+
+.eleee-dialog .el-dialog__header {
+  background-color: rgba(255, 255, 255, 0.315);
+
+}
+
+
 </style>

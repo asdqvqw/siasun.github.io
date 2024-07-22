@@ -124,9 +124,33 @@ export const constantRoutes = [
                 },
             },
             {
-                path: 'mrc05/index',
-                component: () => import('@/views/docx/mrc05/index.vue'),
-                name: 'mrc05',
+                path: 'huojiashiyong/index',
+                component: () => import('@/views/docx/huojiashiyong/index.vue'),
+                name: 'huojiashiyong',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'pingtainei/index',
+                component: () => import('@/views/docx/pingtainei/index.vue'),
+                name: 'pingtainei',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'pingtaiwai/index',
+                component: () => import('@/views/docx/pingtaiwai/index.vue'),
+                name: 'pingtaiwai',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'AgvKey/index',
+                component: () => import('@/views/agv_ctrl/AgvKey/index.vue'),
+                name: 'agvkey',
                 meta: { 
                     isMenu:true,
                 },
@@ -189,8 +213,16 @@ export const constantRoutes = [
             },
             {
                 path: 'task/index',
-                component: () => import('@/views/agv_ctrl/task/index.vue'),
+                component: () => import('@/views/param/equipment/task/index.vue'),
                 name: 'task',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'equipment/index',
+                component: () => import('@/views/param/equipment/index.vue'),
+                name: 'equipment',
                 meta: { 
                     isMenu:true,
                 },
@@ -212,9 +244,33 @@ export const constantRoutes = [
                 },
             },
             {
+                path: 'checkcan/index',
+                component: () => import('@/views/agv_ctrl/checkcan/index.vue'),
+                name: 'checkcan',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'checkin/index',
+                component: () => import('@/views/agv_ctrl/checkin/index.vue'),
+                name: 'checkin',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
                 path: 'downloadfile/index',
                 component: () => import('@/views/file/downloadfile/index.vue'),
                 name: 'downloadfile',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
+                path: 'deletefile/index',
+                component: () => import('@/views/file/deletefile/index.vue'),
+                name: 'deletefile',
                 meta: { 
                     isMenu:true,
                 },
@@ -291,7 +347,7 @@ export const constantRoutes = [
             /** 一些页面例子 */
             {
                 path: 'index',
-                component: () => import('@/views/system/main/index.vue'),
+                component: () => import('@/views/agv_ctrl/param/index.vue'),
                 name: 'main-index',
                 meta: { 
                     isMenu:true,

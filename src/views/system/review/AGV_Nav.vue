@@ -17,8 +17,8 @@
     <br>
 
 
-
-    <div class="bingzhuang" id="main1" style="width: 300px; height: 300px;"></div>
+<!-- 
+    <div class="bingzhuang" id="main1" style="width: 300px; height: 300px;"></div> -->
   </el-dialog>
 </template>
 

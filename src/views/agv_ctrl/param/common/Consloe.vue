@@ -1,8 +1,8 @@
 <template>
     <div>
 
-        <el-table :data="tableDataCrtlnet" style="width: 100%">
-            <el-table-column prop="name" label="名称"></el-table-column>
+        <el-table :data="tableDataCrtlnet" style="width: 100%" class="datatableCON">
+            <el-table-column prop="name" label="⚠️ 网口"></el-table-column>
             <el-table-column prop="key" label="英文名">
 
             </el-table-column>
@@ -18,8 +18,7 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template #default="scope">
-                    <el-button type="danger"  @click="deleteRow(scope.row)"
-                        >删除</el-button>
+                    <el-button type="danger" @click="deleteRow(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -27,7 +26,8 @@
         <el-button type="primary" @click="addNewRow">添加新数据</el-button>
 
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="800px"
-            :close-on-click-modal="false" class="edit-data-dialog" draggable>
+            :close-on-click-modal="false" class="edit-data-dialog" draggable style="height: 35%;">
+            <br>
             <el-form ref="form" :model="newRow" label-width="80px">
                 <el-form-item label="名称">
                     <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
@@ -38,15 +38,22 @@
                 <el-form-item label="地址">
                     <el-input v-model="newRow.value" placeholder="请输入地址"></el-input>
                 </el-form-item>
+                <!-- <el-form-item >
+
+                    <el-button @click="dialogVisible = false" >取 消</el-button>
+                    <el-button type="primary" @click="handleAddRow">确 定</el-button>
+                </el-form-item> -->
+
+
             </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
+            <div slot="footer" style="right: 50px;">
+                <el-button @click="dialogVisible = false" style="margin-left: 75%;">取 消</el-button>
                 <el-button type="primary" @click="handleAddRow">确 定</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
-  
+
 <script setup>
 import { ref, computed } from 'vue'
 import { jsondata } from './commondata.js'
@@ -97,7 +104,7 @@ const deleteRow = (row) => {
 
 </script>
 
-    
+
 <style scoped>
 .divider {
     border: none;
@@ -105,14 +112,21 @@ const deleteRow = (row) => {
     margin: 20px 0;
 }
 </style>
-  
-  
-  
+
+
+
 <style lang="scss" scoped>
 .edit-data-dialog {
     .dialog-container {
         padding: 15px 15px 0 15px;
         box-sizing: border-box;
     }
+}
+</style>
+
+<style>
+.datatableCON .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
 }
 </style>

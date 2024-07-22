@@ -23,9 +23,6 @@ npm install
 
 灵活可控，保证稳定性，什么华丽花哨的不考虑。做到稳如泰山的代码，一眼就能看明白。
 
-[官网DEMO](https://admin.dumogu.top/)
-[开源地址](https://github.com/wurencaideli/dumogu-admin)
-
 ### 文档如下
 
 #### 路由页面的添加（待完善）

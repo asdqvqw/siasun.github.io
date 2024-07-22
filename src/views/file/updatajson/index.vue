@@ -1,4 +1,5 @@
 <template>
+
     <div class="page-container main-view">
         <div class="table-box content-container page-content-box"
             style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
@@ -6,46 +7,31 @@
             <h2 style="margin-top: 1%; margin-left: 1%;">JSON</h2>
             <div class="hengxian"></div>
             <div style="display: flex; align-items: center;">
-                <el-select v-model="filename" style="width: 70%; margin-right: 4%; margin-left: 4%;
-                margin-top: 0%;" placeholder="🦊链接车体后选择文件.." @click="listfile">
 
-                    <el-option v-for="file in filelist" :key="file.name" :label="file.name"
-                        :value="file.name"></el-option>
-                </el-select>
+                <el-autocomplete v-model="filename" @change="listfile" @click="listfile"
+                    :fetch-suggestions="fetchSuggestions" placeholder="🦊链接车体后选择文件.."
+                    style="width: 70%; margin-right: 4%; margin-left: 4%; margin-top: 0%;">
+
+                </el-autocomplete>
                 <el-button @click="syncAgvParm" type="primary" style="width: 15%; margin-top: 0%;"
                     :icon="Loading">加载</el-button>
             </div>
             <br>
+            <DefinScrollbar height="100%" :showUpBt="true">
 
-            <el-input type="textarea" v-model="inputJsonData" class="custom-textarea"></el-input>
+                <el-input type="textarea" v-model="inputJsonData" class="custom-textarea"></el-input>
+
+            </DefinScrollbar>
+
             <br>
 
-
-
-
-
             <el-button @click="commit" type="primary" style="margin-top: 0%;" :icon="Upload">提交</el-button>
-
-            <el-dialog title="⛔" v-model="dialogVisible" :visible="dialogVisible"
-                :close-on-click-modal="false" style="text-align: center; width: 20%;">
-                <br>
-                是否提交？
-                <br><br>
-                <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogVisible = false">取 消</el-button>
-                    <el-button @click="updateJsonData">确定</el-button>
-
-                </div>
-
-            </el-dialog>
-
-
-
-
 
         </div>
 
     </div>
+
+
 </template>
 
 <script setup>
@@ -55,18 +41,36 @@ import {
     Loading,
     Upload
 } from '@element-plus/icons-vue'
-
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 const jsondata = ref() // 创建响应式变量
-const dialogVisible = ref(false);
-const filelist = ref(null)
+
+const filelist = ref([])
 const filename = ref('');
 const filename2 = ref('');
 const inputfilename = ref('.json');
 
-
-const commit = () =>{
-    dialogVisible.value = true;
+const fetchSuggestions = (query, callback) => {
+    const matchedFiles = filelist.value.filter(file => file.name.includes(query));
+    for (let i of matchedFiles) {
+        i.value = i.name;  //将想要展示的数据作为value
+    }
+    callback(matchedFiles);
 }
+
+import { ElMessage, ElMessageBox } from 'element-plus';
+const commit = () => {
+    ElMessageBox.confirm('是否提交修改'
+        , '提示').then(() => {
+            updateJsonData();
+        }).catch(() => {
+            return;
+        });
+
+}
+
+
+
+
 const listfile = () => {
     let userList = {
         data: inputfilename.value
@@ -153,7 +157,7 @@ const updateJsonData = () => {
         data: JSON.stringify(userList),
     }).then((res) => {
         ElMessage.success('提交成功')
-        dialogVisible.value = false;
+
     }).catch(error => {
         ElMessage.error('提交失败')
     }).finally(() => {
@@ -224,7 +228,7 @@ const updateJsonData = () => {
 }
 
 .custom-textarea {
-    height: 85%;
+    height: 10000px;
     /* 将高度设置为 50% */
     margin-top: 0% !important;
     width: 90%;

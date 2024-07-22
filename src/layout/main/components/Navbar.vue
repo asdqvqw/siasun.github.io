@@ -10,8 +10,8 @@
         <div class="path-list-container">
             <el-breadcrumb separator="">
                 <el-breadcrumb-item 
-                    :to="{ path: '/main/index' }">
-                    首页    
+                    :to="{ path: '/main/param/index' }">
+                    {{ $t('home') }}   
                 </el-breadcrumb-item>
                 <el-breadcrumb-item
                     v-for="item,index in dataContainer.breadcrumbList"
@@ -102,23 +102,22 @@
             <div
                 v-if="dataContainer.show_1"
                 class="bt-list-container">
-                <div class="item">
+                <!-- <div class="item">
                     <router-link 
                         to="/main/mine/info">
                         <SvgIcon
                             :style="'width:16px;height:16px;'"
                             name="svg:user-fill.svg"></SvgIcon>
-                        个人中心
+                            {{ languageflag }}
                     </router-link>
-                </div>
-                <div class="item">
-                    <router-link 
-                        to="/main/mine/info-password">
-                        <SvgIcon
-                            :style="'width:16px;height:16px;'"
-                            name="svg:supervise.svg"></SvgIcon>
-                        密码修改
-                    </router-link>
+                </div> -->
+                <div class="logout-btlan" 
+                @click="toggleLanguage">
+                    <SvgIcon
+                        :style="'width:16px;height:16px;color:#0d0d0d;'"
+                        name="svg:switch.svg"></SvgIcon>
+                        
+                        {{ $t('Language') }}
                 </div>
                 <div 
                     class="logout-bt"
@@ -126,7 +125,7 @@
                     <SvgIcon
                         :style="'width:16px;height:16px;color:#f56c6c;'"
                         name="svg:poweroff.svg"></SvgIcon>
-                    退出登录
+                    {{ $t('quit') }}
                 </div>
             </div>
         </div>
@@ -139,7 +138,7 @@
                 <SvgIcon
                     :style="'width:17px;height:17px;margin-right:10px;'"
                     name="svg:search-bt.svg"></SvgIcon>
-                搜索目录
+                    {{ $t('search') }}
             </div>
             <div class="right">
                 Alt S
@@ -158,12 +157,18 @@ import {
     computed,onMounted,watch,toRef,
     onUnmounted,
 } from "vue";
+import { useI18n } from 'vue-i18n';
 import { useRouter } from "vue-router";
 import SvgIcon from "@/components/svgIcon/index.vue";
 import {logout} from "@/action/FormatUserData";
 import {confirm} from "@/action/MessagePrompt";
 import img_1 from "@/assets/logo.png";
 import {toggleFullScreen} from "@/common/OtherTools";
+import {languageflag} from '@/timer.js'
+import {
+    getUserData_1,
+    getUserData,
+} from "@/action/FormatUserData";
 
 export default {
     name: 'Navbar',
@@ -190,6 +195,7 @@ export default {
     },
     emits:['switchShowLogo'],
     setup(props,{emit}){
+        const { locale } = useI18n()
         const router = useRouter();
         const RightOptionRef = ref(null);
         const dataContainer = reactive({
@@ -204,6 +210,12 @@ export default {
         /** 跳转去相应页面 */
         function toPath(params){
             router.push(params);
+        }
+        //中英文
+        function toggleLanguage() {
+            locale.value = locale.value === 'en' ? 'zh' : 'en'
+            languageflag.value = !languageflag.value;
+            getUserData();
         }
         /** 退出登录 */
         function onLogout() {
@@ -260,6 +272,7 @@ export default {
             dataContainer,
             toPath,
             toggleFullScreen,
+            toggleLanguage,
             onLogout,
             RightOptionRef,
             switchShowLogo,
@@ -522,6 +535,24 @@ export default {
                     &:hover{
                         box-shadow: inset 0 1px 4px #0000001f;
                         color: #f14242;
+                    }
+                }
+                >.logout-btlan{
+                    cursor: pointer;
+                    padding: 11px 15px;
+                    box-sizing: border-box;
+                    background-color: #e3f1f7;
+                    color: #070707;
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-start;
+                    >*{
+                        margin: 0 10px 0 0;
+                    }
+                    &:hover{
+                        box-shadow: inset 0 1px 4px #0000001f;
+                        color: #0d0d0d;
                     }
                 }
             }

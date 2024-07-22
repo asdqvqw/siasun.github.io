@@ -29,10 +29,13 @@
                             v-if="element.showTagIcon && element.iconName"
                             :style="'width: 15px;min-width:15px;height: 15px;'"
                             :name="element.iconName"></SvgIcon>
+
+                            
                         <div 
                             class="sign"
                             v-else-if="dataContainer.activeSign==element.sign">
                         </div>
+
                         {{element.title}}
                         <div
                             v-if="!element.fixed && (tagListTrans.length > 1)"
@@ -139,7 +142,7 @@
                     name="svg:arrow-right.svg"></SvgIcon>
                 关闭右边标签页
             </div>
-            <div 
+            <!-- <div 
                 class="item re-bt"
                 @click="handleOptionClick(5)">
                 <SvgIcon
@@ -154,14 +157,14 @@
                     :style="'width:16px;height:16px;color:#f86464;'"
                     name="svg:redo.svg"></SvgIcon>
                 刷新所有标签页
-            </div>
+            </div> -->
             <div 
                 class="item"
                 @click="handleOptionClick(6)">
                 <SvgIcon
                     :style="'width:16px;height:16px;color:#0072E5;'"
                     name="svg:expand-alt.svg"></SvgIcon>
-                视图全屏(Esc键退出)
+                    {{ $t('Viewfull_screen') }}
             </div>
         </div>
     </div>
@@ -297,10 +300,12 @@ export default {
         });
         /** 标签点击事件，向外部抛出 */
         function handleClick(item){
+
             emit('onClick',item);
         }
         /** 标签删除事件 */
         function handleRemove(item){
+            
             emit('onRemove',item);
         }
         /** 操作事件 */
@@ -393,6 +398,7 @@ export default {
          * 由外部实现
          *  */
         function handleSwitchFixed(){
+
             if(!otherDataContainer.activeItem) return;
             emit('onSwitchFixed',otherDataContainer.activeItem);
         }

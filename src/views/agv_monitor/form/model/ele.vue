@@ -1,12 +1,11 @@
 <template>
     <div>
-        <el-button class="controlele" type="info" @click="clickbutton" ><span style="font-size: 18px;">
-                电气</span></el-button>
+        <el-button class="controlele" type="info" @click="clickbutton">电气</el-button>
 
         <el-dialog v-model="dialogVisible" title="电气" :modal="false" draggable :close-on-click-modal="false"
             modal-class="kkk-dialog-class" custom-class="ele-dialog">
             <br>
-            <el-table :data="tableData" border style="width: 90%; margin-left: 5%; ">
+            <el-table :data="tableData" border style="width: 90%; margin-left: 5%; " class="datatableele">
                 <el-table-column prop="key" label="防碰"></el-table-column>
                 <el-table-column prop="value"></el-table-column>
                 <el-table-column prop="key2"></el-table-column>
@@ -15,7 +14,7 @@
                 <el-table-column prop="value3"></el-table-column>
             </el-table>
             <br>
-            <el-table :data="erweima" border style="width: 90%; margin-left: 5%;">
+            <el-table :data="erweima" border style="width: 90%; margin-left: 5%;" class="datatableele">
                 <el-table-column prop="key" label="二维码"></el-table-column>
                 <el-table-column prop="value"></el-table-column>
                 <el-table-column prop="key2"></el-table-column>
@@ -24,7 +23,7 @@
                 <el-table-column prop="value3"></el-table-column>
             </el-table>
             <br>
-            <el-table :data="cidaohang" border style="width: 90%; margin-left: 5%;">
+            <!-- <el-table :data="cidaohang" border style="width: 90%; margin-left: 5%;" class="datatableele">
                 <el-table-column prop="key" label="磁导航"></el-table-column>
                 <el-table-column prop="value"></el-table-column>
                 <el-table-column prop="key2"></el-table-column>
@@ -32,15 +31,15 @@
                 <el-table-column prop="key3"></el-table-column>
                 <el-table-column prop="value3"></el-table-column>
             </el-table>
-            <br>
-            <el-table :data="sifu" border style="width: 90%; margin-left: 5%;">
+            <br> -->
+            <el-table :data="sifu" border style="width: 90%; margin-left: 5%;" class="datatableele">
                 <el-table-column prop="key" label="伺服"></el-table-column>
                 <el-table-column prop="value"></el-table-column>
                 <el-table-column prop="key2"></el-table-column>
-                <el-table-column prop="value2" label="切换驱动单元"></el-table-column>
+                <el-table-column prop="value2" label="切换轴"></el-table-column>
                 <el-table-column prop="key3">
                     <template #header>
-                        <el-button @click="Cutdrive">{{ ele_dev_name }}</el-button>
+                        <el-button @click="Cutdrive" style="width: 90%; font-size: 10px;">{{ ele_dev_name }}</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column prop="value3"></el-table-column>
@@ -51,10 +50,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, defineExpose } from 'vue'
 
 import {
-    parsedLogData
+    parsedLogData, raycaster
 } from '../commondata.js'
 
 const dialogVisible = ref(false);
@@ -63,7 +62,27 @@ const clickbutton = () => {
 };
 
 
+const handleMouseClickele = (car) => {
+    const intersects = raycaster.intersectObjects([car]);
+    if (intersects.length > 0) {
+        console.log('modelname33333:', intersects[0].object.name)
+        if (intersects[0].object.name === 'Material_27车体4-41-170'
+            || intersects[0].object.name === 'Material_27车体4-41-140'
+            || intersects[0].object.name === 'Material_27车体4-41-167'
+        ) {
 
+            dialogVisible.value = true;
+
+        } else {
+            dialogVisible.value = false;
+
+        }
+    }
+
+
+
+}
+defineExpose({ handleMouseClickele });
 
 const tableData = computed(() => {
 
@@ -82,8 +101,8 @@ const tableData = computed(() => {
 
     return [
         {
-            key: '保险杠状态', value: parsedLogData.value.electricalModule.safeCheck.bHardBumper ? '触发' : '未触发',
-            key2: '急停状态', value2: parsedLogData.value.electricalModule.safeCheck.bEmgStop ? '触发' : '未触发',
+            key: '保险杠', value: parsedLogData.value.electricalModule.safeCheck.bHardBumper ? '🔴' : '🟢',
+            key2: '急停', value2: parsedLogData.value.electricalModule.safeCheck.bEmgStop ? '🔴' : '🟢',
             key3: 'pls状态', value3: plsStatus
         }
     ]
@@ -192,7 +211,7 @@ const sifu = computed(() => {
         ele_dev_steer_bPositiveLimitSwt.value = parsedLogData.value.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer.bPositiveLimitSwt;
         ele_dev_steer_bNegativeLimitSwt.value = parsedLogData.value.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer.bNegativeLimitSwt;
         ele_dev_steer_bZeroSwt.value = parsedLogData.value.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer.bZeroSwt;
-    }else{
+    } else {
         ele_dev_steer_fServoPosition.value = '🚫无';
         ele_dev_steer_nServoState.value = '🚫无';
         ele_dev_steer_nServoErrCode.value = '🚫无';
@@ -205,20 +224,20 @@ const sifu = computed(() => {
 
     return [
         {
-            key: '轮实际速度', value: ele_dev_wheel_fServoSpeed.value,
-            key2: '轮伺服状态码', value2: ele_dev_wheel_nServoState.value,
-            key3: '轮伺服错误码', value3: ele_dev_wheel_nServoErrCode.value
+            key: '实际速度', value: ele_dev_wheel_fServoSpeed.value,
+            key2: '状态码', value2: ele_dev_wheel_nServoState.value,
+            key3: '错误码', value3: ele_dev_wheel_nServoErrCode.value
         },
-        {
-            key: '舵实际位置', value: ele_dev_steer_fServoPosition.value,
-            key2: '舵伺服状态码', value2: ele_dev_steer_nServoState.value,
-            key3: '舵伺服错误码', value3: ele_dev_steer_nServoErrCode.value
-        },
-        {
-            key: '舵限位开关1', value: ele_dev_steer_bPositiveLimitSwt.value,
-            key2: '舵限位开关2', value2: ele_dev_steer_bNegativeLimitSwt.value,
-            key3: '舵零位开关', value3: ele_dev_steer_bZeroSwt.value
-        }
+        // {
+        //     key: '舵实际位置', value: ele_dev_steer_fServoPosition.value,
+        //     key2: '舵伺服状态码', value2: ele_dev_steer_nServoState.value,
+        //     key3: '舵伺服错误码', value3: ele_dev_steer_nServoErrCode.value
+        // },
+        // {
+        //     key: '舵限位开关1', value: ele_dev_steer_bPositiveLimitSwt.value,
+        //     key2: '舵限位开关2', value2: ele_dev_steer_bNegativeLimitSwt.value,
+        //     key3: '舵零位开关', value3: ele_dev_steer_bZeroSwt.value
+        // }
     ]
 });
 
@@ -227,29 +246,57 @@ const sifu = computed(() => {
 
 <style scoped>
 .controlele {
-    background-color: rgba(255, 255, 255, 0.475);
+    /* background-color: rgba(255, 255, 255, 0.475);
     color: black;
     position: absolute;
     bottom: 3%;
     right: 65%;
-    width: 8%;
+    width: 8%; */
+    width: 120%;
+    left: 10%;
+ 
+  position: relative;
+  background-color: #424141d8;
+  color: rgb(241, 234, 234);
+  font-size: 12px;
 }
 </style>
 
 <style lang="scss" scoped>
-::v-deep .el-table{
-    background:rgba(255,255,255,0.326)
+::v-deep .el-table {
+    background: rgba(255, 255, 255, 0.326)
 }
-::v-deep .el-table_expanded-cell{
-    background:rgba(255,255,255,0.326)
+
+::v-deep .el-table_expanded-cell {
+    background: rgba(255, 255, 255, 0.326)
 }
-::v-deep .el-table th{
-    background:rgba(255, 255, 255, 0.326)
+
+::v-deep .el-table th {
+    background: rgba(255, 255, 255, 0.326)
 }
-::v-deep .el-table tr{
-    background:rgba(255,255,255,0.326)
+
+::v-deep .el-table tr {
+    background: rgba(255, 255, 255, 0.326)
 }
-::v-deep .el-table td{
-    background:rgba(255,255,255,0.326)
+
+::v-deep .el-table td {
+    background: rgba(255, 255, 255, 0.326)
+}
+</style>
+
+
+<style scoped>
+
+.datatableele {
+  font-size: 12px;
+}
+
+
+</style>
+<style>
+
+.datatableele .el-table__body tr:nth-child(2n) {
+    background-color: #768aaa67;
+
 }
 </style>

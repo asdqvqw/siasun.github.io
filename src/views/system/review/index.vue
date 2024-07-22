@@ -78,7 +78,6 @@ import statistics from './statistics.vue'
 import screen from './dialog_info/screen_info.vue'
 import wheelinfo from './dialog_info/wheel_info.vue'
 import { raycaster } from './sharedata.js';
-const Gundongtiao = ref(0);
 const screenRef = ref(null);
 const wheelRef = ref(null);
 
@@ -159,7 +158,7 @@ const parseLog = (content) => {
     const realthita = (logJson.navInfo.fRealThita * 180 / Math.PI).toFixed(3);
     let trunpan = '';
     let lifter = '';
- 
+
     if (logJson.equipmentInfo.rack !== undefined) {
       trunpan = logJson.equipmentInfo.rack.turn_axis.fAxisPosition / 1000;
       lifter = logJson.equipmentInfo.rack.lifter_axis.fAxisPosition;
@@ -209,8 +208,8 @@ const parseLog = (content) => {
       (gltf) => {
         car = gltf.scene;
         // 设置模型的位置、缩放等属性
-        car.position.set(0, 0, 0);
-        car.scale.set(1, 0.6, 0.7);
+        // car.position.set(0, 0, 0);
+        // car.scale.set(1, 0.6, 0.7);
 
         car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
         scene.add(car);
@@ -226,7 +225,32 @@ const parseLog = (content) => {
       }
     );
     ElMessage.success('导入完成');
-  } else {
+  }
+  else if (parsedLogData.value[0].agvType === 1) {
+    gltfLoader.load(
+      './main/v.glb',
+      (gltf) => {
+        car = gltf.scene;
+        // 设置模型的位置、缩放等属性
+        // car.position.set(0, 0, 0);
+        // car.scale.set(1, 0.6, 0.7);
+
+        car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+        scene.add(car);
+        animateWheelV();
+        animateWheel2();
+        animatelight();
+      },
+      (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+      },
+      (error) => {
+        console.error('Error loading model:', error);
+      }
+    );
+    ElMessage.success('导入完成');
+  }
+  else {
     ElMessage.error('没有匹配模型');
   }
 
@@ -371,7 +395,26 @@ const render = () => {
   controls && controls.update();
   requestAnimationFrame(render);
 };
+//举升转盘
+const animateWheelV = () => {
+  car.traverse((child) => {
+    if (child.name === 'upDown') {
+      // child.rotation.y = parsedLogData.value[currentCoordinateIndex.value].trunpan.toFixed(2);
+       child.position.y = parsedLogData.value[currentCoordinateIndex.value].lifter *1000;
+    }
+    if (child.name === 'leftwheel') {
 
+      child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[0].wheel.fServoSpeed.toFixed(5) * 0.5;
+    }
+    if (child.name === 'rightwheel') {
+
+      child.rotation.z += parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[1].wheel.fServoSpeed.toFixed(5) * 0.5;
+    }
+
+  });
+  //setTimeout(animateWheel, 200);
+  requestAnimationFrame(animateWheelV);
+};
 
 //举升转盘
 const animateWheel = () => {
@@ -715,7 +758,7 @@ onMounted(() => {
   /* 修改弹窗背景色 */
   /* animation: dialogSlideIn 0.3s ease-out forwards; */
   width: 40%;
-  height: 42.5%;
+  /* height: 42.5%; */
   right: 0%;
   bottom: -10%;
   background-size: 100%;
@@ -870,5 +913,10 @@ onMounted(() => {
 
 .el-dialog {
   pointer-events: auto;
+}
+.el-dialog__body {
+  overflow: auto;
+  height: 300px;
+  /* 根据需要设置高度 */
 }
 </style>

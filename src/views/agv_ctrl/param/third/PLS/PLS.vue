@@ -1,15 +1,20 @@
 <template>
     <div>
 
-        <el-table :data="tableDataCrtlPLS" style="width: 100%">
-            <el-table-column prop="name" label="">
+        <el-table :data="tableDataCrtlPLS" style="width: 100%" class="tableDataCrtlPLS">
+            <el-table-column prop="name" label="🔖 可切区PLS">
                 <template #default="scope">
                     <el-button type="text" @click="reedit(scope.$index)">{{ tableDataCrtlPLS[scope.$index].name
                         }}</el-button>
                 </template>
             </el-table-column>
-
             <el-table-column label="">
+
+                <template #header>
+                    <el-button type="primary" @click="addNewRow">添加</el-button>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作">
 
                 <template #default="scope">
                     <el-button type="danger" @click="deleteRow(scope.$index)">删除</el-button>
@@ -18,157 +23,162 @@
         </el-table>
         <br>
 
-        <el-button type="primary" @click="addNewRow">添加</el-button>
+
 
 
         <el-dialog title="PLS" v-model="dialogVisible" :visible="dialogVisible" width="800px"
             :close-on-click-modal="false" class="edit-data-dialog">
-            <el-form ref="form" :model="newRow" label-width="80px">
-                <el-form-item label="名称">
-                    <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
-                </el-form-item>
 
-                <el-form-item label="类型">
-                    <el-select v-model="newRow.type" placeholder="请选择">
-                        <el-option label="IO" :value=0></el-option>
-                        <el-option label="网络" :value=1></el-option>
-                    </el-select><br>
-                </el-form-item>
+            <DefinScrollbar height="100%" :showUpBt="true">
+                <el-form ref="form" :model="newRow" label-width="80px">
 
-
-                <div v-if="newRow.type === 0">
-                    <el-form-item label="IO">
-                        &nbsp;
-                        <el-button @click="handleIOnear" type="primary">近距离区域</el-button>
-                        <el-dialog title="近" v-model="IOnear" :visible="IOnear" width="600px"
-                            :close-on-click-modal="false" class="edit-data-dialog">
-                            <div>
-                                <IO :wheel="newRow.near"></IO>
-                            </div>
-                            <div slot="footer" class="dialog-footer">
-                                <el-button @click="IOnear = false">取 消</el-button>
-                                <el-button @click="handleIOnearQ">确定</el-button>
-                            </div>
-                        </el-dialog>&nbsp;
-
-                        <el-button @click="handleIOmid" type="primary">中距离区域</el-button>
-                        <el-dialog title="中" v-model="IOmid" :visible="IOmid" width="600px"
-                            :close-on-click-modal="false" class="edit-data-dialog">
-                            <div>
-                                <IO1 :wheel="newRow.mid"></IO1>
-                            </div>
-                            <div slot="footer" class="dialog-footer">
-                                <el-button @click="IOmid = false">取 消</el-button>
-                                <el-button @click="handleIOmidQ">确定</el-button>
-                            </div>
-                        </el-dialog>&nbsp;
-
-
-                        <el-button @click="handleIOfar" type="primary">远距离区域</el-button>
-                        <el-dialog title="远" v-model="IOfar" :visible="IOfar" width="600px"
-                            :close-on-click-modal="false" class="edit-data-dialog">
-                            <div>
-                                <IO2 :wheel="newRow.far"></IO2>
-                            </div>
-                            <div slot="footer" class="dialog-footer">
-                                <el-button @click="IOfar = false">取 消</el-button>
-                                <el-button @click="handleIOfarQ">确定</el-button>
-                            </div>
-                        </el-dialog>&nbsp;
-
-
-
+                    <br>
+                    <el-form-item label="名称">
+                        <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
                     </el-form-item>
 
-
-
-
-                    <el-form-item label="切区类型">
-
-                        <el-select v-model="newRow.CUTtype" placeholder="请选择">
-                            <el-option label="正常类型" :value=0></el-option>
-                            <el-option label="互斥类型" :value=1></el-option>
-                            <el-option label="单点切区" :value=2></el-option>
-                            <el-option label="多点切区" :value=3></el-option>
+                    <el-form-item label="类型">
+                        <el-select v-model="newRow.type" placeholder="请选择">
+                            <el-option label="IO" :value=0></el-option>
+                            <el-option label="网络" :value=1></el-option>
                         </el-select><br>
                     </el-form-item>
 
-                    <el-form-item label="切区设置">
+
+                    <div v-if="newRow.type === 0">
+                        <el-form-item label="IO">
+                            &nbsp;
+                            <el-button @click="handleIOnear" type="primary">近距离区域</el-button>
+                            <el-dialog title="近" v-model="IOnear" :visible="IOnear" width="600px"
+                                :close-on-click-modal="false" class="edit-data-dialog" style="height: 43%;">
+                                <div>
+                                    <IO :wheel="newRow.near"></IO>
+                                </div>
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="IOnear = false">取 消</el-button>
+                                    <el-button @click="handleIOnearQ">确定</el-button>
+                                </div>
+                            </el-dialog>&nbsp;
+
+                            <el-button @click="handleIOmid" type="primary">中距离区域</el-button>
+                            <el-dialog title="中" v-model="IOmid" :visible="IOmid" width="600px"
+                                :close-on-click-modal="false" class="edit-data-dialog" style="height: 43%;">
+                                <div>
+                                    <IO1 :wheel="newRow.mid"></IO1>
+                                </div>
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="IOmid = false">取 消</el-button>
+                                    <el-button @click="handleIOmidQ">确定</el-button>
+                                </div>
+                            </el-dialog>&nbsp;
+
+
+                            <el-button @click="handleIOfar" type="primary">远距离区域</el-button>
+                            <el-dialog title="远" v-model="IOfar" :visible="IOfar" width="600px"
+                                :close-on-click-modal="false" class="edit-data-dialog" style="height: 43%;">
+                                <div>
+                                    <IO2 :wheel="newRow.far"></IO2>
+                                </div>
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="IOfar = false">取 消</el-button>
+                                    <el-button @click="handleIOfarQ">确定</el-button>
+                                </div>
+                            </el-dialog>&nbsp;
+
+
+
+                        </el-form-item>
 
 
 
 
-                        <el-table :data="tableDataCrtlTYPE" style="width: 100%">
-                            <el-table-column prop="name" label="">
-                                <template #default="scopeEX">
-                                    <el-button type="text" @click="reeditEX(scopeEX.$index)">{{
+                        <el-form-item label="切区类型">
+
+                            <el-select v-model="newRow.CUTtype" placeholder="请选择">
+                                <el-option label="正常类型" :value=0></el-option>
+                                <el-option label="互斥类型" :value=1></el-option>
+                                <el-option label="单点切区" :value=2></el-option>
+                                <el-option label="多点切区" :value=3></el-option>
+                            </el-select><br>
+                        </el-form-item>
+
+                        <el-form-item label="切区设置">
+
+
+
+
+                            <el-table :data="tableDataCrtlTYPE" style="width: 100%">
+                                <el-table-column prop="name" label="">
+                                    <template #default="scopeEX">
+                                        <el-button type="text" @click="reeditEX(scopeEX.$index)">{{
             tableDataCrtlTYPE[scopeEX.$index].name
         }}</el-button>
-                                </template>
-                            </el-table-column>
+                                    </template>
+                                </el-table-column>
 
-                            <el-table-column label="">
+                                <el-table-column label="">
 
-                                <template #default="scopeEX">
-                                    <el-button type="danger" @click="deleteRowEX(scopeEX.$index)">删除</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-
-
-                        <br><br>
-
-                        <el-button type="primary" @click="addNewRowEX()">添加</el-button>
-
-                        <!-- {{ newRowEX.area }} -->
-                        <el-dialog title="切区设置" v-model="dialogVisibleEX" :visible="dialogVisibleEX" width="600px"
-                            :close-on-click-modal="false" class="edit-data-dialog">
+                                    <template #default="scopeEX">
+                                        <el-button type="danger" @click="deleteRowEX(scopeEX.$index)">删除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
 
 
-                            <el-form ref="form" :model="newRowEX" label-width="80px">
-                                <el-form-item label="名称">
-                                    <el-input v-model="newRowEX.name" placeholder="请输入名称"></el-input>
-                                </el-form-item>
+                            <br><br>
+
+                            <el-button type="primary" @click="addNewRowEX()">添加</el-button>
+
+                            <!-- {{ newRowEX.area }} -->
+                            <el-dialog title="切区设置" v-model="dialogVisibleEX" :visible="dialogVisibleEX" width="600px"
+                                :close-on-click-modal="false" class="edit-data-dialog" style="height: 48%;">
 
 
-
-                                <el-form-item label="控制区域">
-                                    <IOEX></IOEX>
-                                </el-form-item>
+                                <el-form ref="form" :model="newRowEX" label-width="80px">
+                                    <el-form-item label="名称">
+                                        <el-input v-model="newRowEX.name" placeholder="请输入名称"></el-input>
+                                    </el-form-item>
 
 
 
+                                    <el-form-item label="控制区域">
+                                        <IOEX></IOEX>
+                                    </el-form-item>
 
-                            </el-form>
-                            <div slot="footer" class="dialog-footer">
-                                <el-button @click="dialogVisibleEX = false">取 消</el-button>
-                                <el-button @click="handleAddRowEX()">确定</el-button>
 
-                            </div>
-                        </el-dialog>
-                    </el-form-item>
 
-                    <!-- {{ tableDataCrtlTYPE }} -->
+
+                                </el-form>
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="dialogVisibleEX = false">取 消</el-button>
+                                    <el-button @click="handleAddRowEX()">确定</el-button>
+
+                                </div>
+                            </el-dialog>
+                        </el-form-item>
+
+                        <!-- {{ tableDataCrtlTYPE }} -->
+                    </div>
+                    <div v-else-if="newRow.type === 1">
+                        <el-form-item label="IP">
+                            <el-input v-model="newRow.ip" placeholder="请输入IP"></el-input>
+                        </el-form-item>
+                        <el-form-item label="端口号">
+                            <el-input v-model="newRow.port" placeholder="端口号"></el-input>
+                        </el-form-item>
+                    </div>
+
+
+
+                </el-form>
+
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false" style="margin-left: 75%;">取 消</el-button>
+                    <el-button type="primary" @click="handleAddRow(true)">确定</el-button>
+
                 </div>
-                <div v-else-if="newRow.type === 1">
-                    <el-form-item label="IP">
-                        <el-input v-model="newRow.ip" placeholder="请输入IP"></el-input>
-                    </el-form-item>
-                    <el-form-item label="端口号">
-                        <el-input v-model="newRow.port" placeholder="端口号"></el-input>
-                    </el-form-item>
-                </div>
-
-
-
-            </el-form>
-
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button @click="handleAddRow(true)">确定</el-button>
-
-            </div>
-
+                <br>
+            </DefinScrollbar>
         </el-dialog>
         <!-- {{ tableDataCrtlPLS }} -->
     </div>
@@ -183,7 +193,7 @@ import IO2 from './IO.vue';
 import IOEX from './IOEXP.vue'
 import { tableDataCrtlPLS } from '@/views/agv_ctrl/param/common/commondata.js'
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
-
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 
 const IOfar = ref(false);
 const IOnear = ref(false);
@@ -487,5 +497,12 @@ const deleteRowEX = (index) => {
         padding: 15px 15px 0 15px;
         box-sizing: border-box;
     }
+}
+</style>
+
+<style>
+.tableDataCrtlPLS .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
 }
 </style>

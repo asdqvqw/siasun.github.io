@@ -69,7 +69,7 @@ router.beforeEach(async (to, from, next) => {
             !hasSysMenuConfigObj[toName] && !hasSysMenuConfigObj[toPath]
         )
     ){
-        next(`/401?fullPath=${toFullPath}`); // 没权限的跳转到401
+        next(`/main/param/index`); // 没权限的跳转到401
         return;
     }
     next();

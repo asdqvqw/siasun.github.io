@@ -3,9 +3,9 @@
  * 操作 layout
  * 负责相应事件的统一分发处理
  */
-import { 
-    ref, defineComponent,h,
-    reactive,watch,
+import {
+    ref, defineComponent, h,
+    reactive, watch,
     toRef,
     computed,
     onMounted,
@@ -14,12 +14,19 @@ import {
 import Navbar from "./components/Navbar.vue";
 import Menu from "./components/Menu.vue";
 import TagList from "./components/TagList.vue";
-import { useRouter,useRoute } from "vue-router";
-import {userData} from "@/store/User";
-import {publicData} from "@/store/Public";
-import {sysMeluList} from "@/router/Common";
+import { useRouter, useRoute } from "vue-router";
+import { userData } from "@/store/User";
+import { publicData } from "@/store/Public";
+import { sysMeluList } from "@/router/Common";
 import img_1 from "@/assets/logo.png";
 import img_2 from "@/assets/siasun.png";
+import {
+    parsedLogData, importflag,
+    parsedLogDatabak
+} from '@/views/system/review/sharedata.js'
+import {
+    coordinateHistory
+} from '@/views/agv_monitor/form/commondata.js'
 import {
     deleteCurrentTag,
     refreshCurrentTag,
@@ -34,14 +41,16 @@ import {
     getTag,
     refreshAllTag,
 } from "./common/TagListTools";
-import {deepCopyObj} from "@/common/OtherTools";
-import {toggleFullScreen} from "@/common/OtherTools";
-import {guid} from "@/common/Guid";
-import {timer_agv,timer_from,timer_statistics,timer_statistics2,timer_bettery} from "@/timer.js"
+import { deepCopyObj } from "@/common/OtherTools";
+import { toggleFullScreen } from "@/common/OtherTools";
+import { guid } from "@/common/Guid";
+import { timer_agv, timer_from, timer_statistics, timer_statistics2, timer_bettery,
+    starter,starter2
+ } from "@/timer.js"
 import tagDataStore from "./common/TagData";
 
 export default defineComponent({
-    name:'MainLayout',
+    name: 'MainLayout',
     components: {
         Menu,
         Navbar,
@@ -54,51 +63,51 @@ export default defineComponent({
         const router = useRouter();
         const route = useRoute();
         const dataContainer = reactive({
-            img:{
+            img: {
                 img_1,
                 img_2,
             },
-            userInfo:toRef(userDataStore,'userInfo'),
-            tagList:toRef(tagDataStore,'tagList'),
-            activeSign:toRef(tagDataStore,'activeSign'),
-            showMenuList:toRef(userDataStore,'showMenuList'),
-            hasSysMenuConfigObj:toRef(userDataStore,'hasSysMenuConfigObj'),
-            tagHisList:toRef(tagDataStore,'tagHisList'),
-            iframeList:toRef(tagDataStore,'iframeList'),  //当前已打开的iframe数组
-            showMenu:toRef(publicDataStore,'showMenu'),  //是否显示目录
-            breadcrumbList:[],  //面包屑列表
-            optionBtShow:true,  //控制按钮的显示
+            userInfo: toRef(userDataStore, 'userInfo'),
+            tagList: toRef(tagDataStore, 'tagList'),
+            activeSign: toRef(tagDataStore, 'activeSign'),
+            showMenuList: toRef(userDataStore, 'showMenuList'),
+            hasSysMenuConfigObj: toRef(userDataStore, 'hasSysMenuConfigObj'),
+            tagHisList: toRef(tagDataStore, 'tagHisList'),
+            iframeList: toRef(tagDataStore, 'iframeList'),  //当前已打开的iframe数组
+            showMenu: toRef(publicDataStore, 'showMenu'),  //是否显示目录
+            breadcrumbList: [],  //面包屑列表
+            optionBtShow: true,  //控制按钮的显示
         });
         const otherDataContainer = {
-            baseCountdown:3,
-            countdown:0,  //控制按钮显示的倒计时
-            timer:null,
+            baseCountdown: 3,
+            countdown: 0,  //控制按钮显示的倒计时
+            timer: null,
         };
         /** 
          * iframe list map
          * 记录已有的iframe个数的path map 方便查找
          *  */
-        const iframePathMap = computed(()=>{
-            return dataContainer.iframeList.reduce((c,i)=>{
+        const iframePathMap = computed(() => {
+            return dataContainer.iframeList.reduce((c, i) => {
                 c[i.path] = i;
                 return c;
-            },{});
+            }, {});
         });
         /** 
          * 需要缓存的页面列表
          * 根据标签列表来的，需要改的话只需要处理标签列表
          *  */
-        const cacheTagList = computed(()=>{
-            return dataContainer.tagList.filter(item=>{
+        const cacheTagList = computed(() => {
+            return dataContainer.tagList.filter(item => {
                 return item.isCache;
-            }).map(item=>{
+            }).map(item => {
                 /** 缓存组件是根据path命名来缓存的 */
                 return item.path;
             });
         });
         /** 当前活动的标签 */
-        const activeTag = computed(()=>{
-            let tag = dataContainer.tagList.find(item=>item.sign == dataContainer.activeSign);
+        const activeTag = computed(() => {
+            let tag = dataContainer.tagList.find(item => item.sign == dataContainer.activeSign);
             return tag || {};
         });
         /** 
@@ -108,7 +117,7 @@ export default defineComponent({
          * 解决方法文章 https://blog.csdn.net/qq_42611074/article/details/127206469
          */
         const wrapperMap = new Map();
-        function formatComponentInstance(component,route){
+        function formatComponentInstance(component, route) {
             let wrapper;
             // 重点就是这里，这个组件的名字是完全可控的，
             // 只要自己写好逻辑，每次能找到对应的外壳组件就行，完全可以写成任何自己想要的名字
@@ -128,19 +137,19 @@ export default defineComponent({
                 wrapperMap.set(wrapperName, wrapper);
             }
             /** 以标签页为主，清除不需要的，减少内存 */
-            let pathList = dataContainer.tagList.map(item=>item.path);
-            wrapperMap.forEach((_,key)=>{
-                if(pathList.includes(key)) return;
+            let pathList = dataContainer.tagList.map(item => item.path);
+            wrapperMap.forEach((_, key) => {
+                if (pathList.includes(key)) return;
                 wrapperMap.delete(key);
             });
             return h(wrapper);
         }
         /** 页面加载后重新映射标签页与菜单的关系 */
-        onMounted(()=>{
+        onMounted(() => {
             formatTagsByMenu();
         });
         /** 根据系统目录获取用户的目录配置 */
-        function getUserMenu(data){
+        function getUserMenu(data) {
             /** 优先使用当前的path判断获取映射 */
             let target = dataContainer.hasSysMenuConfigObj[data.path] || dataContainer.hasSysMenuConfigObj[data.name];
             return target;
@@ -149,15 +158,15 @@ export default defineComponent({
          * 获取面包屑列表
          * 根据当前用户目录中获取树形级别
          *  */
-        function getBreadcrumbList(){
+        function getBreadcrumbList() {
             const userMenuConfig = getUserMenu(route);
-            if(!userMenuConfig) return;
-            if(!userMenuConfig.path) return;
+            if (!userMenuConfig) return;
+            if (!userMenuConfig.path) return;
             let list = [];
-            function findP(target){
+            function findP(target) {
                 list.unshift(target);
                 let targetP = dataContainer.hasSysMenuConfigObj[target.parentSign];
-                if(targetP){
+                if (targetP) {
                     findP(targetP);
                 }
             }
@@ -165,16 +174,16 @@ export default defineComponent({
             dataContainer.breadcrumbList = list;
         }
         /** 添加历史点击记录 */
-        function addHisTagList(){
+        function addHisTagList() {
             let tagHisList = dataContainer.tagHisList;
             let tagList = dataContainer.tagList;
             let activeSign = dataContainer.activeSign;
             /** 如果与最近的一个重复则不添加 */
             let latelyHisTag = getLatelyHisTag();
-            if(latelyHisTag && (latelyHisTag.sign == activeSign)) return;
+            if (latelyHisTag && (latelyHisTag.sign == activeSign)) return;
             /** 找到当前显示的tag，并且添加记录 */
-            let activeTag = tagList.find(item=>item.sign==activeSign);
-            if(!activeTag) return;
+            let activeTag = tagList.find(item => item.sign == activeSign);
+            if (!activeTag) return;
             /** 添加到数据管理 */
             tagHisList.push(activeTag);
             tagDataStore.setTagHisList(tagHisList);
@@ -182,59 +191,59 @@ export default defineComponent({
         /**
          * 根据当前路由情况 添加标签
          */
-        function addTag(){
+        function addTag() {
             let tagList = deepCopyObj(dataContainer.tagList);
             let activeSign = dataContainer.activeSign;
             /** 获取该路由对应的用户配置 */
             const userMenuConfig = getUserMenu(route);
             /** 如果没有该路由配置表示不允许添加标签页 */
-            if(!userMenuConfig) return;
+            if (!userMenuConfig) return;
             /** 
              * 创建一个新标签，配置其属性
              * 其中sign是唯一标识，很重要，必填 
              * menuName 必填
              * */
             let newTag = {
-                title:userMenuConfig.title,
-                menuName:userMenuConfig.name,
-                path:route.path,
-                fullPath:route.fullPath,
-                sign:guid(),  //唯一标识
-                isCache:userMenuConfig.isCache,  //表示该标签需要缓存
-                fixed:userMenuConfig.fixed,  //表示该标签需要固定
-                showTagIcon:userMenuConfig.showTagIcon,  //表示该标签是否需要显示icon
-                iconName:userMenuConfig.iconName,  //表示该标签对应的icon
-                viewFullScreen:userMenuConfig.viewFullScreen,  //表示该标签视图全屏
-                hiddenViewFullScreenBt:userMenuConfig.hiddenViewFullScreenBt,  //表示该标签视图全屏时隐藏全屏按钮
-                redirectPath:{  //刷新重定向路由地址参数
-                    name:'main-redirect',
-                    params:{
-                        path:route.fullPath,
+                title: userMenuConfig.title,
+                menuName: userMenuConfig.name,
+                path: route.path,
+                fullPath: route.fullPath,
+                sign: guid(),  //唯一标识
+                isCache: userMenuConfig.isCache,  //表示该标签需要缓存
+                fixed: userMenuConfig.fixed,  //表示该标签需要固定
+                showTagIcon: userMenuConfig.showTagIcon,  //表示该标签是否需要显示icon
+                iconName: userMenuConfig.iconName,  //表示该标签对应的icon
+                viewFullScreen: userMenuConfig.viewFullScreen,  //表示该标签视图全屏
+                hiddenViewFullScreenBt: userMenuConfig.hiddenViewFullScreenBt,  //表示该标签视图全屏时隐藏全屏按钮
+                redirectPath: {  //刷新重定向路由地址参数
+                    name: 'main-redirect',
+                    params: {
+                        path: route.fullPath,
                     },
                 },
             };
             /** 
              * 必须是系统目录中的，不然不允许添加标签，因为只有属于目录才会有标签
              *  */
-            if(!sysMeluList.find(item=>item.name == route.name)) return;
+            if (!sysMeluList.find(item => item.name == route.name)) return;
             /** 
              * 不重复添加
              * 相同path的判断为重复
              *  */
-            let target = tagList.find(item=>item.path == newTag.path);
-            if(!target){
+            let target = tagList.find(item => item.path == newTag.path);
+            if (!target) {
                 // 添加进入标签列表，添加到当前标签的右边
-                let index = tagList.findIndex(item=>{
+                let index = tagList.findIndex(item => {
                     return item.sign == activeSign;
                 });
-                if(index != -1){
-                    tagList.splice(index+1,0,newTag);
-                }else{
+                if (index != -1) {
+                    tagList.splice(index + 1, 0, newTag);
+                } else {
                     tagList.push(newTag);
                 }
                 /** 设置当前所显示的标签 */
                 activeSign = newTag.sign;
-            }else{
+            } else {
                 activeSign = target.sign;
                 /** 防止没有刷新地址 */
                 target.redirectPath = target.redirectPath || newTag.redirectPath;
@@ -248,62 +257,72 @@ export default defineComponent({
          * 当路由发生变化时将符合条件的标签添加到标签列表中 
          * 获取面包屑导航列表
          * */
-        watch(route,()=>{
+        watch(route, () => {
             addTag();
             getBreadcrumbList();
-        },{
-            immediate:true,
+        }, {
+            immediate: true,
         });
         /** 
          * tag 点击事件
          * 跳转到该标签的地址里，注意是完整地址
          *  */
-        function handleTagClick(item){
+        function handleTagClick(item) {
 
-            if(!item || !item.fullPath) return;
+            if (!item || !item.fullPath) return;
             router.push(item.fullPath);
         }
         /** 
          * tag 删除事件
          * 删除后跳转到一个最近的标签，使用标签记录
          *  */
-        function handleTagRemove(tag){
-            if(tag.path === '/main/update/index')
-            {
+        function handleTagRemove(tag) {
+            if (tag.path === '/main/update/index') {
                 clearTimeout(timer_from.value);
             }
-            if(tag.path === '/main/form/index')
-            {
+            if (tag.path === '/main/form/index') {
                 clearTimeout(timer_bettery.value);
                 clearTimeout(timer_agv.value);
+                coordinateHistory.value = [];
+                clearInterval(starter2.value);
+                starter2.value = "";
             }
-            if(tag.path === '/main/statistics/index')
-            {
+            if (tag.path === '/main/statistics/index') {
                 clearTimeout(timer_statistics.value);
             }
-            if(tag.path === '/main/motion/index')
-            {
+            if (tag.path === '/main/motion/index') {
                 clearTimeout(timer_statistics2.value);
             }
+            console.log('1111', tag.path)
+            if (tag.path === '/main/whwtest') {
+                parsedLogData.value = [];
+                importflag.value = true;
+                parsedLogDatabak.value = [];
+            }
+            if (tag.path === '/main/manual/index') {
+                clearInterval(starter.value);
+                starter.value = "";
+            }
+            
             let tagList = dataContainer.tagList;
             let activeSign = dataContainer.activeSign;
             /** 还剩最后一个标签的话不用删除 */
-            if(tagList.length <= 1) return;
+            if (tagList.length <= 1) return;
             let lastTarget = null;
             let nextTarget = null;
-            let target = tagList.find((item,index)=>{
+            let target = tagList.find((item, index) => {
                 let state = item.sign == tag.sign;
-                if(state){
+                if (state) {
                     lastTarget = tagList[index - 1];
                     nextTarget = tagList[index + 1];
                 }
                 return state;
             });
-            if(!target) return;
+            if (!target) return;
             /** 删除此标签页 */
             deleteTags(target.sign);
             /** 如果删除的是当前的标签页的话跳转到最近的标签 */
-            if(target.sign === activeSign){
+            if (target.sign === activeSign) {
                 let latelyHisTag = getLatelyHisTag();
                 /** 没有的话跳转到上一个或者下一个 */
                 latelyHisTag = latelyHisTag || lastTarget || nextTarget;
@@ -312,10 +331,10 @@ export default defineComponent({
             }
         }
         /** 操作事件 */
-        function handleOptionClick(type,tagParams){
+        function handleOptionClick(type, tagParams) {
             tagParams = tagParams || {};
             let tag;
-            switch(true){
+            switch (true) {
                 case type == 1:
                     deleteCurrentTag();
                     let latelyHisTag = getLatelyHisTag();
@@ -336,19 +355,19 @@ export default defineComponent({
                     break;
                 case type == 6:
                     tag = getTag(dataContainer.activeSign);
-                    if(tag){
+                    if (tag) {
                         updateTag({
                             ...tag,
-                            viewFullScreen:true,
+                            viewFullScreen: true,
                         });
                     }
                     break;
                 case type == 7:
                     tag = getTag(tagParams.sign);
-                    if(tag){
+                    if (tag) {
                         updateTag({
                             ...tag,
-                            viewFullScreen:true,
+                            viewFullScreen: true,
                         });
                         /** 触发该标签的点击事件 */
                         handleTagClick(tag);
@@ -360,100 +379,119 @@ export default defineComponent({
             }
         }
         /** 切换缓存状态 */
-        function handleSwitchCache(item){
-            if(!item) return;
+        function handleSwitchCache(item) {
+            if (!item) return;
             updateTag({
                 ...item,
-                isCache:!item.isCache,
+                isCache: !item.isCache,
             });
         }
         /** 切换固定状态 */
-        function handleSwitchFixed(item){
-            if(!item) return;
+        function handleSwitchFixed(item) {
+            if (!item) return;
             updateTag({
                 ...item,
-                fixed:!item.fixed,
+                fixed: !item.fixed,
             });
         }
         /** 刷新指定标签页 */
-        function handleRefresh(item){
-            if(!item) return;
+        function handleRefresh(item) {
+            if (item.path === '/main/whwtest') {
+                parsedLogData.value = [];
+                importflag.value = true;
+                parsedLogDatabak.value = [];
+            }
+            if (item.path === '/main/update/index') {
+                clearTimeout(timer_from.value);
+            }
+            if (item.path === '/main/form/index') {
+                clearTimeout(timer_bettery.value);
+                clearTimeout(timer_agv.value);
+                coordinateHistory.value = [];
+            }
+            if (item.path === '/main/statistics/index') {
+                clearTimeout(timer_statistics.value);
+            }
+            if (item.path === '/main/motion/index') {
+                clearTimeout(timer_statistics2.value);
+            }
+            if (!item) return;
             refreshTag(item.sign);
         }
         /** 取消内容全屏 */
-        function handleClick_1(){
+        function handleClick_1() {
             let item = getTag(dataContainer.activeSign);
-            if(item){
+            if (item) {
                 updateTag({
                     ...item,
-                    viewFullScreen:false,
+                    viewFullScreen: false,
                 });
             };
         }
         /** 按钮消失的倒计时 */
-        otherDataContainer.timer = setInterval(()=>{
+        otherDataContainer.timer = setInterval(() => {
             otherDataContainer.countdown = otherDataContainer.countdown - 1;
-            if(otherDataContainer.countdown <= 0){
+            if (otherDataContainer.countdown <= 0) {
                 dataContainer.optionBtShow = false;
             }
-        },1000);
+        }, 1000);
         /** 设置显示的事件回调 */
-        function setupShow(){
+        function setupShow() {
             otherDataContainer.countdown = otherDataContainer.baseCountdown;
             dataContainer.optionBtShow = true;
         }
-        function setupShow_1(event){
+        function setupShow_1(event) {
             // 检查按下的键是否是ESC键
             if (event.key === 'Escape' || event.key === 'Esc') {
                 otherDataContainer.countdown = otherDataContainer.baseCountdown;
                 dataContainer.optionBtShow = false;
                 let item = getTag(dataContainer.activeSign);
-                if(item){
+                if (item) {
                     updateTag({
                         ...item,
-                        viewFullScreen:false,
+                        viewFullScreen: false,
                     });
                 };
             }
         }
         /** 鼠标移动的时候显示 */
-        window.addEventListener('mousemove',setupShow);
+        window.addEventListener('mousemove', setupShow);
         /** Esc键按下时退出 */
-        window.addEventListener('keydown',setupShow_1);
-        onUnmounted(()=>{
+        window.addEventListener('keydown', setupShow_1);
+        onUnmounted(() => {
             clearInterval(otherDataContainer.timer);
-            window.removeEventListener('mousemove',setupShow);
-            window.removeEventListener('keydown',setupShow_1);
+            window.removeEventListener('mousemove', setupShow);
+            window.removeEventListener('keydown', setupShow_1);
         });
         /** 切换目录展示 */
-        function switchShowMenu(state){
+        function switchShowMenu(state) {
             publicDataStore.setShowMenu(state);
         }
         /** 添加一个标签 */
-        function handleAdd(){
+        function handleAdd() {
             let tagList = deepCopyObj(dataContainer.tagList);
             let path = `/main/new-tag-page/${new Date().getTime()}`;
             /** 获取用户配置信息 */
             const userMenuConfig = getUserMenu({
-                name:'new-tag-page',
+                name: 'new-tag-page',
             });
-            if(!userMenuConfig) return;
+            if (!userMenuConfig) return;
             let newTag = {
-                title:userMenuConfig.title,
-                menuName:userMenuConfig.name,
-                path:path,
-                fullPath:path,
-                sign:guid(),  //唯一标识
-                isCache:userMenuConfig.isCache,  //表示该标签需要缓存
-                fixed:userMenuConfig.fixed,  //表示该标签需要固定
-                showTagIcon:userMenuConfig.showTagIcon,  //表示该标签是否需要显示icon
-                iconName:userMenuConfig.iconName,  //表示该标签对应的icon
-                viewFullScreen:userMenuConfig.viewFullScreen,  //表示该标签视图全屏
-                hiddenViewFullScreenBt:userMenuConfig.hiddenViewFullScreenBt,  //表示该标签视图全屏时隐藏全屏按钮
-                redirectPath:{  //刷新重定向路由地址参数
-                    name:'main-redirect',
-                    params:{
-                        path:path,
+                title: userMenuConfig.title,
+                menuName: userMenuConfig.name,
+                path: path,
+                fullPath: path,
+                sign: guid(),  //唯一标识
+                isCache: userMenuConfig.isCache,  //表示该标签需要缓存
+                fixed: userMenuConfig.fixed,  //表示该标签需要固定
+                showTagIcon: userMenuConfig.showTagIcon,  //表示该标签是否需要显示icon
+                iconName: userMenuConfig.iconName,  //表示该标签对应的icon
+                viewFullScreen: userMenuConfig.viewFullScreen,  //表示该标签视图全屏
+                hiddenViewFullScreenBt: userMenuConfig.hiddenViewFullScreenBt,  //表示该标签视图全屏时隐藏全屏按钮
+                redirectPath: {  //刷新重定向路由地址参数
+                    name: 'main-redirect',
+                    params: {
+                        path: path,
                     },
                 },
             };
@@ -463,7 +501,7 @@ export default defineComponent({
             handleTagClick(newTag);
         }
         /** 是否显示添加标签按钮 */
-        const showTagAdd = computed(()=>{
+        const showTagAdd = computed(() => {
             return !!dataContainer.hasSysMenuConfigObj['new-tag-page'];
         });
         return {
@@ -477,7 +515,7 @@ export default defineComponent({
             handleSwitchFixed,
             handleRefresh,
             iframePathMap,
-            routeIncetance:route,
+            routeIncetance: route,
             toggleFullScreen,
             handleClick_1,
             switchShowMenu,
@@ -491,105 +529,70 @@ export default defineComponent({
 </script>
 
 <template>
-    <div 
-        :class="{
-            'main-layout':true,
-            'is-view-full-screen':!!activeTag.viewFullScreen,
-        }">  
+    <div :class="{
+        'main-layout': true,
+        'is-view-full-screen': !!activeTag.viewFullScreen,
+    }">
         <div class="head-container">
-            <div
-                :class="{
-                    'left':true,
-                    'hidden':!dataContainer.showMenu,
-                }">
-                <el-image style="width: 100%;height: 100%;"
-                    @click="toPath({path:'/'})"
-                    :src="dataContainer.img.img_2"  />
+            <div :class="{
+        'left': true,
+        'hidden': !dataContainer.showMenu,
+    }">
+                <el-image style="width: 100%;height: 100%;" @click="toPath({ path: '/' })"
+                    :src="dataContainer.img.img_2" />
                 <!-- <div class="name">
                      新松机器人  
                 </div> -->
             </div>
             <div class="right">
-                <Navbar
-                    :showLogo="dataContainer.showMenu"
-                    @switchShowLogo="()=>{
-                        switchShowMenu(!dataContainer.showMenu);
-                    }"
-                    :userInfo="dataContainer.userInfo"
-                    :breadcrumbList="dataContainer.breadcrumbList"></Navbar>
+                <Navbar :showLogo="dataContainer.showMenu" @switchShowLogo="() => {
+        switchShowMenu(!dataContainer.showMenu);
+    }" :userInfo="dataContainer.userInfo" :breadcrumbList="dataContainer.breadcrumbList"></Navbar>
             </div>
         </div>
         <div class="content-container">
-            <div
-                :class="{
-                    'left':true,
-                    'hidden':!dataContainer.showMenu,
-                }"
-                class="left">
-                <Menu
-                    :dataList="dataContainer.showMenuList"></Menu>
+            <div :class="{
+        'left': true,
+        'hidden': !dataContainer.showMenu,
+    }" class="left">
+                <Menu :dataList="dataContainer.showMenuList"></Menu>
             </div>
             <div class="right">
                 <div class="top">
-                    <TagList
-                        :tagList="dataContainer.tagList"
-                        :activeSign="dataContainer.activeSign"
-                        @onChange="e=>{
-                            tagDataStore.setTagList(e);
-                        }"
-                        @onClick="handleTagClick"
-                        @onRemove="handleTagRemove"
-                        @onSwitchCache="handleSwitchCache"
-                        @onSwitchFixed="handleSwitchFixed"
-                        @onRefresh="handleRefresh"
-                        @onAdd="handleAdd"
-                        :showTagAdd="showTagAdd"
-                        @onOptionClick="handleOptionClick"></TagList>
+                    <!-- {{ dataContainer.tagList }} -->
+                    <TagList :tagList="dataContainer.tagList" :activeSign="dataContainer.activeSign" @onChange="e => {
+        tagDataStore.setTagList(e);
+    }" @onClick="handleTagClick" @onRemove="handleTagRemove" @onSwitchCache="handleSwitchCache"
+                        @onSwitchFixed="handleSwitchFixed" @onRefresh="handleRefresh" @onAdd="handleAdd"
+                        :showTagAdd="showTagAdd" @onOptionClick="handleOptionClick"></TagList>
                 </div>
                 <div class="view-container">
-                    <router-view 
-                        v-slot="{ Component,route }">
+                    <router-view v-slot="{ Component, route }">
                         <transition name="el-fade-in">
-                            <keep-alive 
-                                :include="cacheTagList">
-                                <component 
-                                    :is="formatComponentInstance(Component,route)"/>
+                            <keep-alive :include="cacheTagList">
+                                <component :is="formatComponentInstance(Component,route)" />
                             </keep-alive>
                         </transition>
                     </router-view>
                     <!-- 当前打开的iframe列表页，防止重新刷新 -->
-                    <div
-                        :style="{
-                            'z-index':iframePathMap[routeIncetance.path]?1:-1,
-                            'opacity':iframePathMap[routeIncetance.path]?1:0,
-                        }"
-                        class="iframe-view">
-                        <iframe 
-                            v-for="item in dataContainer.iframeList"
-                            :key="item.key"
-                            :style="{
-                                'z-index':item.path==routeIncetance.path?1:-1,
-                                'opacity':item.path==routeIncetance.path?1:0,
-                            }"
-                            :src="item.src"
-                            width="100%" height="100%" frameborder="0"
-                            allowfullscreen>
+                    <div :style="{
+        'z-index': iframePathMap[routeIncetance.path] ? 1 : -1,
+        'opacity': iframePathMap[routeIncetance.path] ? 1 : 0,
+    }" class="iframe-view">
+                        <iframe v-for="item in dataContainer.iframeList" :key="item.key" :style="{
+        'z-index': item.path == routeIncetance.path ? 1 : -1,
+        'opacity': item.path == routeIncetance.path ? 1 : 0,
+    }" :src="item.src" width="100%" height="100%" frameborder="0" allowfullscreen>
                         </iframe>
                     </div>
-                    <div 
-                        v-if="!!activeTag.viewFullScreen && !activeTag.hiddenViewFullScreenBt"
-                        :class="{
-                            'option-bt-list':true,
-                            'show':dataContainer.optionBtShow,
-                        }">
+                    <div v-if="!!activeTag.viewFullScreen && !activeTag.hiddenViewFullScreenBt" :class="{
+        'option-bt-list': true,
+        'show': dataContainer.optionBtShow,
+    }">
                         <div class="container">
-                            <SvgIcon
-                                :style="'width:16px;height:16px;'"
-                                @click="handleClick_1"
+                            <SvgIcon :style="'width:16px;height:16px;'" @click="handleClick_1"
                                 name="svg:compress-alt.svg"></SvgIcon>
-                            <SvgIcon
-                                :style="'width:16px;height:16px;'"
-                                @click="toggleFullScreen"
+                            <SvgIcon :style="'width:16px;height:16px;'" @click="toggleFullScreen"
                                 name="svg:Navbar-full.svg"></SvgIcon>
                         </div>
                     </div>
@@ -610,28 +613,34 @@ export default defineComponent({
     background-color: white;
     position: relative;
     z-index: 9;
+
     /** 内容页面全屏展示 */
-    &.is-view-full-screen{
-        >.head-container{
+    &.is-view-full-screen {
+        >.head-container {
             z-index: 1;
             display: none;
         }
-        >.content-container{
+
+        >.content-container {
             z-index: 2;
             position: initial;
-            >.left{
+
+            >.left {
                 z-index: 2;
                 display: none;
             }
-            >.right{
+
+            >.right {
                 z-index: 3;
                 position: initial;
-                >.top{
+
+                >.top {
                     display: none;
                 }
-                >.view-container{
+
+                >.view-container {
                     z-index: 4;
-                    position:absolute;
+                    position: absolute;
                     top: 0;
                     left: 0;
                     flex: initial;
@@ -641,7 +650,8 @@ export default defineComponent({
             }
         }
     }
-    >.head-container{
+
+    >.head-container {
         width: 100%;
         background-color: white;
         height: var(--navbar-height);
@@ -651,7 +661,8 @@ export default defineComponent({
         z-index: 9;
         display: flex;
         flex-direction: row;
-        >.left{
+
+        >.left {
             width: var(--menu-width);
             height: 100%;
             padding: 0 10px;
@@ -666,16 +677,19 @@ export default defineComponent({
             transition: all 0.2s;
             overflow: hidden;
             border-bottom: 1px solid rgba(0, 0, 0, 0.435);
-            &.hidden{
+
+            &.hidden {
                 width: 0;
                 padding: 0;
                 // display: none;
                 pointer-events: none;
-                >.name{
+
+                >.name {
                     font-size: 0;
                 }
             }
-            >.logo{
+
+            >.logo {
                 // flex:1 1 0;
                 width: 45px;
                 height: 45px;
@@ -683,7 +697,8 @@ export default defineComponent({
                 cursor: pointer;
                 margin-right: 10px;
             }
-            >.name{
+
+            >.name {
                 width: max-content;
                 font-size: 22px;
                 font-weight: bold;
@@ -691,7 +706,8 @@ export default defineComponent({
                 font-family: cursive;
             }
         }
-        >.right{
+
+        >.right {
             flex: 1 1 0;
             width: 0;
             height: 100%;
@@ -699,7 +715,8 @@ export default defineComponent({
             box-sizing: border-box;
         }
     }
-    >.content-container{
+
+    >.content-container {
         flex: 1 1 0;
         height: 0;
         width: 100%;
@@ -707,7 +724,8 @@ export default defineComponent({
         flex-direction: row;
         position: relative;
         z-index: 8;
-        >.left{
+
+        >.left {
             width: var(--menu-width);
             height: 100%;
             overflow-y: auto;
@@ -719,13 +737,15 @@ export default defineComponent({
             background-color: #353636;
             transition: width 0.2s;
             overflow: hidden;
-            &.hidden{
+
+            &.hidden {
                 width: 0;
                 // display: none;
                 pointer-events: none;
             }
         }
-        >.right{
+
+        >.right {
             flex: 1 1 0;
             width: 0;
             display: flex;
@@ -733,7 +753,8 @@ export default defineComponent({
             position: relative;
             z-index: 8;
             overflow: hidden;
-            >.top{
+
+            >.top {
                 height: var(--tags-height);
                 width: 100%;
                 // border-bottom: 1px solid rgb(218, 218, 218);
@@ -742,7 +763,8 @@ export default defineComponent({
                 position: relative;
                 z-index: 2;
             }
-            >.view-container{
+
+            >.view-container {
                 flex: 1 1 0;
                 height: 0;
                 width: 100%;
@@ -750,21 +772,24 @@ export default defineComponent({
                 position: relative;
                 z-index: 1;
                 background-color: #f1f1f1;
-                >.iframe-view{
+
+                >.iframe-view {
                     width: 100%;
                     height: 100%;
                     position: absolute;
                     top: 0;
                     left: 0;
                     z-index: 1;
-                    >iframe{
+
+                    >iframe {
                         position: absolute;
                         top: 0;
                         left: 0;
                         z-index: -1;
                     }
                 }
-                >.option-bt-list{
+
+                >.option-bt-list {
                     position: absolute;
                     top: 5px;
                     left: 0;
@@ -776,11 +801,13 @@ export default defineComponent({
                     align-items: center;
                     transition: all 0.2s;
                     z-index: 999;
-                    &.show{
+
+                    &.show {
                         opacity: 1;
                         pointer-events: initial;
                     }
-                    >.container{
+
+                    >.container {
                         width: auto;
                         border-radius: 3px;
                         background-color: rgb(255, 255, 255);
@@ -790,14 +817,16 @@ export default defineComponent({
                         padding: 5px;
                         box-sizing: border-box;
                         box-shadow: rgba(0, 0, 0, 0.476) 0px 1px 3px;
-                        >*{
+
+                        >* {
                             margin-right: 5px;
                             cursor: pointer;
                             border-radius: 3px;
                             box-shadow: inset 0 1px 4px #0000001f;
                             padding: 7px;
-                            color:#444954;
-                            &:last-child{
+                            color: #444954;
+
+                            &:last-child {
                                 margin: 0;
                             }
                         }

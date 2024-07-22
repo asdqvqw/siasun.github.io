@@ -1,6 +1,8 @@
 /*jshint esversion: 9 */
 import { service } from "./Request";
 import qs from "qs";
+import {languageflag} from '@/timer.js'
+
 
 /** 公用接口 */
 const allApi = {
@@ -22,21 +24,22 @@ const allApi = {
       code: 200,
       data: {
         userName: "admin",
-        nickName: "管理员",
+        nickName: languageflag.value?'管理员':'Admin',
         avatar: "https://s11.ax1x.com/2023/12/15/pihx4js.jpg",
       },
     });
   },
   getMenuList() {
     let menuList = [
-      {
-        name: "main-index",
-        title: "仪表盘",
-        content: "",
-        isCache: true,
-        fixed: true,
-        iconName: "svg:all-fill.svg",
-      },
+
+      // {
+      //   name: "main-index",
+      //   title: "仪表盘",
+      //   content: "",
+      //   isCache: true,
+      //   fixed: false,
+      //   iconName: "svg:all-fill.svg",
+      // },
       // {
       //   title: "test",
       //   iconName: "svg:laptop-check.svg",
@@ -85,7 +88,7 @@ const allApi = {
       // },
       {
         name: "new-tag-page",
-        title: "新标签页",
+        title: languageflag.value?'新标签页':'New page',
         isCache: true,
         hidden: true,
       },
@@ -120,57 +123,167 @@ const allApi = {
         hidden: true,
       },
       {
-        title: "监测",
-        iconName: "svg:laptop.svg",
+        title:languageflag.value?'配置':'Configure',
+        iconName: "svg:cat-code.svg",
+        content: "",
         childs: [
           {
-            name: "form",
-            title: "AGV",
+            name: "param",
+            title: languageflag.value?'底盘参数':'Chassis parameters',
             isCache: true,
             content: "",
-            iconName: "svg:all.svg",
+            iconName: "svg:chart-relation.svg",
             showTagIcon: true,
           },
           {
-            name: "statistics",
-            title: "统计",
+            name: "equipment",
+            title: languageflag.value?'上装参数':'Installation parameters',
             isCache: true,
             content: "",
-            iconName: "svg:chart-line.svg",
+            iconName: "svg:tag-fill.svg",
             showTagIcon: true,
           },
           {
-            name: "update",
-            title: "变量",
+            name: "task",
+            title: languageflag.value?'上装任务':'Installation task',
             isCache: true,
             content: "",
-            iconName: "svg:alignleft-fill.svg",
+            iconName: "svg:paper-plane.svg",
+            showTagIcon: true,
+          },
+
+        ],
+      },
+      {
+        title: languageflag.value?'调试':'Debug',
+        iconName: "svg:flag.svg",
+        childs: [
+
+          {
+            title: languageflag.value?'硬件调试':'Hardware debug',
+            iconName: "svg:laptop-check.svg",
+            childs: [
+              {
+                title: "MRC04",
+                iconName: "svg:laptop-check.svg",
+              },
+              {
+                title: "MRC05",
+                iconName: "svg:laptop-check.svg",
+                childs: [
+                  {
+                    name: "checkio",
+                    title: languageflag.value?'输出点':'Input point',
+                    isCache: true,
+                    content: "",
+                    iconName: "svg:expand-alt.svg",
+                    showTagIcon: true,
+                  },
+                  {
+                    name: "checkin",
+                    title: languageflag.value?'输入点':'Output point',
+                    isCache: true,
+                    content: "",
+                    iconName: "svg:compress-alt.svg",
+                    showTagIcon: true,
+                  },
+                  {
+                    name: "checkcan",
+                    title: languageflag.value?'CAN总线':'CAN bus',
+                    isCache: true,
+                    content: "",
+                    iconName: "svg:switch.svg",
+                    showTagIcon: true,
+                  },
+                ]
+              }
+            ]
+
+          },
+          {
+            name: "agvkey",
+            title: languageflag.value?'AGV解锁':'AGV unlock',
+            isCache: true,
+            content: "",
+            iconName: "svg:safety-certificate.svg",
+            showTagIcon: true,
+          },
+          // {
+          //   name: "manual",
+          //   title: "手控",
+          //   isCache: true,
+          //   content: "",
+          //   iconName: "svg:user-fill.svg",
+          //   showTagIcon: true,
+          // },
+          {
+            name: "auto",
+            title: languageflag.value?'离线任务':'Offline tasks',
+            isCache: true,
+            content: "",
+            iconName: "svg:tag.svg",
             showTagIcon: true,
           },
           {
             name: "servo",
-            title: "日志",
+            title: languageflag.value?'黑匣子':'Block box',
             isCache: true,
             content: "",
             iconName: "svg:database.svg",
             showTagIcon: true,
           },
+        ],
+      },
+      {
+        title: languageflag.value?'监测':'Monitor',
+        iconName: "svg:laptop.svg",
+        childs: [
           {
-            name: "motion",
-            title: "分析",
+            name: "form",
+            title: languageflag.value?'AGV监测':'AGV monitor',
             isCache: true,
             content: "",
-            iconName: "svg:chart-bar.svg",
+            iconName: "svg:all.svg",
             showTagIcon: true,
           },
           // {
-          //   name: "log",
-          //   title: "日志",
+          //   name: "statistics",
+          //   title: "统计",motion
           //   isCache: true,
           //   content: "",
-          //   iconName: "svg:fankui.svg",
+          //   iconName: "svg:chart-line.svg",
           //   showTagIcon: true,
           // },
+          {
+            title: languageflag.value?'数据监测':'Data monitor',
+            iconName: "svg:laptop-check.svg",
+            childs: [
+              {
+                name: "update",
+                title: languageflag.value?'实时查看':'Real time viewing',
+                isCache: true,
+                content: "",
+                iconName: "svg:alignleft-fill.svg",
+                showTagIcon: true,
+              },
+              {
+                name: "statistics",
+                title: languageflag.value?'统计':'Statistics',
+                isCache: true,
+                content: "",
+                iconName: "svg:chart-bar.svg",
+                showTagIcon: true,
+              },
+            ]
+          },
+          {
+            name: "log",
+            title: languageflag.value?'日志':'Log',
+            isCache: true,
+            content: "",
+            iconName: "svg:fankui.svg",
+            showTagIcon: true,
+          },
           {
             name: "bbb_Aqw",
             title: "统计",
@@ -180,75 +293,38 @@ const allApi = {
         ],
       },
       {
-        title: "控制",
-        iconName: "svg:flag.svg",
-        childs: [
-          {
-            name: "manual",
-            title: "手控",
-            isCache: true,
-            content: "",
-            iconName: "svg:user-fill.svg",
-            showTagIcon: true,
-          },
-          {
-            name: "checkio",
-            title: "IO测试",
-            isCache: true,
-            content: "",
-            iconName: "svg:switch.svg",
-            showTagIcon: true,
-          },
-          {
-            name: "auto",
-            title: "离线任务",
-            isCache: true,
-            content: "",
-            iconName: "svg:tag.svg",
-            showTagIcon: true,
-          },
-
-        ],
-      },
-      {
-        title: "配置",
-        iconName: "svg:cat-code.svg",
-        content: "",
-        childs: [
-          {
-            name: "task",
-            title: "任务",
-            isCache: true,
-            content: "",
-            iconName: "svg:tag-fill.svg",
-            showTagIcon: true,
-          },
-          {
-            name: "param",
-            title: "配置参数",
-            isCache: true,
-            content: "",
-            iconName: "svg:chart-relation.svg",
-            showTagIcon: true,
-          },
-        ],
-      },
-      {
         name: "whwtest",
-        title: "回放",
+        title: languageflag.value?'回放':'Review',
         isCache: true,
         content: "",
         iconName: "svg:laptop-check.svg",
         showTagIcon: true,
       },
       {
-        title: "文件",
+        title: languageflag.value?'文件管理':'File management',
         iconName: "svg:Directory-tree.svg",
         content: "",
         childs: [
+
+          {
+            name: "updatafile",
+            title: languageflag.value?'增加':'Increase',
+            isCache: true,
+            content: "",
+            iconName: "svg:upload.svg",
+            showTagIcon: true,
+          },
+          {
+            name: "deletefile",
+            title: languageflag.value?'删除':'Delete',
+            isCache: true,
+            content: "",
+            iconName: "svg:delete.svg",
+            showTagIcon: true,
+          },
           {
             name: "updatajson",
-            title: "json文件",
+            title: languageflag.value?'修改':'Change',
             isCache: true,
             content: "",
             iconName: "svg:friendship.svg",
@@ -256,53 +332,90 @@ const allApi = {
           },
           {
             name: "downloadfile",
-            title: "管理",
+            title: languageflag.value?'查询':'Query',
             isCache: true,
             content: "",
-            iconName: "svg:cog-fill.svg",
+            iconName: "svg:search-bt.svg",
             showTagIcon: true,
           },
-          {
-            name: "updatafile",
-            title: "上传",
-            isCache: true,
-            content: "",
-            iconName: "svg:upload.svg",
-            showTagIcon: true,
-          },
+
+
 
         ],
       },
       {
-        title: "文档",
+        title: languageflag.value?'帮助文档':'Document',
         iconName: "svg:aligncenter-fill.svg",
+
         childs: [
           {
-            name: "huojia",
-            title: "货架车调试文档",
-            isCache: true,
-            content: "",
-            iconName: "svg:comment-lines.svg",
-            showTagIcon: true,
+            title: languageflag.value?'货架车':'Shelf car',
+            iconName: "svg:aligncenter-fill.svg",
+            childs: [{
+              name: "huojia",
+              title: languageflag.value?'货架车调试文档':'Debug documentation',
+              isCache: true,
+              content: "",
+              iconName: "svg:comment-lines.svg",
+              showTagIcon: true,
+            },
+            {
+              name: "huojiashiyong",
+              title: languageflag.value?'货架车使用说明':'Instructions',
+              isCache: true,
+              content: "",
+              iconName: "svg:comment-lines.svg",
+              showTagIcon: true,
+            },]
           },
           {
-            name: "mrc05",
-            title: "mrc05说明",
-            isCache: true,
-            content: "",
-            iconName: "svg:comment-lines.svg",
-            showTagIcon: true,
+            title: languageflag.value?'V型槽':'V-shaped',
+            iconName: "svg:aligncenter-fill.svg",
+            childs: []
           },
           {
-            path: `/main/iframe/shuoming?src=${encodeURIComponent(
-              "https://asdqvqw.github.io/whwtest.github.io/"
-            )}`,
-            title: "平台说明",
-            content: "需联网",
-            iconName: "svg:laptop-check.svg",
-            showTagIcon: true,
-            isCache: true,
+            title:  languageflag.value?'叉车':'Forklift',
+            iconName: "svg:aligncenter-fill.svg",
+            childs: []
           },
+          {
+            title: languageflag.value?'高精度':'High-precision',
+            iconName: "svg:aligncenter-fill.svg",
+            childs: []
+          },
+          // {
+          //   title: "平台",
+          //   iconName: "svg:aligncenter-fill.svg",
+          //   childs: [
+          //     {
+          //       name: "pingtainei",
+          //       title: "平台说明",
+          //       isCache: true,
+          //       content: "内",
+          //       iconName: "svg:comment-lines.svg",
+          //       showTagIcon: true,
+          //     },
+          //     {
+          //       name: "pingtaiwai",
+          //       title: "平台说明",
+          //       isCache: true,
+          //       content: "外",
+          //       iconName: "svg:comment-lines.svg",
+          //       showTagIcon: true,
+          //     },
+          //   ]
+          // },
+
+          // {
+          //   path: `/main/iframe/shuoming?src=${encodeURIComponent(
+          //     "https://asdqvqw.github.io/whwtest.github.io/"
+          //   )}`,
+          //   title: "平台说明",
+          //   content: "需联网",
+          //   iconName: "svg:laptop-check.svg",
+          //   showTagIcon: true,
+          //   isCache: true,
+          // },
           // {
           //   title: "VUE3文档(外联)",
           //   iconName: "svg:friendship.svg",
@@ -323,29 +436,29 @@ const allApi = {
 
         ],
       },
-      {
-        title: "工具",
-        iconName: "svg:gallery-view.svg",
-        content: "需联网",
-        childs: [
-          {
-            name: "websockettest",
-            title: "websocket测试",
-            isCache: true,
-            content: "",
-            iconName: "svg:sort-line.svg",
-            showTagIcon: true,
-          },
-          {
-            name: "toolsvg",
-            title: "toolbox",
-            isCache: true,
-            content: "",
-            iconName: "svg:collection-fill.svg",
-            showTagIcon: true,
-          },
-        ],
-      },
+      // {
+      //   title: "工具",
+      //   iconName: "svg:gallery-view.svg",
+      //   content: "需联网",
+      //   childs: [
+      //     {
+      //       name: "websockettest",
+      //       title: "websocket测试",
+      //       isCache: true,
+      //       content: "",
+      //       iconName: "svg:sort-line.svg",
+      //       showTagIcon: true,
+      //     },
+      //     {
+      //       name: "toolsvg",
+      //       title: "toolbox",
+      //       isCache: true,
+      //       content: "",
+      //       iconName: "svg:collection-fill.svg",
+      //       showTagIcon: true,
+      //     },
+      //   ],
+      // },
       // {
       //     name:"show-list",
       //     title:'展示列表',
@@ -518,16 +631,16 @@ const allApi = {
       //         },
       //     ],
       // },
-      {
-        name: "icon-list",
-        title: "svg展示",
-        isCache: true,
-        content: "",
-        // iconName:"svg:collection-fill.svg",
-        iconName: "img:logo.png",
-        showTagIcon: true,
-        number: 20,
-      },
+      // {
+      //   name: "icon-list",
+      //   title: "svg展示",
+      //   isCache: true,
+      //   content: "",
+      //   // iconName:"svg:collection-fill.svg",
+      //   iconName: "img:logo.png",
+      //   showTagIcon: true,
+      //   number: 20,
+      // },
       {
         name: "mine",
         title: "个人中心",

@@ -183,7 +183,7 @@ const frontdown = () => {
     })
 
 
-    // timer.value = setTimeout(frontdown, 500);
+    timer.value = setTimeout(frontdown, 500);
 }
 
 const frontup = () => {
@@ -232,7 +232,7 @@ const backdown = () => {
     }).finally(() => {
     })
 
-    // timer2.value = setTimeout(backdown, 500);
+    timer2.value = setTimeout(backdown, 500);
 }
 
 const backup = () => {
@@ -264,7 +264,7 @@ const backup = () => {
 
 
 //复位
-const timer3 = ref(null);
+// const timer3 = ref(null);
 const redown = () => {
     var userList = {
         type: 'equipment',
@@ -288,30 +288,30 @@ const redown = () => {
     // timer3.value = setTimeout(redown, 500);
 }
 
-const reup = () => {
+// const reup = () => {
 
-    clearTimeout(timer3.value)
+//     clearTimeout(timer3.value)
 
-    var userList = {
-        type: 'equipment',
-        data: {
-            axID: Number(actValue.value),
-            direction: 0
-        }
-    }
-    console.log(JSON.stringify(userList));
-    axios({
-        method: 'post',
-        url: '/api/ctrl/manualdata',//这里是请求地址
-        data: JSON.stringify(userList),
-    }).then((res) => {
-        // ElMessage.success('设置任务')
-    }).catch(error => {
-        // ElMessage.error('请求失败')
-    }).finally(() => {
-    })
+//     var userList = {
+//         type: 'equipment',
+//         data: {
+//             axID: Number(actValue.value),
+//             direction: 0
+//         }
+//     }
+//     console.log(JSON.stringify(userList));
+//     axios({
+//         method: 'post',
+//         url: '/api/ctrl/manualdata',//这里是请求地址
+//         data: JSON.stringify(userList),
+//     }).then((res) => {
+//         // ElMessage.success('设置任务')
+//     }).catch(error => {
+//         // ElMessage.error('请求失败')
+//     }).finally(() => {
+//     })
 
 
-    ElMessage.success('停止')
-}
+//     ElMessage.success('停止')
+// }
 </script>

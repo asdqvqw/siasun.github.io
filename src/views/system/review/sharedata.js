@@ -48,6 +48,7 @@ export let Net_Info_TaskState = ref('');
 export let Net_Info_TaskID = ref('');
 export let Net_Info_Key = ref('');
 export let Net_Info_Head = ref('');
+export let Net_Info_uTaskcode = ref('');
 
 
 //infobox
@@ -129,6 +130,7 @@ export const updateTargetCoordinates = () => {
   event_detail.value = parsedLogData.value[currentCoordinateIndex.value].logJson.event.detail;
   event_advise.value = parsedLogData.value[currentCoordinateIndex.value].logJson.event.advise;
   //控制台
+  Net_Info_uTaskcode.value = parsedLogData.value[currentCoordinateIndex.value].logJson.tcInfo.uTaskcode;
   Net_Info_Head.value = parsedLogData.value[currentCoordinateIndex.value].logJson.tcInfo.sHeading;
   Net_Info_CurSpeed.value = parsedLogData.value[currentCoordinateIndex.value].logJson.tcInfo.sCurSpeed;
   Net_Info_WorkState.value = parsedLogData.value[currentCoordinateIndex.value].logJson.tcInfo.uWorkState;
@@ -451,7 +453,7 @@ export const updateTargetCoordinates = () => {
     ele_dev_wheel_nServoState.value = parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[ele_dev_Dcount.value].wheel.nServoState;
   }
   if (parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer !== undefined) {
-    console.log(parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer);
+    // console.log(parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer);
     ele_dev_steer_fServoPosition.value = parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer.fServoPosition.toFixed(5);
     ele_dev_steer_nServoState.value = parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer.nServoState;
     ele_dev_steer_nServoErrCode.value = parsedLogData.value[currentCoordinateIndex.value].logJson.electricalModule.kinematic.drive[ele_dev_Dcount.value].steer.nServoErrCode;

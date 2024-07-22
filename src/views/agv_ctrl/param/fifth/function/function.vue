@@ -1,8 +1,8 @@
 <template>
     <div>
 
-        <el-table :data="functioncDate" style="width: 100%">
-            <el-table-column prop="name" label="名称"></el-table-column>
+        <el-table :data="functioncDate" style="width: 100%" class="functioncDate">
+            <el-table-column prop="name" label="⚠️ 功能定制"></el-table-column>
             <el-table-column prop="des" label="说明"></el-table-column>
             <el-table-column prop="key" label="英文名">
 
@@ -33,7 +33,7 @@
         <el-button type="primary" @click="addNewRow">添加新数据</el-button>
 
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="800px"
-            :close-on-click-modal="false" class="edit-data-dialog">
+            :close-on-click-modal="false" class="edit-data-dialog" style="height: 40%;">
             <el-form ref="form" :model="newRow" label-width="80px">
                 <el-form-item label="名称">
                     <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
@@ -131,5 +131,12 @@ const deleteRow = (row) => {
         padding: 15px 15px 0 15px;
         box-sizing: border-box;
     }
+}
+</style>
+
+<style>
+.functioncDate .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
 }
 </style>

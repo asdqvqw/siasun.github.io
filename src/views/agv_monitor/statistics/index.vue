@@ -186,6 +186,7 @@ const gooncheck = () => {
     flag2.value = !flag2.value;
 }
 
+
 const update = () => {
     let filteredData;
 
@@ -224,6 +225,9 @@ const update = () => {
                 }
                 return tooltipContent;
             },
+        },
+        legend: {
+            show: true
         },
         dataZoom: [
             {
@@ -286,8 +290,8 @@ onMounted(() => {
 
 <style scoped>
 #chart-container {
-    width: 1200px;
-    height: 400px;
+    width: 100%;
+    height: 67%;
     position: absolute;
     margin-left: -3%;
 }

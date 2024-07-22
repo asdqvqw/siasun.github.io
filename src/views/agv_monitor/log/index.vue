@@ -1,100 +1,128 @@
 <template>
-    <div class="page-container main-view">
-        <div class="table-box content-container page-content-box">
-            <el-button @click="aaaaa">aaaaaa</el-button>
-            <el-button @click="bbbb">bbbb</el-button>
-        </div>
-    </div>
+  <div id="container" ref="container"></div>
 </template>
-
+ 
 <script setup>
-import { ref } from 'vue'
-const flag = ref(0)
-const aaaaa = () => {
-
-    switch (flag.value) {
-        case 0:
-            console.log('11111')
-            return;
-        case 2:
-            console.log('333')
-            return;
-        case 3:
-            console.log('4444')
-            return;
+import * as THREE from 'three';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer';
+import { useRafFn } from '@vueuse/core';
+ 
+const container = ref(null);
+let camera, scene, renderer, controls, staticLabel;
+ 
+const words = [
+  'Uniapp', 'PWA','JAVA','Egg.js','React', 'Angular', 'Vue.js', 'Node.js',  'ReactNative', 'Flutter', '微前端', 'PMP', 'Three.js', 'PHP', 'Nuxt.js', 'Taro', 'Uniapp', 'PWA','JAVA','Egg.js',// Example words
+ 
+];
+ 
+onMounted(() => {
+  init();
+  createOrbitControls();
+  createWords();
+  createStaticLabel();  
+  useRafFn(render);
+});
+ 
+function init() {
+  const aspect = window.innerWidth / window.innerHeight;
+  camera = new THREE.PerspectiveCamera(75, aspect, 1, 5000);
+  camera.position.set(0, 0, 1000);
+ 
+  scene = new THREE.Scene();
+ 
+  renderer = new CSS3DRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.value.appendChild(renderer.domElement);
+ 
+  window.addEventListener('resize', onWindowResize, false);
+}
+ 
+function createOrbitControls() {
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 2.0;
+}
+ 
+function createWords() {
+  const radius = 400;
+  words.forEach((word, idx) => {
+    const phi = Math.acos(-1 + (2 * idx) / words.length);
+    const theta = Math.sqrt(words.length * Math.PI) * phi;
+ 
+    const element = document.createElement('div');
+    element.className = 'element';
+    element.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    element.textContent = word;
+ 
+    const object = new CSS3DObject(element);
+    object.position.x = radius * Math.cos(theta) * Math.sin(phi);
+    object.position.y = radius * Math.sin(theta) * Math.sin(phi);
+    object.position.z = radius * Math.cos(phi);
+    object.lookAt(camera.position);
+ 
+    scene.add(object);
+  });
+}
+ 
+function createStaticLabel() {
+  const element = document.createElement('div');
+  element.className = 'static';
+  element.textContent = '技术能力';
+  staticLabel = new CSS3DObject(element);
+  staticLabel.position.set(0, 0, 0);
+  scene.add(staticLabel);
+}
+ 
+function render() {
+  controls.update();
+  scene.children.forEach(child => {
+    if (child instanceof CSS3DObject) {
+      child.lookAt(camera.position);
     }
-
-
-
-
-    console.log('222222')
+  });
+  staticLabel.lookAt(camera.position);  
+ 
+  renderer.render(scene, camera);
 }
-
-const bbbb =() =>{
-    flag.value = 'aaa';
+ 
+function onWindowResize() {
+  const aspect = window.innerWidth / window.innerHeight;
+  camera.aspect = aspect;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
+ 
+onUnmounted(() => {
+  window.removeEventListener('resize', onWindowResize, false);
+});
 </script>
-
-
-<style lang="scss" scoped>
-.main-view {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-    height: 600px;
-
-    >.page-query-box {
-        margin: 0 0 10px 0 !important;
-        padding: 10px 10px 0px 10px;
-
-        :deep(.el-form-item) {
-            margin-bottom: 10px !important;
-        }
-
-        :deep(.el-form-item--default) {
-            width: 100%;
-            margin-right: 0;
-        }
-    }
-
-    >.content-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        padding: 10px 10px;
-        box-sizing: border-box;
-        background: #fff;
-
-        overflow: auto !important;
-
-        >.top-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0px 0 10px 0;
-        }
-
-        >.table-container {
-            flex: 1 1 auto;
-            height: 0;
-            overflow: auto;
-        }
-    }
-
-    .pagination-container {
-        display: flex;
-        justify-content: flex-end;
-        padding: 0;
-        margin: 10px 0 0 0;
-    }
+ 
+<style>
+#container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background:#110031 ;
 }
-
-
-.edit-data-dialog {
-    .dialog-container {
-        padding: 15px 15px 0 15px;
-        box-sizing: border-box;
-    }
+.element {
+  text-align: center;
+  font-family: '微软雅黑', Arial, sans-serif;
+  font-size: 40px;
+  line-height: 1.1;
+  user-select: none;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 150px;
+line-height:150px;  
+  border-radius: 50%;
+  background: rgba(17, 5, 30,0.8);
+  border:1px dashed rgb(67, 181, 247);
 }
+.static {
+  font-size: 70px; 
+  color: #fff;  
+}
+ 
 </style>

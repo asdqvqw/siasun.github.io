@@ -2,85 +2,98 @@
     <div>
         <div class="page-container main-view">
 
-            <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
-
-                <div class="left">
-
-                    <!-- <el-button plain type="primary" @click="handleExport">
-                        导出
-                    </el-button>
-                    &nbsp;&nbsp; -->
-                    <input ref="importInput" type="file" accept=".json" style="display: none" @change="handleImport" />
-                    <el-button @click="$refs.importInput.click()" type="success">
-                        本地导入
-                    </el-button>
-
-                    <el-button type="primary" @click="syncAgvParm">
-                        从AGV同步参数
-                    </el-button>
-
-                    <el-button type="info" @click="handlecheck">
-                        查看设备
-                    </el-button>
-                    <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" width="900px"
-                        @close="checkdevice = false">
-                        <checkbox></checkbox>
-                    </el-dialog>
-
-                    &nbsp;
-                    <el-button type="info" @click="handleExpand11">
-                        查看
-                    </el-button>
-                    <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible"
-                        @close="dialogVisible = false">
-                        <pre>{{ formattedJsondata }}</pre>
-                    </el-dialog>
+            <div class="table-box content-container page-content-box"
+                style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
+                <DefinScrollbar height="100%" :showUpBt="true">
+                    <div class="left">
 
 
-                </div>
-                <hr class="hengxian">
+                        <el-button type="info" @click="handlecheck">
+                            查看设备
+                        </el-button>
+                        <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" width="900px"
+                            @close="checkdevice = false">
+                            <DefinScrollbar height="100%" :showUpBt="true">
+                            <checkbox></checkbox>
+                        </DefinScrollbar>
+                        </el-dialog>
 
-                <div class="left">
-                    <h2>⚠️ 通讯：</h2>
-                    配置串口，网口，CAN线相关参数
+                        &nbsp;
+                        <el-button type="info" @click="handleExpand11">
+                            查看
+                        </el-button>
+                        <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible"
+                            @close="dialogVisible = false" modal-class="kk-dialog-class" custom-class="custom-dialog">
+                            <DefinScrollbar height="100%" :showUpBt="true">
+                            <pre>{{ formattedJsondata }}</pre>
+                        </DefinScrollbar>
+                        </el-dialog>
+                        &nbsp;
+                        <el-button type="primary" @click="syncAgvParm">
+                            从AGV同步参数
+                        </el-button>
+
+
+                        <el-button type="primary" @click="nextstep">下一步</el-button>
+                        &nbsp;
+                        <input ref="importInput" type="file" accept=".json" style="display: none"
+                            @change="handleImport" />
+                        <el-button @click="$refs.importInput.click()" type="success">
+                            本地导入
+                        </el-button>
+                    </div>
+                    <hr class="hengxian">
+
+                    <div class="left">
+                        <h2>⚠️ 通讯：</h2>
+                        配置串口，网口，CAN线相关参数
+                        <hr class="hengxian2">
+
+                        <!-- <h3>⚠️ 串口</h3>
+                        
+                        启用的串口号： -->
+
+                        <el-table :data="tableData" border class="datatableCOM">
+                            <el-table-column prop="key" label="⚠️ 串口"></el-table-column>
+
+                            <el-table-column label="勾选启用的串口号：">
+                                <template v-slot="scope">
+                                    <el-checkbox v-model="scope.row.isChecked"
+                                        @change="handlecom(scope.row)"></el-checkbox>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+
+
+                        <hr class="hengxian3">
+                        <!-- <h3>⚠️ 网口</h3>
+                        配置车体相关所有ip地址: -->
+                        <!-- <el-button @click="toggleNetTable" type="text" plain :disabled="false">
+                            <span v-if="!ShowNetSelect">展开</span>
+                            <span v-else>展开</span>
+                            <span :class="{ 'rotate-arrow': ShowNetSelect }">➡️</span>
+                        </el-button><br> -->
+                        <div v-if="ShowNetSelect">
+                            <Consloe />
+                        </div>
+
+                        <hr class="hengxian3">
+                        <!-- <h3>⚠️ CAN线</h3>
+                        配置CAN总线挂载的设备:
+                        <el-button @click="toggleCanTable" type="text" plain :disabled="false">
+                            <span v-if="!ShowCanSelect">展开</span>
+                            <span v-else>展开</span>
+                            <span :class="{ 'rotate-arrow': ShowCanSelect }">➡️</span>
+                        </el-button><br> -->
+                        <div v-if="ShowCanSelect">
+                            <CanLine />
+                        </div>
+                    </div>
+
+
                     <hr class="hengxian2">
 
-                    <h3>⚠️ 串口</h3>
-                    勾选启用的串口号：
-                    <el-checkbox v-model="isChecked" @change="handlecom">COM1</el-checkbox>
-                    <el-checkbox v-model="isChecked1" @change="handlecom">COM2</el-checkbox>
-                    <el-checkbox v-model="isChecked2" @change="handlecom">COM3</el-checkbox>
-                    <el-checkbox v-model="isChecked3" @change="handlecom">COM4</el-checkbox>
-
-                    <hr class="hengxian3">
-                    <h3>⚠️ 网口</h3>
-                    配置车体相关所有ip地址:
-                    <el-button @click="toggleNetTable" type="text" plain :disabled="false">
-                        <span v-if="!ShowNetSelect">展开</span>
-                        <span v-else>展开</span>
-                        <span :class="{ 'rotate-arrow': ShowNetSelect }">➡️</span>
-                    </el-button><br>
-                    <div v-if="ShowNetSelect">
-                        <Consloe />
-                    </div>
-
-                    <hr class="hengxian3">
-                    <h3>⚠️ CAN线</h3>
-                    配置CAN总线挂载的设备:
-                    <el-button @click="toggleCanTable" type="text" plain :disabled="false">
-                        <span v-if="!ShowCanSelect">展开</span>
-                        <span v-else>展开</span>
-                        <span :class="{ 'rotate-arrow': ShowCanSelect }">➡️</span>
-                    </el-button><br>
-                    <div v-if="ShowCanSelect">
-                        <CanLine />
-                    </div>
-                </div>
-
-
-                <hr class="hengxian2">
-                <el-button type="primary" @click="nextstep">下一步</el-button>
-
+                </DefinScrollbar>
             </div>
 
         </div>
@@ -109,10 +122,10 @@ import { OTHERPARM, functioncDate } from './common/commondata.js';
 import { tableDataCrtlswitch, tableDataCrtlswitchEmg } from './common/commondata.js';
 import { tableDataCrtlBumper, tableDataCrtlPLS, tableDataCrtlSound, MANUALDATA } from './common/commondata.js';
 import { tableDataCrtlBetter, tableDataCrtlRelay } from './common/commondata.js';
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 
-
-const ShowNetSelect = ref(false);
-const ShowCanSelect = ref(false);
+const ShowNetSelect = ref(true);
+const ShowCanSelect = ref(true);
 const dialogVisible = ref(false);
 const checkdevice = ref(false);
 const isChecked = ref(false);
@@ -123,13 +136,22 @@ const isChecked3 = ref(false);
 const formattedJsondata = computed(() => {
     return JSON.stringify(jsondata.value, null, 2);
 });
+const handlecom = (row) => {
+    // 更新 tableData 数组中的 isChecked 属性
+    tableData.value.forEach(item => {
+        if (item.key === row.key) {
+            item.isChecked = row.isChecked
+        }
+    })
 
-const handlecom = () => {
-    jsondata.value.com.com1 = isChecked;
-    jsondata.value.com.com2 = isChecked1;
-    jsondata.value.com.com3 = isChecked2;
-    jsondata.value.com.com4 = isChecked3;
-};
+    jsondata.value.com.com1 = tableData.value[0].isChecked;
+    jsondata.value.com.com2 = tableData.value[1].isChecked;
+    jsondata.value.com.com3 = tableData.value[2].isChecked;
+    jsondata.value.com.com4 = tableData.value[3].isChecked;
+
+
+}
+
 const handlecheck = () => {
     checkdevice.value = true;
 };
@@ -148,23 +170,31 @@ const nextstep = () => {
 };
 
 
-const handleExport = () => {
-    const jsonDataToExport = JSON.stringify(jsondata.value);
-    const blob = new Blob([jsonDataToExport], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'parm.json';
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-};
 import axios from 'axios'
+
+const tableData = computed(() => {
+    return [
+        {
+            key: 'COM1', isChecked: jsondata.value.com.com1
+        },
+        {
+            key: 'COM2', isChecked: jsondata.value.com.com2
+        },
+        {
+            key: 'COM3', isChecked: jsondata.value.com.com3
+        },
+        {
+            key: 'COM4', isChecked: jsondata.value.com.com4
+        }
+    ]
+});
+
+
+
 const responseData = ref(null) // 创建响应式变量
 const syncAgvParm = () => {
     let userList = {
-        data:'SystemParm.json',
+        data: 'SystemParm.json',
         group: 'siasun',
         account: 'test',
         password: '123456'
@@ -194,10 +224,10 @@ const syncdata = () => {
     tableDataCrtlnet.value = jsondata.value.network;
     functioncDate.value = jsondata.value.function;
     //com
-    isChecked.value = jsondata.value.com.com1;
-    isChecked1.value = jsondata.value.com.com2;
-    isChecked2.value = jsondata.value.com.com3;
-    isChecked3.value = jsondata.value.com.com4;
+    tableData.value[0].isChecked = jsondata.value.com.com1;
+    tableData.value[1].isChecked = jsondata.value.com.com2;
+    tableData.value[2].isChecked = jsondata.value.com.com3;
+    tableData.value[3].isChecked = jsondata.value.com.com4;
 
     // canpos
     if (jsondata.value.can1.can_pos !== undefined) {
@@ -571,7 +601,7 @@ const handleImport = (event) => {
     display: flex;
     flex-direction: column;
     overflow: auto;
-    height: 600px;
+    height: 85vh;
 
     >.page-query-box {
         margin: 0 0 10px 0 !important;
@@ -625,5 +655,27 @@ const handleImport = (event) => {
         padding: 15px 15px 0 15px;
         box-sizing: border-box;
     }
+}
+</style>
+
+<style>
+.kk-dialog-class {
+    pointer-events: none;
+}
+
+.el-dialog {
+    pointer-events: auto;
+}
+
+.el-dialog__body {
+    overflow: auto;
+    height: 400px;
+}
+</style>
+
+<style>
+.datatableCOM .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
 }
 </style>

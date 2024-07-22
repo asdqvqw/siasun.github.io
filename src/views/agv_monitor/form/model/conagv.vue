@@ -6,28 +6,44 @@
       <div v-if="isSmall">
         AGV
       </div>
-      <div class="better" v-if="!isSmall">
+      <div v-if="!isSmall">
+
         <div class="dianchi">
-          <betters ></betters>
+          <betters></betters>
 
         </div>
 
 
-        <el-table :data="tableData" border class="datatable">
+        <el-table :data="tableData" border class="datatablecon">
           <el-table-column prop="key" label="AGV"></el-table-column>
           <el-table-column prop="value"></el-table-column>
-          <el-table-column prop="key2"></el-table-column>
-          <el-table-column prop="value2"></el-table-column>
+          <el-table-column prop="key2" label="版本号"></el-table-column>
+          <el-table-column prop="value2">
+            <template #header>
+              {{ parsedLogData.nAgvVersion }}
+            </template>
+          </el-table-column>
         </el-table>
 
-        <el-button class="fuwei" type="info">复位</el-button>
-        <el-button class="quxiaorenwu" type="info">取消任务</el-button>
-        <el-button class="jusheng" type="info">举升</el-button>
-        <el-button class="fangxia" type="info">放下</el-button>
-        <el-button class="quchongdian" type="info">去充电</el-button>
-        <el-button class="shoudongkongzhi" type="info" @click="shoudongctrol">手动控制</el-button>
+        <el-button class="fuwei" type="primary" @click="setzero">复位</el-button>
+        <el-button class="shoudongkongzhi" type="primary" @click="shoudongctrol">手动控制</el-button>
 
+        <el-radio-group class="sandang" v-model="switchPosition">
+          <el-radio-button @change="roboSwitch" label="left">手动</el-radio-button>
+
+          <el-radio-button @change="roboSwitch" label="mid">空闲</el-radio-button>
+
+          <el-radio-button @change="roboSwitch" label="right">自动</el-radio-button>
+        </el-radio-group>
+        <div style="width: 100%;  margin-top: 3%;
+                  display: flex; justify-content: space-between; align-items: center; ">
+          <navcontrol></navcontrol>
+          <elecontrol></elecontrol>
+          <devcontrol></devcontrol>
+          <tccontrol></tccontrol>
+        </div>
       </div>
+
 
       <el-dialog v-model="dialogVisible" title="手动控制" :modal="false" draggable :close-on-click-modal="false"
         modal-class="kkk-dialog-class" custom-class="ele-dialog">
@@ -47,7 +63,63 @@ import {
 } from '../commondata.js'
 import manual from './manualbox.vue'
 import betters from './BatteryDisplay.vue'
+import axios from "axios";
+import navcontrol from './nav.vue'
+import elecontrol from './ele.vue'
+import devcontrol from './dev.vue'
+import tccontrol from './tc.vue'
 
+const switchPosition = ref('left')
+//复位
+const setzero = () => {
+  var userList = {
+    type: 'reset',
+    data: true
+  }
+  console.log(JSON.stringify(userList));
+  axios({
+    method: 'post',
+    url: '/api/ctrl/manualdata',//这里是请求地址
+    data: JSON.stringify(userList),
+  }).then((res) => {
+    ElMessage.success('复位')
+  }).catch(error => {
+    // ElMessage.error('请求失败')
+  }).finally(() => {
+  })
+}
+
+// 模式选择
+const roboSwitch = (value) => {
+  let swNum = 1
+  switch (value.target.value) {
+    case 'left':
+      swNum = 1
+      break
+    case 'mid':
+      swNum = 2
+      break
+    case 'right':
+      swNum = 3
+      break
+  }
+  var userList = { triswt: swNum }
+
+  console.log(JSON.stringify(userList));
+  console.log(typeof JSON.stringify(userList))
+
+  axios({
+    method: 'post',
+    url: '/api/ctrl/triswt',//这里是请求地址
+    data: JSON.stringify(userList),
+  }).then((res) => {
+    // ElMessage.success('请求成功')
+
+  }).catch(error => {
+    // ElMessage.error('请求失败')
+  }).finally(() => {
+  })
+}
 
 //手动控制
 const dialogVisible = ref(false);
@@ -85,7 +157,7 @@ const tableData = computed(() => {
 
   return [
     {
-      key: '车号', value: 3,
+      key: '车号', value: parsedLogData.value.nAgvNum,
       key2: '模式', value2: agvmode.value
     },
     {
@@ -112,17 +184,17 @@ const tableData = computed(() => {
 
 <style scoped>
 .agv {
-  background-color: rgba(234, 229, 229, 0.47);
+  background-image: linear-gradient(to bottom right, #141515, #eef1ef);
   color: black;
   position: absolute;
   top: 20%;
   right: 5%;
-  height: 60%;
+  height: 58%;
   width: 25%;
 }
 
 .agv2 {
-  background-color: rgba(234, 229, 229, 0.47);
+  background-color: rgb(234, 229, 229);
   color: black;
   position: absolute;
   top: 20%;
@@ -135,7 +207,7 @@ const tableData = computed(() => {
   position: absolute;
   top: 0%;
   width: 100%;
-  background-image: linear-gradient(to bottom right, #3a3d3d, #c6e0d017);
+  background-image: linear-gradient(to top right, #141515, #eef1ef);
   height: 30%;
 }
 
@@ -156,78 +228,49 @@ const tableData = computed(() => {
 
 .fuwei {
   width: 17%;
-  margin-left: 8%;
-  margin-top: 90%;
-  position: absolute;
-  background-color: #8892925e;
-  color: rgb(7, 7, 7);
-  font-size: 12px;
-}
-
-.quxiaorenwu {
-  width: 17%;
-  left: 25%;
-  margin-top: 90%;
-  position: absolute;
-  background-color: #8892925e;
-  color: rgb(7, 7, 7);
-  font-size: 12px;
-}
-
-.jusheng {
-  width: 17%;
-  left: 45%;
-  margin-top: 90%;
-  position: absolute;
-  background-color: #8892925e;
-  color: rgb(7, 7, 7);
-  font-size: 12px;
-}
-
-.fangxia {
-  width: 17%;
-  left: 65%;
-  margin-top: 90%;
-  position: absolute;
-  background-color: #8892925e;
-  color: rgb(7, 7, 7);
-  font-size: 12px;
-}
-
-.quchongdian {
-  width: 17%;
-  left: 5%;
-  margin-top: 100%;
-  position: absolute;
-  background-color: #8892925e;
-  color: rgb(7, 7, 7);
-  font-size: 12px;
-}
-
-.datatable {
-  width: 90%;
-  height: 130%;
   margin-left: 5%;
-  margin-top: 40%;
-  position: absolute;
+  margin-top: 2%;
+  position: relative;
+  background-color: #424141d8;
+  color: rgb(241, 234, 234);
+  font-size: 12px;
+}
+
+.shoudongkongzhi {
+  width: 17%;
+  left: 2%;
+  margin-top: 2%;
+  position: relative;
+  background-color: #424141d8;
+  color: rgb(241, 234, 234);
+  font-size: 12px;
+}
+
+.sandang {
+  width: auto;
+  left: 5%;
+  margin-top: 2%;
+  position: relative;
+  /* background-color: #8892925e;
+  color: rgb(113, 111, 111); */
+  font-size: 12px;
+}
+
+.datatablecon {
+
+  width: 90%;
+  height: 27vh;
+  margin-left: 5%;
+  margin-top: -2%;
+  position: relative;
   font-size: 12px;
 }
 
 .dianchi {
   margin-left: 10%;
-  margin-top: 15%;
-  position: absolute;
+  margin-top: 18%;
+  position: relative;
   font-size: 22px;
-}
-
-.shoudongkongzhi {
-  width: 17%;
-  left: 25%;
-  margin-top: 100%;
-  position: absolute;
-  background-color: #8892925e;
-  color: rgb(7, 7, 7);
-  font-size: 12px;
 }
 </style>
 
@@ -251,5 +294,12 @@ const tableData = computed(() => {
 
 ::v-deep .el-table td {
   background: rgba(255, 255, 255, 0.34)
+}
+</style>
+
+<style>
+.datatablecon .el-table__body tr:nth-child(2n) {
+  background-color: #768aaa67;
+  /* 隔行背景色 */
 }
 </style>

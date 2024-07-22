@@ -6,13 +6,12 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import { resolve } from 'path';
 import optionConfig from './oss.config';
 import vitePluginAliOss from 'vite-plugin-ali-oss';
-import dumoguConfig from './dumogu.config';
+import dumoguConfig from './siasun';
 import { createHtmlPlugin } from 'vite-plugin-html';
 
 const pathResolve = (dir) => {
     return resolve(__dirname, '.', dir);
 };
-// https://vitejs.dev/config/
 export default defineConfig(({
     mode, 
 })=>{
@@ -44,7 +43,6 @@ export default defineConfig(({
     /** 如果有阿里云配置则使用 */
     if(optionConfig.url){
         base = prod ? optionConfig.url+'/' : base;
-        /** 上传到阿里云OSS上 */
         const options = {
             region: optionConfig.region,
             accessKeyId: optionConfig.accessKeyId,

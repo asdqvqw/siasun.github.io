@@ -16,7 +16,7 @@ export default defineComponent({
         // 倒计时跳转回首页
         const redirectToHome = () => {
             setTimeout(() => {
-                router.push('/main/index');
+                router.push('/main/param/index');
             }, 2000); // 两秒后跳转
         }
 
@@ -47,7 +47,7 @@ export default defineComponent({
             </div>
             <router-link 
                 class="bt"
-                to="/main/index">
+                to="/main/param/index">
                 返回首页
             </router-link>
             <div class="countdown">页面将在2秒后自动跳转...</div>

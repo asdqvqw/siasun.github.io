@@ -1,28 +1,34 @@
 <template>
 
     <el-form ref="form" label-width="180px">
-
+        
         <el-form-item label="CAN:">
             <el-button type="primary" @click="handlecheckCAN1">
                 查看CAN1
             </el-button>
             <el-dialog v-model="checkcanone" title="CAN1设备" :visible="checkcanone" width="800px"
                 @close="checkcanone = false">
-                <canone></canone>
+                <DefinScrollbar height="100%" :showUpBt="true">
+                    <canone></canone>
+                </DefinScrollbar>
             </el-dialog> &nbsp;
             <el-button type="primary" @click="handlecheckCAN2">
                 查看CAN2
             </el-button>
             <el-dialog v-model="checkcantwo" title="CAN2设备" :visible="checkcantwo" width="800px"
                 @close="checkcantwo = false">
-                <cantwo></cantwo>
+                <DefinScrollbar height="100%" :showUpBt="true">
+                    <cantwo></cantwo>
+                </DefinScrollbar>
             </el-dialog> &nbsp;
             <el-button type="primary" @click="handlecheckCAN3">
                 查看CAN3
             </el-button>
             <el-dialog v-model="checkcanthree" title="CAN3设备" :visible="checkcanthree" width="800px"
                 @close="checkcanthree = false">
-                <canthree></canthree>
+                <DefinScrollbar height="100%" :showUpBt="true">
+                    <canthree></canthree>
+                </DefinScrollbar>
             </el-dialog> &nbsp;
         </el-form-item>
 
@@ -43,7 +49,7 @@
         </el-form-item>
 
 
-
+ 
     </el-form>
 
 
@@ -55,21 +61,18 @@ import { ref } from 'vue'
 import canone from './checkcan/canone.vue'
 import cantwo from './checkcan/cantwo.vue'
 import canthree from './checkcan/canthree.vue'
-
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 const checkcanone = ref(false)
 const checkcantwo = ref(false)
 const checkcanthree = ref(false)
 
-const handlecheckCAN1 = () =>
-{
+const handlecheckCAN1 = () => {
     checkcanone.value = true;
 }
-const handlecheckCAN2 = () =>
-{
+const handlecheckCAN2 = () => {
     checkcantwo.value = true;
 }
-const handlecheckCAN3 = () =>
-{
+const handlecheckCAN3 = () => {
     checkcanthree.value = true;
 }
 </script>

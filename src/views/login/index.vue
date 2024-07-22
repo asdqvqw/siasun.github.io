@@ -131,6 +131,7 @@ export default defineComponent({
                  *  */
                 let routeParams = route.query || {};
                 if(routeParams.from) {
+                   
                     router.push(decodeURIComponent(routeParams.from));
                 }else{
                     router.push('/');

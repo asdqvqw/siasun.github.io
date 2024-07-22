@@ -2,7 +2,45 @@
     <div class="page-container main-view">
         <div class="table-box content-container page-content-box">
 
-            <div class="left">
+
+            <el-table :data="tableDataCrtlcan" style="width: 100%" class="datatableCAN">
+                <el-table-column type="expand"  >
+                    <template #default="props">
+                        <div class="expand-content">
+                            <div v-if="props.row.name==='CAN-POS设备'" style="width: 90%;  margin: 0 auto;">
+                                <Can_Pos />
+                            </div>
+                            <div v-if="props.row.name==='CAN-OPEN设备'" style="width: 90%;  margin: 0 auto;">
+                                <Can_Open />
+                            </div>
+                            <div v-if="props.row.name==='CAN-惯导设备'" style="width: 90%;  margin: 0 auto;">
+                                <Can_guide />
+                            </div>
+                            <div v-if="props.row.name==='锂电池管理'" style="width: 90%;  margin: 0 auto;">
+                                <Can_bms />
+                            </div>
+                            <div v-if="props.row.name==='CAN-IO'" style="width: 90%;  margin: 0 auto;">
+                                <Can_io />
+                            </div>
+                            <div v-if="props.row.name==='CAN手控盒'" style="width: 90%;  margin: 0 auto;">
+                                <Can_manual />
+                            </div>
+                            <div v-if="props.row.name==='CAN-RFID'" style="width: 90%;  margin: 0 auto;">
+                                <Can_rfid />
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="name" label="⚠️ CAN设备3" :width="180"></el-table-column>
+                <el-table-column prop="value">
+                    👉
+                </el-table-column>
+
+
+            </el-table>
+
+
+            <!-- <div class="left">
                 <el-button @click="togglePos" type="primary" plain
                     :disabled="CAN_openD || CAN_guideD || CAN_bmsD || CAN_ioD || CAN_manualD || CAN_Rfid">
                     <span v-if="!CAN_posD">CAN-POS设备</span>
@@ -81,7 +119,7 @@
 
             <div v-if="CAN_Rfid">
                 <Can_rfid />
-            </div>
+            </div> -->
 
         </div>
     </div>
@@ -104,7 +142,15 @@ const CAN_ioD = ref(false);
 const CAN_manualD = ref(false);
 const CAN_Rfid = ref(false);
 
-
+const tableDataCrtlcan = ref([
+    { name: "CAN-POS设备", value: "" },
+    { name: "CAN-OPEN设备", value: "" },
+    { name: "CAN-惯导设备", value: "" },
+    { name: "锂电池管理", value: "" },
+    { name: "CAN-IO", value: "" },
+    { name: "CAN手控盒", value: "" },
+    { name: "CAN-RFID", value: "" },
+]);
 const togglePos = () => {
     CAN_posD.value = !CAN_posD.value;
 };

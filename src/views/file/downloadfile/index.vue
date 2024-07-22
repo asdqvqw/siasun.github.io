@@ -1,6 +1,7 @@
 <template>
     <div class="page-container main-view">
-        <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
+        <div class="table-box content-container page-content-box"
+            style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
             <h2 style="margin-top: 1%; margin-left: 1%;">管理</h2>
             <div class="hengxian"></div>
@@ -8,7 +9,10 @@
             <div style="display: flex; align-items: center;">
                 <el-input v-model="filename" style="width: 70%; margin-right: 4%; margin-left: 2%;
                 margin-top: 0%;" placeholder="🤪文件名.."></el-input>
-                <el-button @click="listfile" type="primary" style="width: 15%; margin-top: 0%;" :icon="Search">搜索</el-button>
+                <el-button @click="listfile" type="primary" style="width: 15%; margin-top: 0%;"
+                    :icon="Search">搜索</el-button>
+                <!-- <el-button @click="passwordcheck" :disabled="passwordflag" type="primary"
+                    style="width: 15%; margin-top: 0%;" :icon="Delete">删除权限</el-button> -->
             </div>
             <br>
             <el-table :data="filelist">
@@ -21,18 +25,20 @@
                 <el-table-column prop="size" label="文件大小"></el-table-column>
                 <el-table-column label="操作">
                     <template #default="{ row }">
-                        <el-button type="success" @click="handleContextMenuClick($event, row)" :icon="Download">下载</el-button>
-                        <!-- <el-button type="success" @click="handleContextMenuClick($event, row)">下载</el-button> -->
+                        <div class="button-container">
+                            <el-button type="success" @click="commit($event, row)" :icon="Download">下载</el-button>
+                            <div v-if="passwordflag">
+                                <el-button type="danger" @click="commitde($event, row)" :icon="Delete">删除</el-button>
+                            </div>
+                        </div>
                     </template>
-                    
+
                 </el-table-column>
 
-                
+
             </el-table>
 
 
-            <!-- <el-input v-model="input"></el-input>
-            <el-button @click="downloadFile">点击下载文件</el-button> -->
             <a ref="downloadLink" style="display: none" :href="downloadUrl" download></a>
         </div>
     </div>
@@ -43,7 +49,8 @@ import { ref } from 'vue'
 import axios from 'axios'
 import {
     Search,
-    Download
+    Download,
+    Delete
 } from '@element-plus/icons-vue'
 
 import { ArrayCamera } from 'three';
@@ -53,7 +60,26 @@ const input = ref('');
 const filelist = ref(null)
 const filename = ref('');
 const selectedFile = ref(null);
+const passwordflag = ref(false);
+const passwordcheck = () => {
+    let password = '';  // 声明密码变量
 
+    ElMessageBox.prompt('请输入密码', '提示', {
+        inputType: 'password',
+        inputPattern: /^.{6,}$/,
+        inputErrorMessage: '密码格式错误'
+    }).then(({ value }) => {
+        password = value;
+
+        if (password === 'siasun') {
+            passwordflag.value = true;
+        } else {
+            ElMessage.error('密码错误');
+        }
+    }).catch(() => {
+        return;
+    });
+}
 
 const listfile = () => {
     let userList = {
@@ -116,7 +142,25 @@ const downloadFile = () => {
         })
 };
 
+import { ElMessage, ElMessageBox } from 'element-plus';
+const commit = (event, row) => {
+    ElMessageBox.confirm('下载文件？' + row.name
+        , '提示').then(() => {
+            handleContextMenuClick(event, row);
+        }).catch(() => {
+            return;
+        });
 
+}
+const commitde = (event, row) => {
+    ElMessageBox.confirm('删除文件？' + row.name
+        , '提示').then(() => {
+            handleContextMenuClickde(event, row);
+        }).catch(() => {
+            return;
+        });
+
+}
 const handleContextMenuClick = (event, row) => {
     event.preventDefault();
     selectedFile.value = row;
@@ -128,8 +172,42 @@ const handleContextMenuClick = (event, row) => {
     }
 
 };
+const selectedFilede = ref(null);
+const inputde = ref('');
+const handleContextMenuClickde = (event, row) => {
+    event.preventDefault();
+    selectedFilede.value = row;
 
+    if (selectedFilede.value) {
+        inputde.value = selectedFilede.value.name;
 
+        DeleteFile();
+    }
+
+};
+const DeleteFile = () => {
+    let userList = {
+        dele: inputde.value
+    }
+
+    axios({
+        method: 'get',
+        url: '/api/download',
+        params: userList,
+    })
+        .then((res) => {
+            ElMessage.success('删除成功')
+        })
+        .catch((error) => {
+            // console.log('error',error)
+            //ElMessage.error('请求失败')
+        })
+        .finally(() => {
+            // 可以在此处执行其他操作
+        })
+
+    listfile();
+};
 
 </script>
 
@@ -191,5 +269,19 @@ const handleContextMenuClick = (event, row) => {
         padding: 0;
         margin: 10px 0 0 0;
     }
+}
+</style>
+
+<style scoped>
+.button-container {
+    display: flex;
+    /* 将容器设置为Flex容器 */
+    align-items: center;
+    /* 垂直居中对齐子元素 */
+}
+
+.button-container>* {
+    margin-right: 10px;
+    /* 子元素之间的水平间距 */
 }
 </style>

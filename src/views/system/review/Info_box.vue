@@ -3,8 +3,8 @@
     <div class="info-text" v-if="infoTextVisible" :style="{ left: infoTextX + 'px', top: infoTextY + 'px' }">
         {{ infoText }}<br>
         时间：{{ parsedLogData[currentCoordinateIndex].logDateTime}}<br>
-        车体软件版本：{{ }}<br>
-        车号：{{ }}<br>
+        车体软件版本：{{parsedLogData[0].logJson.nAgvVersion }}<br>
+        车号：{{parsedLogData[0].logJson.nAgvNum }}<br>
         模式：{{ agvmode }}<br>
 
 

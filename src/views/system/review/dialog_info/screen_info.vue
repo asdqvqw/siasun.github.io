@@ -5,9 +5,9 @@
     </el-dialog>
     <el-dialog v-model="dialogVisible" title="屏幕" custom-class="custom-dialog3"  :modal="false"
     >
-        屏幕型号:{{  }}<br>
-        通讯类型:{{  }}<br>
-        手控设备信息:{{  }}<br>
+        屏幕型号:迪文屏幕<br>
+        通讯类型:串口通讯<br>
+        手控设备信息:无<br>
     </el-dialog>
 
 

@@ -1,59 +1,69 @@
 <template>
-    <div>
-        <div style="margin-left: 18%;">
+    <div style="width: 100%;
+                  display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
+        <div style="margin-left: 10%; width: 50%;">
             <h4>五米测试</h4><br>
             <el-button @click="fivestart" style="margin-left: -5%;" type="primary" :icon="Place">开始</el-button>
             <el-button @click="fiveend" style="margin-left: 5%;" type="primary" :icon="Setting">停止</el-button>
         </div>
 
 
-        <div style="margin-left: 58%; margin-top: -10%;">
+        <div style=" width: 50%;">
             <h4>手动任务</h4><br>
-            <el-select-v2 v-model="taskValue" placeholder="Activity count" :options="taskOptions" />
-            <el-button @click="settask" style="margin-left: 2%;" type="primary" :icon="Setting">设置</el-button>
+            <div style="width: 100%;
+                  display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
+                <el-select-v2 style="width: 45%;" v-model="taskValue" placeholder="Activity count"
+                    :options="taskOptions" />
+                <el-button style="margin-right: 15%;" @click="settask" type="primary" :icon="Setting">设置</el-button>
+            </div>
         </div>
     </div>
     <br><br>
 
-    <div style="margin-left: 18%;">
-        <h4>设备动作</h4><br>
-        <el-select v-model="actValue" placeholder="请选择" style="margin-left: -9%;">
-            <el-option label="举升" :value=0></el-option>
-            <el-option label="转盘" :value=1></el-option>
-            <el-option label="2" :value=2></el-option>
-            <el-option label="3" :value=3></el-option>
-            <el-option label="4" :value=4></el-option>
-            <el-option label="5" :value=5></el-option>
-            <el-option label="6" :value=6></el-option>
-        </el-select><br><br>
-        <el-button @mousedown="frontdown" @mouseup="frontup" style="margin-left: -10%;" type="primary"
-            :icon="Setting">正向</el-button>
-        <el-button @mousedown="backdown" @mouseup="backup" style="margin-left: -5%;" type="primary"
-            :icon="Setting">反向</el-button>
-        <el-button @mousedown="redown" @mouseup="reup" style="margin-left: 0%;" type="primary"
-            :icon="Check">复位</el-button>
+    <div style="width: 100%; margin-top: 2%;
+                  display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
 
 
 
+        <div style="margin-left: 10%; width: 50%;">
+            <h4>设备动作</h4><br>
+            <el-select v-model="actValue" placeholder="请选择" style="width: 80%;">
+                <el-option label="举升" :value=0></el-option>
+                <el-option label="转盘" :value=1></el-option>
+                <el-option label="2" :value=2></el-option>
+                <el-option label="3" :value=3></el-option>
+                <el-option label="4" :value=4></el-option>
+                <el-option label="5" :value=5></el-option>
+                <el-option label="6" :value=6></el-option>
+            </el-select><br><br>
+            <div    style="margin-left: -7.5%;">
+            <el-button @mousedown="frontdown" @mouseup="frontup" style="width: 25%;" type="primary"
+                :icon="Setting">正向</el-button>
+            <el-button @mousedown="backdown" @mouseup="backup" style="width: 25%;" type="primary"
+                :icon="Setting">反向</el-button>
+            <el-button @mousedown="redown" style="width: 25%;" type="primary" :icon="Check">复位</el-button>
+        </div>
+        </div>
 
-        <div style="margin-left: 48%; margin-top: -20%;">
+
+
+        <div style=" width: 50%;">
             <h4>手控类型</h4><br>
-
-            <el-select v-model="typeValue" placeholder="手控工具切换">
+            <div style="width: 100%;
+                  display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
+            <el-select v-model="typeValue" placeholder="手控工具切换" style="width: 55%;">
                 <el-option label="手控盒" :value=1></el-option>
                 <el-option label="手柄" :value=2></el-option>
             </el-select>
-            <el-button @click="settype" style="margin-left: 2%;" type="primary" :icon="Setting">设置</el-button>
+            <el-button @click="settype" style="margin-right: 5%;" type="primary" :icon="Setting">设置</el-button>
+        </div>
         </div>
 
 
 
 
     </div>
-    <br><br>
 
-
-    <br><br>
 </template>
 
 <script setup>
@@ -176,14 +186,14 @@ const frontdown = () => {
         url: '/api/ctrl/manualdata',//这里是请求地址
         data: JSON.stringify(userList),
     }).then((res) => {
-        ElMessage.success('开始')
+        // ElMessage.success('开始')
     }).catch(error => {
         // ElMessage.error('请求失败')
     }).finally(() => {
     })
 
 
-    // timer.value = setTimeout(frontdown, 500);
+    timer.value = setTimeout(frontdown, 400);
 }
 
 const frontup = () => {
@@ -226,13 +236,13 @@ const backdown = () => {
         url: '/api/ctrl/manualdata',//这里是请求地址
         data: JSON.stringify(userList),
     }).then((res) => {
-        ElMessage.success('开始')
+        // ElMessage.success('开始')
     }).catch(error => {
         // ElMessage.error('请求失败')
     }).finally(() => {
     })
 
-    // timer2.value = setTimeout(backdown, 500);
+    timer2.value = setTimeout(backdown, 400);
 }
 
 const backup = () => {
@@ -279,39 +289,39 @@ const redown = () => {
         url: '/api/ctrl/manualdata',//这里是请求地址
         data: JSON.stringify(userList),
     }).then((res) => {
-        ElMessage.success('开始')
+        // ElMessage.success('开始')
     }).catch(error => {
         // ElMessage.error('请求失败')
     }).finally(() => {
     })
 
-    // timer3.value = setTimeout(redown, 500);
+    //  timer3.value = setTimeout(redown, 400);
 }
 
-const reup = () => {
+// const reup = () => {
 
-    clearTimeout(timer3.value)
+//     clearTimeout(timer3.value)
 
-    var userList = {
-        type: 'equipment',
-        data: {
-            axID: Number(actValue.value),
-            direction: 0
-        }
-    }
-    console.log(JSON.stringify(userList));
-    axios({
-        method: 'post',
-        url: '/api/ctrl/manualdata',//这里是请求地址
-        data: JSON.stringify(userList),
-    }).then((res) => {
-        // ElMessage.success('设置任务')
-    }).catch(error => {
-        // ElMessage.error('请求失败')
-    }).finally(() => {
-    })
+//     var userList = {
+//         type: 'equipment',
+//         data: {
+//             axID: Number(actValue.value),
+//             direction: 0
+//         }
+//     }
+//     console.log(JSON.stringify(userList));
+//     axios({
+//         method: 'post',
+//         url: '/api/ctrl/manualdata',//这里是请求地址
+//         data: JSON.stringify(userList),
+//     }).then((res) => {
+//         // ElMessage.success('设置任务')
+//     }).catch(error => {
+//         // ElMessage.error('请求失败')
+//     }).finally(() => {
+//     })
 
 
-    ElMessage.success('停止')
-}
+//     ElMessage.success('停止')
+// }
 </script>

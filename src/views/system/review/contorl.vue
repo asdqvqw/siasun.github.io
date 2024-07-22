@@ -55,7 +55,6 @@ const restartCar = () => {
 //暂停
 const togglePause = () => {
     paused.value = !paused.value;
-
     //   if (paused.value) {
     //     pauseAnimation();
     //   } else {

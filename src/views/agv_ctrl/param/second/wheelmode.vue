@@ -2,80 +2,96 @@
     <div>
         <div class="page-container main-view">
 
-            <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
+            <div class="table-box content-container page-content-box"
+                style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
+                <DefinScrollbar height="100%" :showUpBt="true">
+                    <div class="left">
 
-                <div class="left">
+                        <el-button type="info" @click="handlecheck">
+                            查看设备
+                        </el-button>
+                        <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" width="900px"
+                            @close="checkdevice = false">
+                            <DefinScrollbar height="100%" :showUpBt="true">
+                                <checkbox></checkbox>
+                            </DefinScrollbar>
+                        </el-dialog>
 
-                    <el-button type="info" @click="handlecheck" >
-                        查看设备
-                    </el-button>
-                    <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" 
-                    width="900px" @close="checkdevice = false" >
-                        <checkbox></checkbox>
-                    </el-dialog>
-
-                    &nbsp;
+                        &nbsp;
 
 
-                    <el-button type="info" @click="handleExpand11" >
-                        查看
-                    </el-button>
-                    <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible" @close="dialogVisible = false">
-                        <pre>{{ formattedJsondata }}</pre>
-                    </el-dialog>
-                </div>
-                
-                <hr class="hengxian">
+                        <el-button type="info" @click="handleExpand11">
+                            查看
+                        </el-button>
+                        <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible"
+                            @close="dialogVisible = false">
+                            <DefinScrollbar height="100%" :showUpBt="true">
+                                <pre>{{ formattedJsondata }}</pre>
+                            </DefinScrollbar>
+                        </el-dialog>
+                        &nbsp;
+                        <el-button type="primary" @click="afterstep">上一步</el-button>
 
-                <div class="left">
-                    <h2>⚠️ 驱动模型：</h2>
-                    配置车体驱动模型
+                        <el-button type="primary" @click="nexatstep">下一步</el-button>
+                    </div>
+
+                    <hr class="hengxian">
+
+                    <div class="left">
+                        <h2>⚠️ 驱动模型：</h2>
+                        配置车体驱动模型
+                        &nbsp;车型:&nbsp;<el-select v-model="jsondata.car_type">
+                            <el-option label="货架车" :value="0"></el-option>
+                            <el-option label="V型槽" :value="1"></el-option>
+                        </el-select>
+                        <hr class="hengxian2">
+
+                        <h3>⚠️ 车体模型</h3>
+                        <!-- 配置车体类型和轮舵机械参数:
+                        <el-button @click="toggleKinematic" type="text" plain :disabled="false">
+                            <span v-if="!Kinematic">展开</span>
+                            <span v-else>展开</span>
+                            <span :class="{ 'rotate-arrow': Kinematic }">➡️</span>
+                        </el-button>
+                        <br> -->
+
+                        <div v-if="Kinematic">
+                            <Kinematich />
+                        </div>
+
+
+
+                        <hr class="hengxian3">
+
+                        <h3>⚠️ 运行参数</h3>
+                        <br>
+                        <!-- <span class="title">🔖 自动参数:</span>
+                        <el-button @click="toggleautoparm" type="text" plain :disabled="false">
+                            <span v-if="!autoparm">展开</span>
+                            <span v-else>展开</span>
+                            <span :class="{ 'rotate-arrow': autoparm }">➡️</span>
+                        </el-button><br> -->
+                        <div v-if="autoparm">
+                            <autoparmh />
+                        </div>
+                        <br>
+                        <span class="title">🔖 手动参数:</span>
+                        <!-- <el-button @click="togglemanualparm" type="text" plain :disabled="false">
+                            <span v-if="!manualparm">展开</span>
+                            <span v-else>展开</span>
+                            <span :class="{ 'rotate-arrow': manualparm }">➡️</span>
+                        </el-button><br> -->
+                        <br><br>
+                        <div v-if="manualparm">
+                            <manualparmh />
+                        </div>
+
+
+
+                    </div>
                     <hr class="hengxian2">
-                    <h3>⚠️ 运行参数</h3>
-                    配置手动运行参数和自动运行参数:
-                    <br><br>
-                    <span class="title">🔖 自动参数:</span>
-                    <el-button @click="toggleautoparm" type="text" plain :disabled="false">
-                        <span v-if="!autoparm">展开</span>
-                        <span v-else>展开</span>
-                        <span :class="{ 'rotate-arrow': autoparm }">➡️</span>
-                    </el-button><br>
-                    <div v-if="autoparm">
-                        <autoparmh />
-                    </div>
-                    <br>
-                    <span class="title">🔖 手动参数:</span>
-                    <el-button @click="togglemanualparm" type="text" plain :disabled="false">
-                        <span v-if="!manualparm">展开</span>
-                        <span v-else>展开</span>
-                        <span :class="{ 'rotate-arrow': manualparm }">➡️</span>
-                    </el-button><br>
 
-                    <div v-if="manualparm">
-                        <manualparmh />
-                    </div>
-                    <hr class="hengxian3">
-
-
-                    <h3>⚠️ 车体模型</h3>
-                    配置车体类型和轮舵机械参数:
-                    <el-button @click="toggleKinematic" type="text" plain :disabled="false">
-                        <span v-if="!Kinematic">展开</span>
-                        <span v-else>展开</span>
-                        <span :class="{ 'rotate-arrow': Kinematic }">➡️</span>
-                    </el-button><br>
-
-                    <div v-if="Kinematic">
-                        <Kinematich />
-                    </div>
-
-                    
-                </div>
-                <hr class="hengxian2">
-                <el-button type="primary" @click="nexatstep">下一步</el-button>
-                <hr class="kongge">
-                <el-button type="primary" @click="afterstep">上一步</el-button>
-
+                </DefinScrollbar>
             </div>
 
         </div>
@@ -84,20 +100,21 @@
 </template>
 
 <script setup>
-import { ref,computed } from 'vue';
+import { ref, computed } from 'vue';
 import { jsondata } from '../common/commondata.js';
 import manualparmh from './manualparm.vue';
 import autoparmh from './autoparm.vue';
 import Kinematich from './Kinematic/Kinematic.vue';
 import checkbox from '@/views/agv_ctrl/param/check.vue';
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 const checkdevice = ref(false);
 const handlecheck = () => {
     checkdevice.value = true;
 };
 const dialogVisible = ref(false);
-const manualparm = ref(false);
-const autoparm = ref(false);
-const Kinematic = ref(false);
+const manualparm = ref(true);
+const autoparm = ref(true);
+const Kinematic = ref(true);
 const formattedJsondata = computed(() => {
     return JSON.stringify(jsondata.value, null, 2);
 });
@@ -131,7 +148,7 @@ const nexatstep = () => {
     display: flex;
     flex-direction: column;
     overflow: auto;
-    height: 600px;
+    height: 85vh;
 
     >.page-query-box {
         margin: 0 0 10px 0 !important;
@@ -225,5 +242,20 @@ const nexatstep = () => {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 10px;
+}
+</style>
+
+<style>
+.kk-dialog-class {
+    pointer-events: none;
+}
+
+.el-dialog {
+    pointer-events: auto;
+}
+
+.el-dialog__body {
+    overflow: auto;
+    height: 400px;
 }
 </style>

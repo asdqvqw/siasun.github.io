@@ -1,27 +1,30 @@
 <template>
     <div>
-        <el-table :data="tableDataCrtlswitch" style="width: 100%">
-            <el-table-column prop="name" label="按钮名称">
+        <el-table :data="tableDataCrtlswitch" style="width: 100%" class="tableDataCrtlswitch">
+            <el-table-column prop="name" label="🔖 启动按钮">
                 <template #default="scope">
                     <el-button type="text" @click="reedit(scope.$index)">{{ tableDataCrtlswitch[scope.$index].name
                     }}</el-button>
                 </template>
             </el-table-column>
-
+            <el-table-column label="">
+                <template #header>
+                    <el-button type="primary" @click="addNewRow">添加</el-button>
+                </template>
+            </el-table-column>
             <el-table-column label="操作">
+
                 <template #default="scope">
                     <el-button type="danger" @click="deleteRow(scope.$index)">删除</el-button>
                 </template>
             </el-table-column>
+
         </el-table>
+        
         <br>
-
-        <el-button type="primary" @click="addNewRow">添加开关</el-button>
-
-
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="900px"
-            :close-on-click-modal="false" class="edit-data-dialog">
-
+            :close-on-click-modal="false" class="edit-data-dialog" style="height: 55%;">
+                 <br>
             <el-form ref="form" :model="newRow" label-width="80px">
                 <el-form-item label="按钮名称">
                     <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
@@ -33,8 +36,8 @@
 
 
             <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button @click="handleAddRow">确定</el-button>
+                <el-button @click="dialogVisible = false" style="margin-left: 75%;">取 消</el-button>
+                <el-button type="primary" @click="handleAddRow">确定</el-button>
 
             </div>
 
@@ -129,5 +132,13 @@ const deleteRow = (index) => {
         padding: 15px 15px 0 15px;
         box-sizing: border-box;
     }
+}
+</style>
+
+
+<style>
+.tableDataCrtlswitch .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
 }
 </style>

@@ -42,7 +42,9 @@ export function deleteTags(signs){
  * 刷新指定标签页
  * params 标签唯一标识
  *  */
+
 export function refreshTag(sign){
+
     let tagList = deepCopyObj(tagDataStore.tagList);
     let target = tagList.find(item=>{
         return item.sign == sign;

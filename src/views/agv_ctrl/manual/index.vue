@@ -1,7 +1,8 @@
 <template>
   <div class="page-container main-view">
 
-    <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
+    <div class="table-box content-container page-content-box"
+      style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
       <h2 style="margin-top: 1%; margin-left: 1%;">手控：</h2>
       <div class="hengxian"></div>
 
@@ -15,22 +16,22 @@
 
             <el-form-item style="margin-bottom: 3%; margin-top: 3%; margin-left: 3%; height: 23%;">
               <el-button-group style="width: 100%; ">
-                <el-button :disabled="!value" @mouseleave="leave()" @mousedown='down(row_1.id)' @mouseup="up"
-                  type="info" @touchstart="startLongPress(row_1.id)" @touchend="endLongPress"
+                <el-button :disabled="!value || keypressed" @mousedown='down(row_1.id)' type="info"
+                  @touchstart="startLongPress(row_1.id)" @touchend="endLongPress"
                   style="width: 17%; height: 100%; margin-left: 2px">
                   <el-icon size="30">
                     ↖
                   </el-icon>
                 </el-button>
-                <el-button :disabled="!value" @mouseleave="leave()" @mousedown='down(row_2.id)' @mouseup="up"
-                  type="info" @touchstart="startLongPress(row_2.id)" @touchend="endLongPress"
+                <el-button :disabled="!value || keypressed" @mousedown='down(row_2.id)' type="info"
+                  @touchstart="startLongPress(row_2.id)" @touchend="endLongPress"
                   style="width: 17%; height: 100%; margin-left: 2px">
                   <el-icon size="30">
                     ↑
                   </el-icon>
                 </el-button>
-                <el-button :disabled="!value" @mouseleave="leave()" @mousedown='down(row_3.id)' @mouseup="up"
-                  type="info" @touchstart="startLongPress(row_3.id)" @touchend="endLongPress"
+                <el-button :disabled="!value || keypressed" @mousedown='down(row_3.id)' type="info"
+                  @touchstart="startLongPress(row_3.id)" @touchend="endLongPress"
                   style="width: 17%; height: 100%; margin-left: 2px">
                   <el-icon size="30">
                     ↗
@@ -40,22 +41,23 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 3%; height: 5%; margin-left: 3%; height: 23%;">
               <el-button-group style="width: 100%">
-                <el-button :disabled="!value" @mouseleave="leave()" @mousedown='down(row_4.id)' @mouseup="up"
-                  type="info" @touchstart="startLongPress(row_4.id)" @touchend="endLongPress"
+                <el-button :disabled="!value || keypressed" @mousedown='down(row_4.id)' type="info"
+                  @touchstart="startLongPress(row_4.id)" @touchend="endLongPress"
                   style="width: 17%; height: 100%; margin-left: 2px">
                   <el-icon size="30">
                     ←
                   </el-icon>
                 </el-button>
 
-                <el-button :disabled="!value" @click="changeClick" type="info"
+                <el-button :disabled="!value || keypressed" @click="changeClick" type="info"
                   style="width: 17%; height: 100%; margin-left: 2px">
-                  <el-checkbox-button :disabled="!value" @change="changeMove" v-model="moveMode" size="large">{{ Option
+                  <el-checkbox-button :disabled="!value || keypressed" @change="changeMove" v-model="moveMode"
+                    size="large">{{ Option
                     }}</el-checkbox-button>
                 </el-button>
 
-                <el-button :disabled="!value" @mouseleave="leave()" @mousedown='down(row_6.id)' @mouseup="up"
-                  type="info" @touchstart="startLongPress(row_6.id)" @touchend="endLongPress"
+                <el-button :disabled="!value || keypressed" @mousedown='down(row_6.id)' type="info"
+                  @touchstart="startLongPress(row_6.id)" @touchend="endLongPress"
                   style="width: 17%; height: 100%; margin-left: 2px">
                   <el-icon size="30">
                     →
@@ -65,22 +67,22 @@
             </el-form-item>
             <el-form-item style="margin-bottom: 3%; height: 5%; margin-left: 3%; height: 23%;">
               <el-button-group style="width: 100%">
-                <el-button :disabled="!value" @mouseleave="leave()" @mousedown='down(row_7.id)' @mouseup="up"
-                  type="info" @touchstart="startLongPress(row_7.id)" @touchend="endLongPress"
+                <el-button :disabled="!value || keypressed" @mousedown='down(row_7.id)' type="info"
+                  @touchstart="startLongPress(row_7.id)" @touchend="endLongPress"
                   style="width: 17%; height: 100%; margin-left: 2px">
                   <el-icon size="30">
                     ↙
                   </el-icon>
                 </el-button>
-                <el-button :disabled="!value" @mouseleave="leave()" @mousedown='down(row_8.id)' @mouseup="up"
-                  type="info" @touchstart="startLongPress(row_8.id)" @touchend="endLongPress"
+                <el-button :disabled="!value || keypressed" @mousedown='down(row_8.id)' type="info"
+                  @touchstart="startLongPress(row_8.id)" @touchend="endLongPress"
                   style="width: 17%; height: 100%; margin-left: 2px">
                   <el-icon size="30">
                     ↓
                   </el-icon>
                 </el-button>
-                <el-button :disabled="!value" @mouseleave="leave()" @mousedown='down(row_9.id)' @mouseup="up"
-                  type="info" @touchstart="startLongPress(row_9.id)" @touchend="endLongPress"
+                <el-button :disabled="!value || keypressed" @mousedown='down(row_9.id)' type="info"
+                  @touchstart="startLongPress(row_9.id)" @touchend="endLongPress"
                   style="width: 17%; height: 100%; margin-left: 2px">
                   <el-icon size="30">
                     ↘
@@ -160,26 +162,109 @@
           </el-form>
         </div>
         <br>
-        <div style="width: 100%; height: 1px; margin-top: 6%; background-color: black" ></div>
+        <div style="width: 100%; height: 1px; margin-top: 6%; background-color: black"></div>
         <br>
         <manualboxtwo></manualboxtwo>
 
       </div>
+
     </div>
   </div>
 </template>
 
 <script setup>
 import axios from "axios";
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted, onBeforeUnmount } from "vue";
 import { ElMessage } from "element-plus";
 import { ArrowDown } from '@element-plus/icons-vue'
 import manualboxtwo from './manualboxtwo.vue'
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 import {
   Place,
   Setting,
 } from '@element-plus/icons-vue'
+import { starter } from '@/timer.js'
+const currentButtonId = ref(null)
 
+
+const handleMouseUp = (event) => {
+  if (currentButtonId.value === row_1.id
+    || currentButtonId.value === row_2.id
+    || currentButtonId.value === row_3.id
+    || currentButtonId.value === row_4.id
+    || currentButtonId.value === row_6.id
+    || currentButtonId.value === row_7.id
+    || currentButtonId.value === row_8.id
+    || currentButtonId.value === row_9.id
+  ) {
+    currentButtonId.value = 99;
+    up()
+  }
+}
+const keypressed = ref(false)
+onMounted(() => {
+  document.addEventListener('mouseup', handleMouseUp)
+  document.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('keyup', handleKeyUp)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mouseup', handleMouseUp)
+  document.removeEventListener('keydown', handleKeyDown)
+  document.removeEventListener('keyup', handleKeyUp)
+})
+
+const handleKeyDown = (event) => {
+  // console.log('key', event.key)
+  if (event.key === 'o' || event.key === 'O') {
+    value.value = !value.value;
+    start(value.value);
+  }
+  if (value.value && !keypressed.value) {
+
+    if (event.key === 'W' || event.key === 'w') {
+      keypressed.value = true;
+      down(row_2.id)
+    }
+    if (event.key === 'A' || event.key === 'a') {
+      keypressed.value = true;
+      down(row_4.id)
+    }
+    if (event.key === 'S' || event.key === 's') {
+      keypressed.value = true;
+      down(row_8.id)
+    }
+    if (event.key === 'D' || event.key === 'd') {
+      keypressed.value = true;
+      down(row_6.id)
+    }
+  }
+
+}
+
+const handleKeyUp = (event) => {
+  console.log('key', event.key)
+  if ((event.key === 'W' || event.key === 'w'
+    || event.key === 'A' || event.key === 'a'
+    || event.key === 'S' || event.key === 's'
+    || event.key === 'D' || event.key === 'd')
+    && keypressed.value) {
+    if (currentButtonId.value === row_1.id
+      || currentButtonId.value === row_2.id
+      || currentButtonId.value === row_3.id
+      || currentButtonId.value === row_4.id
+      || currentButtonId.value === row_6.id
+      || currentButtonId.value === row_7.id
+      || currentButtonId.value === row_8.id
+      || currentButtonId.value === row_9.id
+    ) {
+      currentButtonId.value = 99;
+      up()
+      keypressed.value = false;
+    }
+
+  }
+}
 const moveMode = ref(false)
 const Option = ref("DEF")
 const value = ref(false)
@@ -200,7 +285,7 @@ const requestNum = ref(0);
 const requestEnd = ref(0);
 // 定时器
 const timer = ref()
-const starter = ref()
+
 // 选中的
 const current_row = reactive({
   id: '',
@@ -291,6 +376,7 @@ const row_11 = reactive({
 
 // 鼠标按下
 function down(id) {
+  currentButtonId.value = id
   isPress.value = true
   if (value.value == true) {
     onEnd()
@@ -333,7 +419,7 @@ const endLongPress = () => {
   clearTimeout(timer.value)
   current_id.value = ""
   timer.value = ""
-  leave();
+  // leave();
   clearTimeout(longPressTimeout.value);
   clearTimeout(timer.value);
 };
@@ -420,12 +506,18 @@ const go = () => {
 
 // 放开鼠标
 function up() {
+  console.log("UP()")
   isPress.value = false
   if (value.value == true) {
-    starter.value = setInterval(() => {
-      onStart()
-    }, 600)
     console.log("Start()")
+
+    starter.value = setInterval(() => {
+
+      console.log('22222')
+      onStart()
+
+    }, 600)
+
   }
   clearTimeout(timer.value)
   current_id.value = ""
@@ -433,23 +525,23 @@ function up() {
 }
 
 // 鼠标移出事件
-const leave = () => {
-  if (isPress.value == true) {
-    if (value.value == true) {
-      starter.value = setInterval(() => {
-        onStart()
-      }, 600)
-      console.log("Start()")
-    }
+// const leave = () => {
+//   if (isPress.value == true) {
+//     if (value.value == true) {
+//       starter.value = setInterval(() => {
+//         onStart()
+//       }, 600)
+//       console.log("Start()")
+//     }
 
-    clearTimeout(timer.value)
-    current_id.value = ""
-    timer.value = ""
+//     clearTimeout(timer.value)
+//     current_id.value = ""
+//     timer.value = ""
 
-    console.log("mouse leave")
-    isPress.value = false
-  }
-}
+//     console.log("mouse leave")
+//     isPress.value = false
+//   }
+// }
 
 // 速度选择
 const level_1 = () => {
@@ -536,8 +628,10 @@ const onLine = () => {
 
 // 开始 循环发送停止信号
 const start = (value) => {
+
   if (value == true) {
     starter.value = setInterval(() => {
+
       onStart()
     }, 600)//修改请求速度就这里 单位毫秒
     console.log("Start()")
@@ -545,6 +639,8 @@ const start = (value) => {
   else {
     onEnd()
   }
+
+
 }
 
 const onStart = () => {
@@ -561,11 +657,13 @@ const onStart = () => {
     // ElMessage.error('请求失败')
   }).finally(() => {
   })
+
 }
 
 // 结束 循环发送停止信号
 function onEnd() {
   console.log("onEnd()")
+
   clearInterval(starter.value)
   starter.value = ""
 }
@@ -644,6 +742,7 @@ const changeMove = () => {
     Option.value = "DEF"
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -673,11 +772,10 @@ const changeMove = () => {
 }
 
 .hengxian {
-    border: none;
-    border-top: 2px solid #ccc;
-    margin: 20px 0;
+  border: none;
+  border-top: 2px solid #ccc;
+  margin: 20px 0;
 }
-
 </style>
 
 

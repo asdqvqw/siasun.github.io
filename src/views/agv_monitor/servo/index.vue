@@ -7,7 +7,7 @@
 
             <div class="box">
 
-                <el-button type="success" style="margin-top: 2%;  width: 90%;"
+                <el-button type="success" style="margin-top: 10%;  width: 80%;"
                     @click="downloadFile">🕶️读取黑匣子</el-button>
                 <a ref="downloadLink" style="display: none" :href="downloadUrl" download></a>
             </div>
@@ -64,24 +64,19 @@ const downloadFile = () => {
 
 
 <style scoped>
-.box {
-
-    padding: 20px;
-    text-align: center;
-    
-    width: 70%;
-    margin-left: 12%;
-    height: 10%;
-    margin-top: 10%;
-    border: 5px double #8d8a8a;
-    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
-
-    background-image: linear-gradient(to bottom right, #3a3d3d95, #c6e0d017);
-}
-
 .hengxian {
-    border: none;
-    border-top: 2px solid #ccc;
-    margin: 20px 0;
+  border: none;
+  border-top: 2px solid #ccc;
+  margin: 20px 0;
+}
+.box {
+  border: 5px double #8d8a8a;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  text-align: center;
+  width: 80%;
+  height: 40%;
+  margin: 0 auto;
+  background-image: linear-gradient(to bottom right, #f0f8ff95, #f5ffe0cc);
 }
 </style>

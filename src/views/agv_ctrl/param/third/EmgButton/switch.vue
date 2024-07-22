@@ -1,10 +1,16 @@
 <template>
     <div>
-        <el-table :data="tableDataCrtlswitchEmg" style="width: 100%">
-            <el-table-column prop="name" label="按钮名称">
+        <el-table :data="tableDataCrtlswitchEmg" style="width: 100%" class="tableDataCrtlswitchEmg">
+            <el-table-column prop="name" label="🔖 急停开关">
                 <template #default="scope">
                     <el-button type="text" @click="reedit(scope.$index)">{{ tableDataCrtlswitchEmg[scope.$index].name
                         }}</el-button>
+                </template>
+            </el-table-column>
+
+            <el-table-column label="">
+                <template  #header>
+                    <el-button type="primary" @click="addnewRowEmg">添加</el-button>
                 </template>
             </el-table-column>
 
@@ -15,14 +21,14 @@
                 </template>
             </el-table-column>
         </el-table>
-        <br>
+       
 
-        <el-button type="primary" @click="addnewRowEmg">添加开关</el-button>
+
 
 
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="900px"
-            :close-on-click-modal="false" class="edit-data-dialog">
-
+            :close-on-click-modal="false" class="edit-data-dialog" style="height: 55%;">
+            <br>
             <el-form ref="form" :model="newRowEmg" label-width="80px">
                 <el-form-item label="按钮名称">
                     <el-input v-model="newRowEmg.name" placeholder="请输入名称"></el-input>
@@ -33,8 +39,8 @@
             </el-form>
 
             <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button @click="handleAddRow">确定</el-button>
+                <el-button @click="dialogVisible = false" style="margin-left: 75%;">取 消</el-button>
+                <el-button type="primary" @click="handleAddRow">确定</el-button>
 
             </div>
 
@@ -128,5 +134,12 @@ const deleteRow = (index) => {
         padding: 15px 15px 0 15px;
         box-sizing: border-box;
     }
+}
+</style>
+
+<style>
+.tableDataCrtlswitchEmg .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
 }
 </style>

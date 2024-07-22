@@ -1,4 +1,3 @@
-
 <template>
     <el-form ref="form" :model="MANUALDATA" label-width="150px">
         <el-form-item label="🎆选择手控盒">
@@ -13,23 +12,26 @@
                 <el-option label="未使用串口" :value=0></el-option>
 
                 <template v-for="(value, key, index) in filteredJsonData">
-                    <el-option v-if="value === true" :key="index" :label="key" :value="parseInt(key.slice(3))"></el-option>
+                    <el-option v-if="value === true" :key="index" :label="key"
+                        :value="parseInt(key.slice(3))"></el-option>
                 </template>
             </el-select><br>
         </el-form-item>
 
         <el-form-item label="🎆自动上线初始方向">
             <el-select v-model="MANUALDATA.direction" placeholder="请选择"
-                :disabled="!MANUALDATA.manualcom && !MANUALDATA.manualcan &&!MANUALDATA.manualforklift" @change="syncdata">
+                :disabled="!MANUALDATA.manualcom && !MANUALDATA.manualcan && !MANUALDATA.manualforklift"
+                @change="syncdata">
                 <el-option label="前进" :value=0></el-option>
                 <el-option label="后退" :value=1></el-option>
             </el-select><br>
         </el-form-item>
 
         <el-form-item label="🎆选择can线">
-            <el-select v-model="MANUALDATA.can" placeholder="请选择" :disabled="!MANUALDATA.manualcan &&!MANUALDATA.manualforklift" @change="syncdata">
+            <el-select v-model="MANUALDATA.can" placeholder="请选择"
+                :disabled="!MANUALDATA.manualcan && !MANUALDATA.manualforklift" @change="syncdata">
                 <el-option label="未安装" :value=0></el-option>
-                <el-option v-for="(canKey, index) in canOptions" :key="index" :label="('can'+canKey)"
+                <el-option v-for="(canKey, index) in canOptions" :key="index" :label="('can' + canKey)"
                     :value="canKey"></el-option>
             </el-select><br>
         </el-form-item>
@@ -50,16 +52,16 @@ const IOweidong = ref(false);
 
 const syncdata = () => {
     jsondata.value.Manual = MANUALDATA;
-    console.log('1111',jsondata.value.Manaul)
+    console.log('1111', jsondata.value.Manaul)
 };
 
 
 
 const canOptions = computed(() => {
     return Object.keys(jsondata.value)
-      .filter(key => key.startsWith('can') && 'can_manual' in jsondata.value[key])
-      .map(key => parseInt(key.slice(3))); // 提取键中的数字部分
-  });
+        .filter(key => key.startsWith('can') && Array.isArray(jsondata.value[key].can_manual) && jsondata.value[key].can_manual.length > 0)
+        .map(key => parseInt(key.slice(3))); // 提取键中的数字部分
+});
 
 const filteredJsonData = computed(() => {
     return Object.fromEntries(

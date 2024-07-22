@@ -1,10 +1,29 @@
 <template>
     <div>
-        <el-table :data="tableDataCrtl" style="width: 100%">
+        <el-table :data="tableDataCrtl" style="width: 100%" class="tableDataCrtl">
+
             <el-table-column prop="name" label="名称">
                 <template #default="scope">
                     <el-button type="text" @click="reedit(scope.$index)">{{ tableDataCrtl[scope.$index].name
                         }}</el-button>
+                </template>
+            </el-table-column>
+
+            <el-table-column label="驱动类型">
+                <template #default="scope">
+                    {{ jsondata.Kinematic.drive[scope.$index].drive_type == 0 ? '普通驱动类型' : '差速驱动类型' }}
+                </template>
+            </el-table-column>
+
+            <el-table-column label="车体坐标X(m)">
+                <template #default="scope">
+                    {{ jsondata.Kinematic.drive[scope.$index].install_x }}
+                </template>
+            </el-table-column>
+
+            <el-table-column label="车体坐标Y(m)">
+                <template #default="scope">
+                    {{ jsondata.Kinematic.drive[scope.$index].install_y }}
                 </template>
             </el-table-column>
 
@@ -21,124 +40,139 @@
 
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="900px"
             :close-on-click-modal="false" class="edit-data-dialog">
-            <el-form ref="form" :model="newRow" label-width="80px">
-                <el-form-item label="名称">
-                    <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
-                </el-form-item>
-            </el-form>
-            <el-form ref="form" :model="newRow" label-width="200px">
-                <h3>安装位置:</h3>
-                <el-form-item label="车体坐标系坐标X(ms):">
-                    <el-input v-model.number="newRow.install_x" type="number" @change="AGVpos"></el-input>
-                </el-form-item>
-                <el-form-item label="车体坐标系坐标Y(ms):">
-                    <el-input v-model.number="newRow.install_y" type="number" @change="AGVpos"></el-input>
-                </el-form-item>
-            </el-form><br>
-            <h3>驱动类型:</h3>
-
-            <el-select v-model="newRow.drive_type" placeholder="请选择">
-                <el-option label="普通驱动类型" :value=0></el-option>
-                <el-option label="差速驱动类型" :value=1></el-option>
-            </el-select><br>
-            <el-checkbox v-model="newRow.use_wheel"
-                @change="updatashowIndex">安装有驱动轮</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            驱动伺服类型
-            <el-select v-model="newRow.wheel.servo_type" placeholder="请选择" :disabled="!newRow.use_wheel"
-                @change="updatashowIndex">
-                <el-option label="普通MCU" :value=0></el-option>
-                <el-option label="差速MCU" :value=1></el-option>
-                <el-option label="Elmo伺服" :value=2></el-option>
-                <el-option label="步科伺服" :value=3></el-option>
-                <el-option label="Motec伺服" :value=4></el-option>
-                <el-option label="AMC伺服" :value=5></el-option>
-            </el-select><br>
-
-            <el-checkbox v-model="newRow.use_steer"
-                @change="updatashowIndexsteer">安装有转舵机构</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            驱动伺服类型
-            <el-select v-model="newRow.steer.servo_type" placeholder="请选择" :disabled="!newRow.use_steer"
-                @change="updatashowIndexsteer">
-                <el-option label="普通MCU" :value=0></el-option>
-                <el-option label="差速MCU" :value=1></el-option>
-                <el-option label="Elmo伺服" :value=2></el-option>
-                <el-option label="步科伺服" :value=3></el-option>
-                <el-option label="Motec伺服" :value=4></el-option>
-                <el-option label="AMC伺服" :value=5></el-option>
-            </el-select><br>
-            <br>
-
-            <div style="display: flex;">
-                <div v-if="newRow.use_wheel">
-                    <wheel :wheel="newRow.wheel" @change="changedata"></wheel>
-                </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-                
-                <div v-if="newRow.use_steer">
-                    <steer :steer="newRow.steer" @change="changedata"></steer>
+            <DefinScrollbar height="100%" :showUpBt="true">
+                <br>
+                <el-form ref="form" :model="newRow" label-width="80px">
+                    <el-form-item label="名称">
+                        <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
+                    </el-form-item>
+                </el-form>
+                <el-form ref="form" :model="newRow" label-width="200px">
                     <br>
-                    <el-button @click="handlesevorONE" type="primary">限位开关1</el-button>
-                    <el-dialog title="限位开关1" v-model="sevorone" :visible="sevorone" width="600px"
-                        :close-on-click-modal="false" class="edit-data-dialog">
-                        <div>
-                            <IO8 :wheel="newRow.steer.unclockwise_limit_switch"></IO8>
+                    <h3>安装位置:</h3>
+                    <br>
+                    <el-form-item label="车体坐标系坐标X(m):">
+                        <el-input v-model.number="newRow.install_x" type="number" @change="AGVpos"></el-input>
+                    </el-form-item>
+                    <el-form-item label="车体坐标系坐标Y(m):">
+                        <el-input v-model.number="newRow.install_y" type="number" @change="AGVpos"></el-input>
+                    </el-form-item>
+                </el-form><br>
+
+                <el-form label-width="120px">
+                    <h3>驱动类型:</h3>
+                    <br>
+                    <el-form-item label="类型:">
+                        <el-select v-model="newRow.drive_type" placeholder="请选择">
+                            <el-option label="普通驱动类型" :value=0></el-option>
+                            <el-option label="差速驱动类型" :value=1></el-option>
+                        </el-select><br>
+                    </el-form-item>
+
+                    <el-form-item label="安装有驱动轮:">
+                        <el-checkbox v-model="newRow.use_wheel"
+                            @change="updatashowIndex">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-checkbox>
+                        驱动伺服类型&nbsp;&nbsp;
+                        <el-select v-model="newRow.wheel.servo_type" placeholder="请选择" :disabled="!newRow.use_wheel"
+                            @change="updatashowIndex">
+                            <el-option label="普通MCU" :value=0></el-option>
+                            <el-option label="差速MCU" :value=1></el-option>
+                            <el-option label="Elmo伺服" :value=2></el-option>
+                            <el-option label="步科伺服" :value=3></el-option>
+                            <el-option label="Motec伺服" :value=4></el-option>
+                            <el-option label="AMC伺服" :value=5></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="安装有转舵机构:">
+                        <el-checkbox v-model="newRow.use_steer"
+                            @change="updatashowIndexsteer">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-checkbox>
+                        驱动伺服类型&nbsp;&nbsp;
+                        <el-select v-model="newRow.steer.servo_type" placeholder="请选择" :disabled="!newRow.use_steer"
+                            @change="updatashowIndexsteer">
+                            <el-option label="普通MCU" :value=0></el-option>
+                            <el-option label="差速MCU" :value=1></el-option>
+                            <el-option label="Elmo伺服" :value=2></el-option>
+                            <el-option label="步科伺服" :value=3></el-option>
+                            <el-option label="Motec伺服" :value=4></el-option>
+                            <el-option label="AMC伺服" :value=5></el-option>
+                        </el-select>
+                    </el-form-item>
+
+
+                    <div style="display: flex; margin-left: 12%;">
+
+                        <div v-if="newRow.use_wheel">
+                            <wheel :wheel="newRow.wheel" @change="changedata"></wheel>
+                        </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+                        <div v-if="newRow.use_steer">
+                            <steer :steer="newRow.steer" @change="changedata"></steer>
+                            <br>
+                            <el-button @click="handlesevorONE" type="primary">限位开关1</el-button>
+                            <el-dialog title="限位开关1" v-model="sevorone" :visible="sevorone" width="600px"
+                                :close-on-click-modal="false" class="edit-data-dialog" style="height: 40%;">
+                                <div>
+                                    <IO8 :wheel="newRow.steer.unclockwise_limit_switch"></IO8>
+                                </div>
+
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="sevorone = false">取 消</el-button>
+                                    <el-button @click="handlesevorone">确定</el-button>
+
+                                </div>
+
+                            </el-dialog>&nbsp;
+
+                            <el-button @click="handlesevorTWO" type="primary">限位开关2</el-button>
+                            <el-dialog title="限位开关2" v-model="sevortwo" :visible="sevortwo" width="600px"
+                                :close-on-click-modal="false" class="edit-data-dialog" style="height: 40%;">
+                                <div>
+                                    <IO9 :wheel="newRow.steer.clockwise_limit_switch"></IO9>
+
+                                </div>
+
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="sevortwo = false">取 消</el-button>
+                                    <el-button @click="handlesevortwo">确定</el-button>
+
+                                </div>
+
+                            </el-dialog>&nbsp;
+
+
+
+                            <el-button @click="handlesevorZERO" type="primary">零位开关</el-button>
+                            <el-dialog title="零位开关" v-model="sevorzero" :visible="sevorzero" width="600px"
+                                :close-on-click-modal="false" class="edit-data-dialog" style="height: 40%;">
+                                <div>
+                                    <IO10 :wheel="newRow.steer.zero_limit_switch"></IO10>
+
+                                </div>
+
+                                <div slot="footer" class="dialog-footer">
+                                    <el-button @click="sevorzero = false">取 消</el-button>
+                                    <el-button @click="handlesevorzero">确定</el-button>
+
+                                </div>
+
+                            </el-dialog>&nbsp;<br>
+
                         </div>
 
-                        <div slot="footer" class="dialog-footer">
-                            <el-button @click="sevorone = false">取 消</el-button>
-                            <el-button @click="handlesevorone">确定</el-button>
+                    </div>
 
-                        </div>
-
-                    </el-dialog>&nbsp;
-
-                    <el-button @click="handlesevorTWO" type="primary">限位开关2</el-button>
-                    <el-dialog title="限位开关2" v-model="sevortwo" :visible="sevortwo" width="600px"
-                        :close-on-click-modal="false" class="edit-data-dialog">
-                        <div>
-                            <IO9 :wheel="newRow.steer.clockwise_limit_switch"></IO9>
-
-                        </div>
-
-                        <div slot="footer" class="dialog-footer">
-                            <el-button @click="sevortwo = false">取 消</el-button>
-                            <el-button @click="handlesevortwo">确定</el-button>
-
-                        </div>
-
-                    </el-dialog>&nbsp;
-
-
-
-                    <el-button @click="handlesevorZERO" type="primary">零位开关</el-button>
-                    <el-dialog title="零位开关" v-model="sevorzero" :visible="sevorzero" width="600px"
-                        :close-on-click-modal="false" class="edit-data-dialog">
-                        <div>
-                            <IO10 :wheel="newRow.steer.zero_limit_switch"></IO10>
-
-                        </div>
-
-                        <div slot="footer" class="dialog-footer">
-                            <el-button @click="sevorzero = false">取 消</el-button>
-                            <el-button @click="handlesevorzero">确定</el-button>
-
-                        </div>
-
-                    </el-dialog>&nbsp;<br>
-
-                </div>
-                <br><br>
-            </div>
-
-
-            <!-- <pre>{{ tableDataCrtl }}</pre> -->
-
+                </el-form>
+                <br>
+            
             <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button @click="handleAddRow">确定</el-button>
+                <el-button @click="dialogVisible = false" style="margin-left: 75%;">取 消</el-button>
+                <el-button type="primary" @click="handleAddRow">确定</el-button>
 
             </div>
-
+            <br>
+        </DefinScrollbar>
         </el-dialog>
     </div>
 </template>
@@ -153,6 +187,7 @@ import { showIndex, showIndexsteer } from './AGVselect.js'
 import { flag } from '@/views/agv_ctrl/param/common/commondata.js'
 import IO8 from './IO.vue'
 import IO9 from './IO.vue'
+import DefinScrollbar from "@/components/DefinScrollbar.vue";
 import IO10 from './IO.vue'
 const sevorone = ref(false);
 const sevortwo = ref(false);
@@ -652,6 +687,7 @@ const changedata = () => {
 
 
 const deleteRow = (index) => {
+    console.log('11111', index)
     tableDataCrtl.value.splice(index, 1);
 };
 </script>
@@ -672,5 +708,12 @@ const deleteRow = (index) => {
         padding: 15px 15px 0 15px;
         box-sizing: border-box;
     }
+}
+</style>
+
+<style>
+.tableDataCrtl .el-table__body tr:nth-child(2n) {
+    background-color: #ada7a757;
+    /* 隔行背景色 */
 }
 </style>

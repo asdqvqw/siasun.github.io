@@ -1,6 +1,6 @@
 <template>
   <div class="page-container main-view">
-    <div class="table-box content-container page-content-box" style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
+    <div class="table-box content-container page-content-box"  style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
       <div >
         <h2 style="margin-top: 1%; margin-left: 1%;">离线任务</h2>
         <div class="hengxian"></div>
@@ -161,18 +161,14 @@ const validate2 = () => {
   border-top: 2px solid #ccc;
   margin: 20px 0;
 }
-
 .box {
   border: 5px double #8d8a8a;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
   padding: 20px;
   text-align: center;
-  width: 70%;
-  height: 50%;
-  margin-left: 10%;
-  background-image: linear-gradient(to bottom right, #3a3d3d95, #c6e0d017);
-}
-.background{
-  background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17);
+  width: 80%;
+  height: 60%;
+  margin: 0 auto;
+  background-image: linear-gradient(to bottom right, #f0f8ff95, #f5ffe0cc);
 }
 </style>

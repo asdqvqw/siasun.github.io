@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div>
+        <div style="margin-left: 2%;">
+            <br>
             <el-checkbox v-model="delayisChecked" @change="delay">轮或舵因伺服响应慢需要设置延时时间</el-checkbox><br>
             使能前延时时间(ms):<el-input v-model="delayinput1" :disabled="!delayisChecked" type="number" style="width: 10%;" @change="delay"></el-input>
             给定前延时时间(ms):<el-input v-model="delayinput2" :disabled="!delayisChecked" type="number" style="width: 10%;" @change="delay"></el-input>

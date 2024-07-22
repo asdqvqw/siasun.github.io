@@ -1,11 +1,14 @@
 <template>
     <div>
-        <el-checkbox-group v-model="checkList" @change="statusChange">
-            <el-checkbox label="1">CAN1</el-checkbox>
-            <el-checkbox label="2">CAN2</el-checkbox>
-            <el-checkbox label="3">CAN3</el-checkbox>
-        </el-checkbox-group>
-
+        <div style="width: 30%;
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
+            <h4>⚠️ CAN线</h4>
+            <el-checkbox-group v-model="checkList" @change="statusChange">
+                <el-checkbox label="1">CAN1</el-checkbox>
+                <el-checkbox label="2">CAN2</el-checkbox>
+                <el-checkbox label="3">CAN3</el-checkbox>
+            </el-checkbox-group>
+        </div>
         <div v-if="cannumber1">
             <CanLineone />
         </div>
@@ -15,10 +18,10 @@
         <div v-if="cannumber3">
             <CanLinethree />
         </div>
-        
+
     </div>
 </template>
-  
+
 <script setup>
 import { ref } from 'vue';
 import CanLineone from './CanLine/CanLineone/CanLineone.vue';
@@ -26,8 +29,8 @@ import CanLinetwo from './CanLine/CanLinetwo/CanLinetwo.vue';
 import CanLinethree from './CanLine/CanLinethree/CanLinethree.vue';
 
 
-const checkList = ref([]);
-const cannumber1 = ref(null);
+const checkList = ref(['1']);
+const cannumber1 = ref(true);
 const cannumber2 = ref(null);
 const cannumber3 = ref(null);
 const statusChange = () => {

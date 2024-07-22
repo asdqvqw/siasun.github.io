@@ -7,13 +7,17 @@ export const showCtrl = ref(false);
 export const showAGV = ref(false);
 
 export const jsondata = ref({
+  car_type:0,
   network: [
     { name: "控制台IP", key: "IP", value: "" },
     { name: "备用IP", key: "BACKUPIP", value: "" },
   ],
   function: [
     { name: "看门狗功能", des: "安全保护功能", key: "watchDog", value: false },
-    { name: "铁电储存", des: "车体状态记录功能", key: "TSave", value: false },
+    { name: "铁电储存", des: "车体状态记录功能", key: "TSave", value: true },
+    { name: "通讯协议相关", des: "通讯校验和功能", key: "CheckSum", value: true },
+    { name: "设备扩展数据", des: "是否开启设备扩展数据", key: "ExData", value: true },
+    { name: "扩展协议", des: "是否开启扩展协议", key: "ExAgreement", value: true },
   ],
   other: {
     ctrlcycle: 0.05,
@@ -253,7 +257,10 @@ export const tableDataCrtlnet = ref([
 
 export const functioncDate = ref([
   { name: "看门狗功能", des: "安全保护功能", key: "watchDog", value: false },
-  { name: "铁电储存", des: "车体状态记录功能", key: "TSave", value: false },
+  { name: "铁电储存", des: "车体状态记录功能", key: "TSave", value: true },
+  { name: "通讯协议相关", des: "通讯校验和功能", key: "CheckSum", value: true },
+  { name: "设备扩展数据", des: "是否开启设备扩展数据", key: "ExData", value: true },
+  { name: "扩展协议", des: "是否开启扩展协议", key: "ExAgreement", value: true },
 ]);
 
 export const CANPOS = ref([]);
