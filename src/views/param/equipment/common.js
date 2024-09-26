@@ -9,7 +9,8 @@ export const jsondata = ref({
     servo: {kinco:[]},
     Task: [
 
-    ]
+    ],
+    device:[]
 });
 
 export const code = ref('');

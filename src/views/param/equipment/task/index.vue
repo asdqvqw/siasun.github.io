@@ -35,6 +35,10 @@
           <el-button type="info" @click="checkcode">
             查看代码
           </el-button>
+          <!-- <el-input v-model="functionName" placeholder="输入函数名"></el-input>
+          <el-button type="info" @click="startBlinking">
+            闪烁
+          </el-button> -->
           <el-dialog v-model="dialogVisible" title="代码" :visible="dialogVisible" @close="dialogVisible = false">
             <DefinScrollbar height="100%" :showUpBt="true">
               <pre>{{ code }}</pre>
@@ -57,9 +61,11 @@ import * as hans from 'blockly/msg/zh-hans';
 import axios from 'axios'
 import './config';
 import DefinScrollbar from "@/components/DefinScrollbar.vue";
-//const jsondata = {"tool":[{"test":1},{"test":2}]};
 Blockly.setLocale(hans);
-
+Blockly.Msg["PROCEDURES_DEFNORETURN_PROCEDURE"] = "名称";
+Blockly.Msg["PROCEDURES_DEFNORETURN_TITLE"] = "任务";
+Blockly.Msg["PROCEDURES_DEFRETURN_PROCEDURE"] = Blockly.Msg["PROCEDURES_DEFNORETURN_PROCEDURE"];
+Blockly.Msg["PROCEDURES_DEFRETURN_TITLE"] = Blockly.Msg["PROCEDURES_DEFNORETURN_TITLE"];
 
 jsondata.value.IO.input.forEach((item) => {
 
@@ -71,9 +77,11 @@ jsondata.value.IO.input.forEach((item) => {
         tooltip: '',
         helpUrl: ''
       });
+
       this.setOutput(true, null)
       this.appendDummyInput()
         .appendField(item.key + '触发')
+
     }
   };
   javascriptGenerator[item.name + 'input'] = function (block) {
@@ -99,6 +107,137 @@ jsondata.value.IO.input.forEach((item) => {
 
 }
 );
+Blockly.Blocks.IO_input = {
+  init: function () {
+    // 获取设备选项
+    const IOOptions = jsondata.value.IO.input.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'IO_input',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "%1  触发",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": IOOptions
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['IO_input'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getBool("Input","' + code1 + '",false)', javascriptGenerator.ORDER_ATOMIC]
+};
+Blockly.Blocks.IO_InputIsExist = {
+  init: function () {
+    // 获取设备选项
+    const IOOptions = jsondata.value.IO.input.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'IO_InputIsExist',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "%1  是否存在",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": IOOptions
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['IO_InputIsExist'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getBool("InputIsExist","' + code1 + '",false)', javascriptGenerator.ORDER_ATOMIC]
+};
+
+
+
+Blockly.Blocks.IO_Output = {
+  init: function () {
+    // 获取设备选项
+    const IOOptions = jsondata.value.IO.output.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'IO_Output',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "将 %1  置为 %2",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": IOOptions
+        },
+        {
+          "type": "field_dropdown",
+          "name": "Get_bool_Type",
+          "options": [
+            [
+              "false",
+              "false"
+            ],
+            [
+              "true",
+              "true"
+            ]
+          ]
+        },
+      ],
+    });
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    // this.setOutput(true, null);
+  }
+};
+javascriptGenerator['IO_Output'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  var code2 = block.getFieldValue('Get_bool_Type');
+  return 'setBool("Output","' + code1 + '",'+code2+');\n'
+};
+Blockly.Blocks.IO_OutputIsExist = {
+  init: function () {
+    // 获取设备选项
+    const IOOptions = jsondata.value.IO.output.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'IO_OutputIsExist',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "%1  是否存在",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": IOOptions
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['IO_OutputIsExist'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getBool("OutputIsExist","' + code1 + '",false)', javascriptGenerator.ORDER_ATOMIC]
+};
+
+
+
 //自定义积木
 jsondata.value.servo.kinco.forEach((item) => {
 
@@ -135,6 +274,8 @@ jsondata.value.servo.kinco.forEach((item) => {
       this.setOutput(true, null);
       this.appendDummyInput()
         .appendField(item.key + '获取错误')
+
+
     }
   };
   javascriptGenerator[item.name + 'FindError'] = function (block) {
@@ -250,30 +391,438 @@ jsondata.value.servo.kinco.forEach((item) => {
 
 });
 
+Blockly.Blocks.servo_MoveAt = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.servo.kinco.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'servo_MoveAt',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: " %1 轴设置速度 %2",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+        {
+          "type": "field_number",
+          "name": "Get_number",
+          "value": 0, // 默认值
+          // "min": 0,   // 可选，最小值
+          // "max": 100  // 可选，最大值
+        },
+      ],
+    });
+    this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+  }
+};
+javascriptGenerator['servo_MoveAt'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  var code2 = block.getFieldValue('Get_number');
+  return 'setDouble("MoveAt","' + code1 + '",' + code2 + ');\n'
+};
+Blockly.Blocks.servo_Finderror = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.servo.kinco.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'servo_Finderror',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: " %1 轴获取错误",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['servo_Finderror'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getInt("FindError", "' + code1 + '",0)', javascriptGenerator.ORDER_ATOMIC]
+};
+Blockly.Blocks.servo_ServoClear = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.servo.kinco.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'servo_ServoClear',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: " %1 轴伺服清错",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+
+      ],
+    });
+    this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+  }
+};
+javascriptGenerator['servo_ServoClear'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return 'setBool("ServoClear", "' + code1 + '",true);\n'
+};
+
+Blockly.Blocks.servo_Lock = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.servo.kinco.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'servo_Lock',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: " %1 轴抱闸",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+
+      ],
+    });
+    this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+  }
+};
+javascriptGenerator['servo_Lock'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return 'setBool("Lock", "' + code1 + '",true);\n'
+};
+
+Blockly.Blocks.servo_SetHomemodeStart = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.servo.kinco.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'servo_SetHomemodeStart',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: " %1 轴复位标志位",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+
+      ],
+    });
+    this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+  }
+};
+javascriptGenerator['servo_SetHomemodeStart'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return 'setBool("SetHomemodeStart", "' + code1 + '",false);\n'
+};
+Blockly.Blocks.servo_GoHome = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.servo.kinco.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'servo_GoHome',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: " %1 轴复位",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['servo_GoHome'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getBool("GoHome", "' + code1 + '",false)', javascriptGenerator.ORDER_ATOMIC]
+};
+Blockly.Blocks.servo_Normalvel = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.servo.kinco.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'servo_Normalvel',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: " %1 轴的速度",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['servo_Normalvel'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getDouble("Normalvel", "' + code1 + '",0.0)', javascriptGenerator.ORDER_ATOMIC]
+};
+Blockly.Blocks.servo_ServoPos = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.servo.kinco.map(device => {
+      return [device.key, device.name]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'servo_ServoPos',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: " %1 轴的位置",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['servo_ServoPos'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getDouble("ServoPos", "' + code1 + '",0.0)', javascriptGenerator.ORDER_ATOMIC]
+};
+
+
+
+
+Blockly.Blocks.check_x = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.device.camera.map(device => {
+      return [device.key, device.value]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'check_x',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "获取 %1  x坐标",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['check_x'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getDouble("ReadCameraX", "' + code1 + '", 99)', javascriptGenerator.ORDER_ATOMIC];
+};
+
+
+Blockly.Blocks.check_y = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.device.camera.map(device => {
+      return [device.key, device.value]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'check_y',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "获取 %1  y坐标",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['check_y'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getDouble("ReadCameraY", "' + code1 + '", 99)', javascriptGenerator.ORDER_ATOMIC];
+};
+
+Blockly.Blocks.check_thitea = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.device.camera.map(device => {
+      return [device.key, device.value]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'check_thitea',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "获取 %1  角度",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['check_thitea'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getDouble("ReadCameraAngle", "' + code1 + '", 99)', javascriptGenerator.ORDER_ATOMIC];
+};
+
+Blockly.Blocks.check_ID = {
+  init: function () {
+    // 获取设备选项
+    const deviceOptions = jsondata.value.device.camera.map(device => {
+      return [device.key, device.value]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'check_ID',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "获取 %1  ID",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": deviceOptions
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['check_ID'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  return ['getInt("ReadCameraID", "' + code1 + '", 0)', javascriptGenerator.ORDER_ATOMIC];
+};
+Blockly.Blocks.check_ON = {
+  init: function () {
+    // 获取设备选项
+    const IOOptions = jsondata.value.device.camera.map(device => {
+      return [device.key, device.value]; // 显示名称和实际值
+    });
+    this.jsonInit({
+      type: 'check_ON',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "%2 %1  ",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": IOOptions
+        },
+        {
+          "type": "field_dropdown",
+          "name": "Get_bool_Type",
+          "options": [
+            [
+              "关闭",
+              "false"
+            ],
+            [
+              "打开",
+              "true"
+            ]
+          ]
+        },
+      ],
+    });
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    // this.setOutput(true, null);
+  }
+};
+javascriptGenerator['check_ON'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  var code2 = block.getFieldValue('Get_bool_Type');
+  return 'setBool("SetCameraOn","' + code1 + '",'+code2+');\n'
+};
 const toolboxXml = `
 <xml id="toolbox" style="display: none">
+   <category name="任务" colour="290" custom="PROCEDURE"></category>
   <category name="伺服" colour="180">
-  ${jsondata.value.servo.kinco.map(item => `
-    <category name="${item.key}" colour="180">
-      <block type="${item.name + 'MoveAt'}"></block>
-      <block type="${item.name + 'Normalvel'}"></block>
-      <block type="${item.name + 'ServoPos'}"></block>
-      <block type="${item.name + 'FindError'}"></block>
-      <block type="${item.name + 'ServoClear'}"></block>
-      <block type="${item.name + 'Lock'}"></block>
-      <block type="${item.name + 'SetHomemodeStart'}"></block>
-      <block type="${item.name + 'GoHome'}"></block>
-    </category>
-  `).join('')}
+    <block type="servo_MoveAt"></block>
+    <block type="servo_Finderror"></block>
+    <block type="servo_ServoClear"></block>
+    <block type="servo_Lock"></block>
+    <block type="servo_SetHomemodeStart"></block>
+    <block type="servo_GoHome"></block>
+    <block type="servo_Normalvel"></block>
+    <block type="servo_ServoPos"></block>
+
   </category>
   <category name="传感器" colour="180">
-  ${jsondata.value.IO.input.map(item => `
-    <category name="${item.key}" colour="180">
-      <block type="${item.name + 'input'}"></block>
-      <block type="${item.name + 'InputIsExist'}"></block>
-    </category>
-  `).join('')}
+  <category name="输入点" colour="180">
+    <block type="IO_input"></block>
+    <block type="IO_InputIsExist"></block>
   </category>
+
+      <category name="输出点" colour="180">
+    <block type="IO_Output"></block>
+      <block type="IO_OutputIsExist"></block>
+      
+  </category>
+      <category name="设备" colour="180">
+      <block type="check_x"></block>
+      <block type="check_y"></block>
+      <block type="check_ID"></block>
+      <block type="check_ON"></block>
+      <block type="check_thitea"></block>
+      
+  </category>
+  </category>
+
   <category name="控制" colour="180">
       <block type="Return_Block"></block>
       <block type="String_Block"></block>
@@ -322,7 +871,7 @@ const toolboxXml = `
           <block type="math_random_float"></block>
         </category>
 
-        <category name="函数" colour="290" custom="PROCEDURE"></category>
+        <category name="任务" colour="290" custom="PROCEDURE"></category>
         <category name="列表" colour="260">
             <block type="lists_create_empty"></block>
             <block type="lists_create_with"></block>
@@ -350,8 +899,25 @@ const toolboxXml = `
 </xml>
 `;
 const workspace = ref(null);
-
-
+// ${jsondata.value.IO.input.map(item => `
+//     <category name="${item.key}" colour="180">
+//       <block type="${item.name + 'input'}"></block>
+//       <block type="${item.name + 'InputIsExist'}"></block>
+//     </category>
+//       `).join('')}
+//sifu
+// ${jsondata.value.servo.kinco.map(item => `
+//     <category name="${item.key}" colour="180">
+//       <block type="${item.name + 'MoveAt'}"></block>
+//       <block type="${item.name + 'Normalvel'}"></block>
+//       <block type="${item.name + 'ServoPos'}"></block>
+//       <block type="${item.name + 'FindError'}"></block>
+//       <block type="${item.name + 'ServoClear'}"></block>
+//       <block type="${item.name + 'Lock'}"></block>
+//       <block type="${item.name + 'SetHomemodeStart'}"></block>
+//       <block type="${item.name + 'GoHome'}"></block>
+//     </category>
+//   `).join('')}
 
 const initBlockly = () => {
   console.log('toolboxXml', toolboxXml);
@@ -396,7 +962,45 @@ const dialogVisible = ref(false)
 const checkcode = () => {
   dialogVisible.value = true;
 };
+const functionName = ref('');
+const startBlinking = () => {
+  // 获取所有积木
+  const allBlocks = workspace.value.getAllBlocks();
 
+  // 查找匹配的函数块
+  const matchingBlocks = allBlocks.filter(b => b.getFieldValue('NAME') === functionName.value);
+
+  if (matchingBlocks.length > 0) {
+    let ishight = false;
+
+    // 定义高亮函数
+    const highlightBlocks = (blocks) => {
+      blocks.forEach(block => {
+        block.setHighlighted(ishight);
+        // 递归高亮子积木
+        highlightBlocks(block.getChildren());
+      });
+    };
+
+    highlightBlocks(matchingBlocks); // 初始高亮
+
+    const intervalId = setInterval(() => {
+      ishight = !ishight;
+      highlightBlocks(matchingBlocks); // 切换高亮状态
+    }, 500);
+
+    // // 停止闪烁的逻辑 (可选)
+    // setTimeout(() => {
+    //   clearInterval(intervalId);
+    //   matchingBlocks.forEach(block => {
+    //     block.setHighlighted(false); // 确保在结束后关闭高亮
+    //     highlightBlocks(block.getChildren()); // 关闭子积木的高亮
+    //   });
+    // }, 5000);
+  } else {
+    ElMessage.error('未找到指定函数块');
+  }
+};
 
 
 

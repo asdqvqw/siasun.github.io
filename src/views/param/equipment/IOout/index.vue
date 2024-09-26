@@ -12,6 +12,10 @@
             <template #header>
                 <el-button type="primary" @click="addNewRow">添加新数据</el-button>
             </template>
+            <template #default="scope">
+                <el-button type="text" @click="reedit(scope.$index)">{{ IOoutputdata[scope.$index].name
+                    }}</el-button>
+            </template>
         </el-table-column>
 
 

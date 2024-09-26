@@ -21,10 +21,10 @@
           ">
 
           <el-button type="danger" @click="exportJSON">
-            导出JS到本地
+            同步js与xml到AGV
           </el-button>
           <el-button type="success" @click="saveBlocks">
-            保存配置xml到本地
+            保存js与xml到本地
           </el-button>
           <el-button type="primary" @click="loadBlocks">
             在本地加载xml
@@ -52,7 +52,7 @@
 import { ref, onMounted } from 'vue'
 import Blockly from 'blockly';
 import { javascriptGenerator } from 'blockly/javascript';
-import { jsondata,code } from '../common.js'
+import { jsondata, code } from '../common.js'
 import * as hans from 'blockly/msg/zh-hans';
 import axios from 'axios'
 import './config';
@@ -400,7 +400,41 @@ const checkcode = () => {
 
 
 
-const exportJSON = () => {
+const exportJSON = async () => {
+  if (code.value) {
+    const jsonBlob = new Blob([code.value], { type: 'application/javascript' });
+    const xml = Blockly.Xml.workspaceToDom(workspace.value);
+    const xmlText = Blockly.Xml.domToText(xml);
+    const xmlBlob = new Blob([xmlText], { type: 'text/xml' });
+
+    await Promise.all([
+      handleFileUpload(jsonBlob, 'task.js'),
+      handleFileUpload(xmlBlob, 'task.xml'),
+    ]);
+  }
+};
+const handleFileUpload = async (file, fileName) => {
+  if (!file) return;
+
+  try {
+    const response = await axios({
+      method: 'post',
+      url: '/api/upload',
+      data: file,
+      headers: {
+        'Content-Type': file.type,
+        'X-File-Name': fileName,
+      },
+    });
+    ElMessage.success(`${fileName} 上传成功`);
+    console.log(`${fileName} 上传成功:`, response.data);
+  } catch (error) {
+    ElMessage.error(`上传 ${fileName} 时出错:`, error);
+    console.error(`上传 ${fileName} 时出错:`, error);
+  }
+};
+
+const saveBlocks = () => {
   if (code.value) {
     const jsonBlob = new Blob([code.value], { type: 'application/js' });
     const url = URL.createObjectURL(jsonBlob);
@@ -409,16 +443,16 @@ const exportJSON = () => {
     link.download = 'task.js';
     link.click();
     URL.revokeObjectURL(url);
-  }
-};
 
-const saveBlocks = () => {
-  const xml = Blockly.Xml.workspaceToDom(workspace.value);
-  const xmlText = Blockly.Xml.domToText(xml);
-  const link = document.createElement('a');
-  link.href = 'data:text/xml;charset=utf-8,' + encodeURIComponent(xmlText);
-  link.download = 'task.xml';
-  link.click();
+    const xml = Blockly.Xml.workspaceToDom(workspace.value);
+    const xmlText = Blockly.Xml.domToText(xml);
+    const link1 = document.createElement('a');
+    link1.href = 'data:text/xml;charset=utf-8,' + encodeURIComponent(xmlText);
+    link1.download = 'task.xml';
+    link1.click();
+  }
+
+
 };
 
 const loadBlocks = () => {

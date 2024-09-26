@@ -1,1 +1,0 @@
-import{aV as a}from"./index-9c50c20e.js";const o=a({version:"1.0",IO:{input:[],output:[]},servo:{kinco:[]},Task:[]}),t=a(""),n=a([{name:"版本号",value:""}]),c=a([]),e=a([]),r=a([]);a([]);export{n as E,c as I,e as a,t as c,o as j,r as s};

@@ -46,9 +46,9 @@ import { javascriptGenerator } from 'blockly/javascript';
 // import {toolboxXml} from './config_box'
 // import * as Blockly from 'blockly/core'
 // import { javascriptGenerator } from 'blockly/javascript';
-import * as hans from 'blockly/msg/zh-hans';
+// import * as hans from 'blockly/msg/zh-hans';
 const jsonData = {"tool":[{"test":1},{"test":2}]};
-Blockly.setLocale(hans);
+// Blockly.setLocale(hans);
 //自定义积木
 //返回
 //自定义积木
