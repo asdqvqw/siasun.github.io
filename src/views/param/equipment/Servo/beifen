@@ -1,0 +1,497 @@
+<template>
+  <div>
+    <el-table :data="jsondata.Task" style="width: 100%" class="jsondatatask">
+      <el-table-column label="⚠️ 任务列表" width="200">
+
+        <template #default="{ row }">
+
+          <div :class="isCollapsed(row) ? 'zhedie' : 'zhankai'">
+            <div
+              :class="{ 'highlight-green': blinkingStates.green[row.id], 'highlight-red': blinkingStates.red[row.id] }"
+              class="data-item">
+              <el-button @click="toggleCollapse(row)" type="info">{{ isCollapsed(row) ? '折叠' : '展开' }}</el-button>
+              <el-button type="danger" @click="removeTask(row)">删除</el-button>
+              <el-input style="margin-top: 3%;" v-model.number="row.note" />
+            </div>
+          </div>
+        </template>
+
+      </el-table-column>
+      <el-table-column label="任务 ID" width="100">
+        <template #default="{ row }">
+
+          <div :class="isCollapsed(row) ? 'zhedie' : 'zhankai'">
+            <div
+              :class="{ 'highlight-green': blinkingStates.green[row.id], 'highlight-red': blinkingStates.red[row.id] }"
+              class="data-item">
+              <el-input v-model.number="row.id" />
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="任务步骤">
+        <template #header>
+          <div style="width: 100%;
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
+            <span>任务步骤</span>
+            
+            <el-button type="primary" @click="addTask">添加任务</el-button>
+            <!-- <el-input v-model.number="inputid" placeholder="输入项目名" style="margin-bottom: 10px; width: 10%;"></el-input>
+            <el-button @click="startBlinkinggreen" type="primary" >开始闪烁（黄）</el-button>
+            <el-button @click="startBlinkingRed" type="danger" >开始闪烁（红）</el-button>
+            <el-button @click="stopBlinkingRed" type="danger" >结束闪烁</el-button> -->
+          </div>
+        </template>
+        <template #default="{ row }">
+          <div :class="{ 'highlight-green': blinkingStates.green[row.id], 'highlight-red': blinkingStates.red[row.id] }"
+            class="data-item">
+            <div v-if="isCollapsed(row)">
+
+
+
+              <div>
+                <el-button type="primary" @click="addTaskList(row)">添加动作</el-button>
+                <el-input v-model="inputact" placeholder="输入项目名" style="margin-bottom: 10px; width: 10%;"></el-input>
+            <el-button @click="startBlinkinggreenact" type="primary" >开始闪烁（黄）</el-button>
+            <el-button @click="startBlinkingRedact" type="danger" >开始闪烁（红）</el-button>
+            <el-button @click="stopBlinkingRedact" type="danger" >结束闪烁</el-button>
+              </div>
+              <el-table :data="row.taskList" style="width: 100%">
+                <el-table-column label="动作">
+                  <template #default="{ row: taskItem }">
+                    <div
+              :class="{ 'highlight-green': blinkingStatesact.green[taskItem.main], 'highlight-red': blinkingStatesact.red[taskItem.main] }"
+              class="data-item">
+                    <span style="font-size: 16px;font-style:oblique; margin-right: 10px;">第{{
+                      row.taskList.indexOf(taskItem) + 1 }}步</span>
+                    <el-button type="danger" @click="removeTaskList(row, taskItem)">删除动作</el-button>
+                    <el-select v-model="taskItem.main" placeholder="选择动作">
+                      <el-option v-for="aaa in functions" :key="aaa" :label="aaa.name" :value="aaa.key"></el-option>
+                    </el-select>
+                  </div>
+                  </template>
+
+
+                </el-table-column>
+                <el-table-column label="动作异常">
+                  <template #default="{ row: taskItem }">
+                    <div
+              :class="{ 'highlight-green': blinkingStatesact.green[taskItem.main], 'highlight-red': blinkingStatesact.red[taskItem.main] }"
+              class="data-item">
+                    <ul>
+                      <li v-for="(exception, exceptionIndex) in taskItem.exceptions"
+                        :key="`exception-${exceptionIndex}`">
+                        <div style="width: 95%;
+                            display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
+                          <el-select v-model="taskItem.exceptions[exceptionIndex]" placeholder="动作中检测异常">
+                            <el-option v-for="aaa in functions" :key="aaa" :label="aaa.name"
+                              :value="aaa.key"></el-option>
+                          </el-select>
+
+                          &nbsp;
+                          <el-button type="danger" @click="removeException(taskItem, exceptionIndex)">删除</el-button>
+                        </div>
+                      </li>
+                      <br>
+                      <el-button type="primary" @click="addException(taskItem)">添加异常</el-button>
+                    </ul>
+                    </div>
+                  </template>
+
+
+
+                </el-table-column>
+
+
+
+
+                <el-table-column label="执行结果和跳转">
+                  <template #default="{ row: taskItem }">
+                    <div
+              :class="{ 'highlight-green': blinkingStatesact.green[taskItem.main], 'highlight-red': blinkingStatesact.red[taskItem.main] }"
+              class="data-item">
+                    <div v-for="(jump, jumpIndex) in taskItem.jump" :key="`jump-${jumpIndex}`">
+                      <div style="width: 95%;
+                         display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
+                        <el-select v-model="jump.condition" placeholder="执行结果">
+                          <el-option v-for="option in conditionOptions" :label="option.label" :value="option.value" />
+                        </el-select>
+                        <el-select v-model="jump.index" placeholder="跳转索引">
+                          <el-option v-for="step in row.taskList"
+                            :label="'第 ' + (row.taskList.indexOf(step) + 1) + ' 步'"
+                            :value="row.taskList.indexOf(step) + 1" />
+                        </el-select>
+                        <!-- <el-input v-model.number="jump.index" placeholder="跳转索引" /> -->
+                        &nbsp;
+                        <el-button type="danger" @click="removeJump(taskItem, jumpIndex)">删除</el-button>
+                      </div>
+                    </div>
+                    <br>
+                    <el-button type="primary" @click="addJump(taskItem)">添加跳转</el-button>
+                    </div>
+                  </template>
+                </el-table-column>
+
+              </el-table>
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+
+    </el-table>
+
+  </div>
+
+</template>
+
+<script setup>
+import { ref, watchEffect, computed ,onMounted } from 'vue';
+import { jsondata, code } from '../common.js'
+import { ElTable, ElTableColumn, ElInput, ElButton } from 'element-plus';
+const functions = ref([]);
+const conditionOptions = ref([
+  { label: '重复执行', value: 0 },
+  { label: '正常', value: 1 },
+  { label: '异常', value: 2 },
+  { label: '3', value: 3 },
+  { label: '4', value: 4 },
+  { label: '5', value: 5 },
+  { label: '6', value: 6 },
+  { label: '7', value: 7 },
+  { label: '8', value: 8 },
+  { label: '9', value: 9 },
+  { label: '10', value: 10 },
+  // 其他条件...
+]);
+watchEffect(() => {
+  let name = ''
+  functions.value = code.value.split('\n')
+    .reduce((acc, line) => {
+      if (line.trim().startsWith('function')) {
+        // 提取函数名
+        const functionName = line.split('(')[0].split(' ')[1]
+
+        if (!name) {
+          name = functionName
+        }
+
+        // 添加到结果数组
+        acc.push({
+          name,
+          key: functionName
+        })
+
+        // 更新 name
+        name = line
+      } else {
+        // 更新 name
+        name = line
+      }
+      return acc
+    }, [])
+})
+
+
+const newException = ref('');
+
+function addTask() {
+  jsondata.value.Task.push({
+    note: '',
+    id: 0,
+    taskList: [],
+  });
+}
+
+
+const inputid = ref(0);
+let blinkIntervals = {
+  green: {},
+  red: {},
+}; // 存储每个项目的闪烁定时器
+const blinkingStates = ref({
+  green: {},
+  red: {},
+}); // 存储闪烁状态
+const currentBlinkColor = ref({}); // 存储当前闪烁颜色
+// 选择要闪烁的项目
+const selectedItem = computed(() => {
+  return jsondata.value.Task.find(aaa => aaa.id === responseData.value.curTaskID);
+});
+const startBlinkinggreen = () => {
+  if (selectedItem.value) {
+
+    const item = selectedItem.value;
+    console.log('2222',currentBlinkColor.value[item.id])
+    // 检查是否已经在闪烁状态
+    if (currentBlinkColor.value[item.id] === 'green') {
+      return;
+    }
+      clearInterval(blinkIntervals.red[item.id]); // 清除对应项目的定时器
+    delete blinkIntervals.red[item.id]; // 删除定时器记录
+    blinkingStates.value.red[item.id] = false; // 取消闪烁状态
+    blinkingStates.value.green[item.id] = true; // 设置为闪烁状态
+    currentBlinkColor.value[item.id] = 'green'; // 更新当前闪烁颜色
+    // 如果没有定时器，则创建一个新的定时器
+    if (!blinkIntervals.green[item.id]) {
+      blinkIntervals.green[item.id] = setInterval(() => {
+        blinkingStates.value.green[item.id] = !blinkingStates.value.green[item.id];
+      }, 500); // 每500毫秒切换一次高亮
+    }
+    
+
+  }
+};
+
+
+const startBlinkingRed = () => {
+  if (selectedItem.value) {
+    const item = selectedItem.value;
+    if (currentBlinkColor.value[item.id] === 'red') {
+      return;
+    }
+    clearInterval(blinkIntervals.green[item.id]); // 清除对应项目的定时器
+    delete blinkIntervals.green[item.id]; // 删除定时器记录
+    blinkingStates.value.green[item.id] = false; // 取消闪烁状态
+    blinkingStates.value.red[item.id] = true; // 设置为闪烁状态
+    currentBlinkColor.value[item.id] = 'red';
+    // 如果没有定时器，则创建一个新的定时器
+    if (!blinkIntervals.red[item.id]) {
+      blinkIntervals.red[item.id] = setInterval(() => {
+        blinkingStates.value.red[item.id] = !blinkingStates.value.red[item.id];
+      }, 500); // 每500毫秒切换一次高亮
+    }
+  }
+};
+
+
+const stopBlinkingRed = () => {
+  if (selectedItem.value) {
+    const item = selectedItem.value;
+    
+    clearInterval(blinkIntervals.green[item.id]); // 清除对应项目的定时器
+    delete blinkIntervals.green[item.id]; // 删除定时器记录
+    blinkingStates.value.green[item.id] = false; // 取消闪烁状态
+    clearInterval(blinkIntervals.red[item.id]); // 清除对应项目的定时器
+    delete blinkIntervals.red[item.id]; // 删除定时器记录
+    blinkingStates.value.red[item.id] = false; // 取消闪烁状态
+    currentBlinkColor.value[item.id] = null;
+  }
+};
+
+//任务闪烁
+const inputact = ref('');
+let blinkIntervalsact = {
+  green: {},
+  red: {},
+}; // 存储每个项目的闪烁定时器
+const blinkingStatesact = ref({
+  green: {},
+  red: {},
+}); // 存储闪烁状态
+const currentBlinkColoract = ref({}); // 存储当前闪烁颜色
+// 选择要闪烁的项目
+const selectedItemact = computed(() => {
+  return jsondata.value.Task.flatMap(task => task.taskList).find(taskItem => taskItem.main === inputact.value);
+});
+const startBlinkinggreenact = () => {
+  if (selectedItemact.value) {
+
+    const item = selectedItemact.value;
+    console.log('2222',currentBlinkColoract.value[item.main])
+    // 检查是否已经在闪烁状态
+    if (currentBlinkColoract.value[item.main] === 'green') {
+      return;
+    }
+      clearInterval(blinkIntervalsact.red[item.main]); // 清除对应项目的定时器
+    delete blinkIntervalsact.red[item.main]; // 删除定时器记录
+    blinkingStatesact.value.red[item.main] = false; // 取消闪烁状态
+    blinkingStatesact.value.green[item.main] = true; // 设置为闪烁状态
+    currentBlinkColoract.value[item.main] = 'green'; // 更新当前闪烁颜色
+    // 如果没有定时器，则创建一个新的定时器
+    if (!blinkIntervalsact.green[item.main]) {
+      blinkIntervalsact.green[item.main] = setInterval(() => {
+        blinkingStatesact.value.green[item.main] = !blinkingStatesact.value.green[item.main];
+      }, 500); // 每500毫秒切换一次高亮
+    }
+    
+
+  }
+};
+
+
+const startBlinkingRedact = () => {
+  if (selectedItemact.value) {
+    const item = selectedItemact.value;
+    if (currentBlinkColoract.value[item.main] === 'red') {
+      return;
+    }
+    clearInterval(blinkIntervalsact.green[item.main]); // 清除对应项目的定时器
+    delete blinkIntervalsact.green[item.main]; // 删除定时器记录
+    blinkingStatesact.value.green[item.main] = false; // 取消闪烁状态
+    blinkingStatesact.value.red[item.main] = true; // 设置为闪烁状态
+    currentBlinkColoract.value[item.main] = 'red';
+    // 如果没有定时器，则创建一个新的定时器
+    if (!blinkIntervalsact.red[item.main]) {
+      blinkIntervalsact.red[item.main] = setInterval(() => {
+        blinkingStatesact.value.red[item.main] = !blinkingStatesact.value.red[item.main];
+      }, 500); // 每500毫秒切换一次高亮
+    }
+  }
+};
+
+
+const stopBlinkingRedact = () => {
+  if (selectedItemact.value) {
+    const item = selectedItemact.value;
+    
+    clearInterval(blinkIntervalsact.green[item.main]); // 清除对应项目的定时器
+    delete blinkIntervalsact.green[item.main]; // 删除定时器记录
+    blinkingStatesact.value.green[item.main] = false; // 取消闪烁状态
+    clearInterval(blinkIntervalsact.red[item.main]); // 清除对应项目的定时器
+    delete blinkIntervalsact.red[item.main]; // 删除定时器记录
+    blinkingStatesact.value.red[item.main] = false; // 取消闪烁状态
+    currentBlinkColoract.value[item.main] = null;
+  }
+};
+
+
+function removeTask(task) {
+  const index = jsondata.value.Task.indexOf(task);
+  if (index > -1) {
+    jsondata.value.Task.splice(index, 1);
+  }
+}
+
+function addTaskList(task) {
+  task.taskList.push({
+    main: '',
+    exceptions: [''],
+    jump: [
+      {
+
+      },
+    ],
+  });
+}
+
+function removeTaskList(row, taskItem) {
+  const index = row.taskList.indexOf(taskItem);
+  if (index > -1) {
+    row.taskList.splice(index, 1);
+  }
+}
+
+function addException(taskItem) {
+  taskItem.exceptions.push(newException.value);
+  newException.value = '';
+}
+
+function removeException(taskItem, index) {
+  taskItem.exceptions.splice(index, 1);
+}
+
+function addJump(taskItem) {
+  taskItem.jump.push({
+
+  });
+}
+
+function removeJump(taskItem, index) {
+  taskItem.jump.splice(index, 1);
+}
+
+const collapsedRows = ref(new Set());
+
+function isCollapsed(row) {
+  return collapsedRows.value.has(row);
+}
+
+function toggleCollapse(row) {
+  if (collapsedRows.value.has(row)) {
+    collapsedRows.value.delete(row);
+  } else {
+    collapsedRows.value.add(row);
+  }
+}
+
+import axios from 'axios'
+const responseData = ref(null)
+const fetchVelocity1 = () => {
+  let userList = {
+    group: 'siasun',
+    account: 'test',
+    password: '123456'
+  }
+  axios({
+    method: 'post',
+    url: '/api/data/analysis',
+    data: JSON.stringify(userList)
+  })
+    .then((res) => {
+      responseData.value = res.data;
+      console.log('111111',responseData.value)
+      // 根据 taskStatus 更新闪烁状态
+      const taskId = responseData.value.curTaskID;
+      const taskStatus = responseData.value.taskStatus;
+       if (taskStatus === 0) {
+        stopBlinkingRed(); // 停止闪烁
+      } else if (taskStatus === 1) {
+        startBlinkinggreen(); // 启动绿色闪烁
+      } else if (taskStatus === 2 || taskStatus === 3) {
+        startBlinkingRed(); // 启动红色闪烁
+      }
+      
+    })
+    .catch((error) => {
+
+    })
+    .finally(() => {
+
+    })
+
+  // timer_statistics2.value = 
+  setTimeout(fetchVelocity1, 500);
+}
+
+onMounted(() => {
+  fetchVelocity1()
+})
+
+</script>
+
+
+<style>
+.jsondatatask .el-table__body tr:nth-child(2n) {
+  background-color: #ada7a757;
+  /* 隔行背景色 */
+}
+</style>
+
+<style scoped>
+.zhedie {
+  top: 10px;
+  position: absolute;
+}
+
+.zhangkai {
+  top: 10px;
+  position: absolute;
+}
+</style>
+
+<style scoped>
+.data-item {
+  padding: 15px;
+  transition: background-color 0.3s;
+}
+
+.highlight-green {
+  background-color: rgb(3, 221, 3);
+  /* 黄色高亮 */
+}
+
+.highlight-red {
+  background-color: red;
+  /* 红色高亮 */
+}
+</style>

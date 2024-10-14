@@ -1,5 +1,5 @@
 import { ref } from "vue";
-
+export const functions = ref([]);
 export const jsondata = ref({
     version: '1.0',
     IO: {
@@ -8,9 +8,10 @@ export const jsondata = ref({
     },
     servo: {kinco:[]},
     Task: [
-
     ],
-    device:[]
+    device:{
+        // camera:[]
+    }
 });
 
 export const code = ref('');
@@ -31,3 +32,7 @@ export const servodata = ref([
 export const taskdata = ref([
 
 ]);
+
+export const devicedata = ref({}
+
+);

@@ -324,8 +324,10 @@ const handleAddRow = () => {
             jsondata.value.servo.kinco = servodata;
 
         } else {
+            const { editingIndex, ...rest } = newservoRow.value;
+            const newRowData = { ...rest };
             // 新增模式下添加数据
-            const newservoRowData = { ...newservoRow.value };
+            const newservoRowData = { ...newRowData };
             servodata.value.push(JSON.parse(JSON.stringify(newservoRowData)));
             jsondata.value.servo.kinco = servodata;
             console.log('handleAddRow', newservoRowData);

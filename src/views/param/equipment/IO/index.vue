@@ -84,7 +84,7 @@ const reedit = (index) => {
     newRow.value.key = IOinputdata.value[index].key;
     newRow.value.config.value = IOinputdata.value[index].config;
     newRow.value.editingIndex = index; // 设置编辑索引
-    console.log('reedit', newRow.value.config.value)
+    console.log('reedit', newRow.value.editingIndex)
     dialogVisible.value = true;
     flag.value = !flag.value;
 };
@@ -99,14 +99,15 @@ const handleAddRow = () => {
                 IOinputdata.value[newRow.value.editingIndex].config = newRow.value.config;
             }
             jsondata.value.IO.input = IOinputdata;
-            console.log('handleAddRow', newRow.value.config);
+            console.log('handleAddRowb', newRow.value.config);
             console.log('handleAddRow', IOinputdata.value[newRow.value.editingIndex].config);
         } else {
             // 新增模式下添加数据
-            const newRowData = { ...newRow.value };
+            const { editingIndex, ...rest } = newRow.value;
+            const newRowData = { ...rest };
             IOinputdata.value.push(JSON.parse(JSON.stringify(newRowData)));
             jsondata.value.IO.input = IOinputdata;
-            console.log('handleAddRow', newRowData);
+            console.log('handleAddRowa', newRowData);
         }
         dialogVisible.value = false;
     } else {

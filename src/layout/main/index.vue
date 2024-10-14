@@ -45,7 +45,7 @@ import { deepCopyObj } from "@/common/OtherTools";
 import { toggleFullScreen } from "@/common/OtherTools";
 import { guid } from "@/common/Guid";
 import { timer_agv, timer_from, timer_statistics, timer_statistics2, timer_bettery,
-    starter,starter2
+    starter,starter2,timer_taskequ,timer_task
  } from "@/timer.js"
 import tagDataStore from "./common/TagData";
 
@@ -302,6 +302,12 @@ export default defineComponent({
             if (tag.path === '/main/manual/index') {
                 clearInterval(starter.value);
                 starter.value = "";
+            }
+            if (tag.path === '/main/equipment/index') {
+                clearInterval(timer_taskequ.value);
+            }
+            if (tag.path === '/main/task/index') {
+                clearInterval(timer_task.value);
             }
             
             let tagList = dataContainer.tagList;

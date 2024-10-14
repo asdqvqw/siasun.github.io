@@ -257,13 +257,13 @@ const shebeixinxi = computed(() => {
 <style scoped>
 .controldev {
 
-    width: 100%;
-  right: 0%;
+    width: 5vw;
+    height: 4vh;
  
   position: relative;
   background-color: #424141d8;
   color: rgb(241, 234, 234);
-  font-size: 12px;
+  font-size: 1vw;
 }
 </style>
 

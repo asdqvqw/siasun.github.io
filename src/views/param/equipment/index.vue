@@ -12,8 +12,8 @@
                         <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible"
                             @close="dialogVisible = false" modal-class="kk-dialog-class" custom-class="custom-dialog">
                             <DefinScrollbar height="100%" :showUpBt="true">
-                            <pre>{{ formattedJsondata }}</pre>
-                        </DefinScrollbar>
+                                <pre>{{ formattedJsondata }}</pre>
+                            </DefinScrollbar>
                         </el-dialog>
                         &nbsp;
 
@@ -32,13 +32,12 @@
                     <hr class="hengxian">
 
                     <el-table :data="EQUversion" style="width: 100%" class="EQUversion">
-                        
+
                         <el-table-column prop="name" label="⚠️ 版本"></el-table-column>
 
                         <el-table-column prop="value">
                             <template #default="scope">
-                                <el-input v-model="jsondata.version" placeholder="请选择" style="width:100%;"
-                                    >
+                                <el-input v-model="jsondata.version" placeholder="请选择" style="width:100%;">
 
                                 </el-input>
 
@@ -53,7 +52,9 @@
                     <servo_equ></servo_equ>
                     <hr class="hengxian3">
                     <equtask></equtask>
-                    <hr class="hengxian2">
+                    <hr class="hengxian3">
+                    <device></device>
+                    <!-- <hr class="hengxian2"> -->
                 </DefinScrollbar>
             </div>
 
@@ -65,14 +66,15 @@
 import { ref, computed } from 'vue'
 import DefinScrollbar from "@/components/DefinScrollbar.vue";
 import axios from 'axios'
-import { jsondata,EQUversion,IOinputdata ,IOoutputdata
-    ,servodata,taskdata
+import {
+    jsondata, EQUversion, IOinputdata, IOoutputdata
+    , servodata, taskdata
 } from './common.js'
 import IO from "./IO/index.vue";
 import IOOUT from "./IOout/index.vue";
 import servo_equ from "./Servo/index.vue";
 import equtask from "./Servo/task.vue";
-
+import device from "./other/index.vue";
 
 const dialogVisible = ref(false)
 
@@ -181,7 +183,7 @@ const handleImport = (event) => {
     reader.onload = (e) => {
         const importedData = JSON.parse(e.target.result);
         jsondata.value = importedData;
-         syncdata();
+        syncdata();
 
     };
     reader.readAsText(file);
@@ -189,10 +191,22 @@ const handleImport = (event) => {
     ElMessage.success('导入成功');
 };
 
-const syncdata = () =>{
-    IOinputdata.value = jsondata.value.IO.input;
-    IOoutputdata.value = jsondata.value.IO.output;
-     servodata.value = jsondata.value.servo.kinco;
+const syncdata = () => {
+    if (jsondata.value.IO !== undefined) {
+        if (jsondata.value.IO.input !== undefined) {
+            IOinputdata.value = jsondata.value.IO.input;
+        }
+        if (jsondata.value.IO.output !== undefined) {
+            IOoutputdata.value = jsondata.value.IO.output;
+        }
+    }
+    if (jsondata.value.servo.kinco !== undefined) {
+        if (jsondata.value.servo !== undefined) {
+            servodata.value = jsondata.value.servo.kinco;
+        }
+
+    }
+
 }
 </script>
 
@@ -202,8 +216,9 @@ const syncdata = () =>{
     border: none;
     border-top: 2px solid #ccc;
     margin: 20px 0;
-    
+
 }
+
 .hengxian3 {
     border: none;
     border-top: 2px dashed #ccc;

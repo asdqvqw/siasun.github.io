@@ -301,50 +301,26 @@ onMounted(() => {
   // readparam()
 })
 const plsangel = 60;
-// gltfLoader.load(
-//   './main/test.glb',
-//   (gltf) => {
-//     car = gltf.scene;
-//     // 设置模型的位置、缩放等属性
-//     // car.position.set(0, 0, 0);
-//     // car.scale.set(1, 0.6, 0.7);
-//     // car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
-//     scene.add(car);
-//     animateWheel2();
-//     animatelight();
-//     animateWheel();
-//     const radius = 2; // 扇形半径
-//     const startAngle = THREE.MathUtils.degToRad(0); // 起始角度
-//     const endAngle = THREE.MathUtils.degToRad(plsangel); // 结束角度
-//     const segments = 32; // 扇形分段数
-
-//     // 创建扇形几何体
-//     fanGeometry = new THREE.CircleGeometry(radius, segments, startAngle, endAngle);
-
-//     // 创建扇形材质
-//     const fanMaterial = new THREE.MeshBasicMaterial({
-//       color: 0x00ff00, // 设置扇形颜色
-//       transparent: true, // 启用透明度
-//       opacity: 0.5 // 设置透明度
-//     });
-
-//     // 创建扇形网格
-//     fanMesh = new THREE.Mesh(fanGeometry, fanMaterial);
-
-//     // 设置扇形位置和朝向
-//     fanMesh.position.set(car.position.x, car.position.y + 0.3, car.position.z - 0.1); // 放置在小车前方2个单位处
-//     // 将扇形添加到场景中
-//     scene.add(fanMesh);
-
-
-//   },
-//   (xhr) => {
-//     console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-//   },
-//   (error) => {
-//     console.error('Error loading model:', error);
-//   }
-// );
+gltfLoader.load(
+  './main/test.glb',
+  (gltf) => {
+    car = gltf.scene;
+    // 设置模型的位置、缩放等属性
+    // car.position.set(0, 0, 0);
+    // car.scale.set(1, 0.6, 0.7);
+    // car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+    scene.add(car);
+    animateWheel2();
+    animatelight();
+    animateWheel();
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+  },
+  (error) => {
+    console.error('Error loading model:', error);
+  }
+);
 //光源
 const light1 = new THREE.DirectionalLight(0xffffff, 1);
 light1.position.set(0, 0, 10);
@@ -619,9 +595,16 @@ const handleMouseOut = () => {
   // infoTextVisible.value = false;
 };
 
+const onWindowResize = () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+};
+
 
 
 onMounted(() => {
+  window.addEventListener('resize', onWindowResize);
   // 鼠标移入移出
   window.addEventListener('mousemove', handleMouseMove);
   window.addEventListener('mouseout', handleMouseOut);
@@ -743,12 +726,12 @@ watch(flagclear, () => {
 
 .el-dialog__body {
   overflow: auto;
-  height: 200px;
+  height: 33vh;
   /* 根据需要设置高度 */
 }
 
 .ele-dialog {
-  height: 40%;
+  height: 40vh;
   width: 35%;
   background-color: #f1f1f1;
 

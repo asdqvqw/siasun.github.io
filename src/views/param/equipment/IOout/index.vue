@@ -102,8 +102,10 @@ const handleAddRow = () => {
             console.log('handleAddRow', newoutRow.value.config);
             console.log('handleAddRow', IOoutputdata.value[newoutRow.value.editingIndex].config);
         } else {
+            const { editingIndex, ...rest } = newoutRow.value;
+            const newRowData = { ...rest };
             // 新增模式下添加数据
-            const newoutRowData = { ...newoutRow.value };
+            const newoutRowData = { ...newRowData };
             IOoutputdata.value.push(JSON.parse(JSON.stringify(newoutRowData)));
             jsondata.value.IO.output = IOoutputdata;
             console.log('handleAddRow', newoutRowData);

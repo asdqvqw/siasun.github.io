@@ -12,17 +12,67 @@ Blockly.Blocks.Return_Block = {
       type: 'Return_Block',
       colour: 180,
       tooltip: '',
-      helpUrl: ''
+      helpUrl: '',
+      message0: "返回 %1",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": [
+            [
+              "再次执行",
+              "0"
+            ],
+            [
+              "执行下一步",
+              "1"
+            ],
+            [
+              "异常",
+              "2"
+            ],
+            [
+              "3",
+              "3"
+            ],
+            [
+              "4",
+              "4"
+            ],
+            [
+              "5",
+              "5"
+            ],
+            [
+              "6",
+              "6"
+            ],
+            [
+              "7",
+              "7"
+            ],
+            [
+              "8",
+              "8"
+            ],
+            [
+              "9",
+              "9"
+            ],
+            [
+              "10",
+              "10"
+            ],
+          ]
+        }
+      ],
     });
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.appendDummyInput()
-      .appendField('返回')
-      .appendField(new Blockly.FieldNumber(0), "VALUE");
   }
 };
 javascriptGenerator['Return_Block'] = function (block) {
-  var code = block.getFieldValue('VALUE')
+  var code = block.getFieldValue('Get_Type')
   return 'return ' + code + ' ;';
 };
 //输入字符串
@@ -85,57 +135,25 @@ javascriptGenerator['Counter_Block'] = function (block) {
   return ['!' + code, javascriptGenerator.ORDER_ATOMIC];
 };
 
-//Set
-Blockly.Blocks.Set_Block = {
+//交互数据区
+Blockly.Blocks.TCSET_Block = {
   init: function () {
     this.jsonInit({
-      type: 'Set_Block',
-      colour: 180,
+      type: 'TCSET_Block',
+      colour: 10,
       tooltip: '',
       helpUrl: '',
-      message0: "调用类型 %1 %2 %3 %4",
+      message0: "发给控制台的数据区索引 %1 的值设置为 %2 ",
       args0: [
-        {
-          "type": "field_dropdown",
-          "name": "Set_Type",
-          "options": [
-            [
-              "setBool",
-              "setBool"
-            ],
-            [
-              "setDouble",
-              "setDouble"
-            ],
-            [
-              "setInt",
-              "setInt"
-            ],
-          ]
-        },
-        {
-          "type": "field_input",
-          "name": "FunctionName",
-          "text": "调用函数"
-        },
         {
           "type": "field_input",
           "name": "Parameter",
-          "text": "参数"
+          "text": ""
         },
         {
-          "type": "field_dropdown",
+          "type": "input_value",
           "name": "Set_bool_Type",
-          "options": [
-            [
-              "false",
-              "false"
-            ],
-            [
-              "true",
-              "true"
-            ]
-          ]
+          "check": ['Number', "Boolean", "FunctionNameBlockType"]
         },
       ],
     });
@@ -143,13 +161,300 @@ Blockly.Blocks.Set_Block = {
     this.setNextStatement(true, null);
   }
 };
-javascriptGenerator['Set_Block'] = function (block) {
-  var code1 = block.getFieldValue('Set_Type');
-  var code2 = block.getFieldValue('FunctionName');
+javascriptGenerator['TCSET_Block'] = function (block) {
+  var code1 = "setInt";
+  var code2 = "DASet";
   var code3 = block.getFieldValue('Parameter');
-  var code4 = block.getFieldValue('Set_bool_Type');
+  var code4 = javascriptGenerator.valueToCode(block, 'Set_bool_Type', javascriptGenerator.ORDER_NONE);
   return code1 + '("' + code2 + '","' + code3 + '",' + code4 + ');\n';
 };
+
+Blockly.Blocks.TCSHOW_Block = {
+  init: function () {
+    this.jsonInit({
+      type: 'TCSHOW_Block',
+      colour: 10,
+      tooltip: '',
+      helpUrl: '',
+      message0: "查询发给控制台的数据区索引 %1 的值",
+      args0: [
+
+        {
+          "type": "field_input",
+          "name": "Parameter",
+          "text": ""
+        }
+      ],
+    });
+    this.setOutput(true, null);
+  },
+
+};
+javascriptGenerator['TCSHOW_Block'] = function (block) {
+  var code1 = "getInt";
+  var code2 = "DAShow";
+
+  var code3 = block.getFieldValue('Parameter');
+  var code4 = -1;
+  return [code1 + '("' + code2 + '","' + code3 + '",' + code4 + ')', javascriptGenerator.ORDER_ATOMIC];
+};
+
+Blockly.Blocks.TCGET_Block = {
+  init: function () {
+    this.jsonInit({
+      type: 'TCGET_Block',
+      colour: 10,
+      tooltip: '',
+      helpUrl: '',
+      message0: "取出控制台下发数据区索引 %1 的值",
+      args0: [
+
+        {
+          "type": "field_input",
+          "name": "Parameter",
+          "text": ""
+        }
+      ],
+    });
+    this.setOutput(true, null);
+  },
+
+};
+javascriptGenerator['TCGET_Block'] = function (block) {
+  var code1 = "getInt";
+  var code2 = "DAGet";
+
+  var code3 = block.getFieldValue('Parameter');
+  var code4 = 0;
+  return [code1 + '("' + code2 + '","' + code3 + '",' + code4 + ')', javascriptGenerator.ORDER_ATOMIC];
+};
+
+//存储数据
+
+Blockly.Blocks.SAYE_Block = {
+  init: function () {
+    this.jsonInit({
+      type: 'SAYE_Block',
+      colour: 45,
+      tooltip: '',
+      helpUrl: '',
+      message0: "存储 %1 数据 %2的值为 %3 ",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Set_Type",
+          "options": [
+            [
+              "布尔型",
+              "setBool"
+            ],
+            [
+              "双精度型",
+              "setDouble"
+            ],
+            [
+              "整型",
+              "setInt"
+            ],
+          ]
+        },
+
+        {
+          "type": "field_input",
+          "name": "Parameter",
+          "text": ""
+        },
+        {
+          "type": "input_value",
+          "name": "Set_bool_Type",
+          "check": ['Number', "Boolean", "FunctionNameBlockType"]
+        },
+      ],
+    });
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+  }
+};
+javascriptGenerator['SAYE_Block'] = function (block) {
+  var code1 = block.getFieldValue('Set_Type');
+  var code2;
+  if (code1 === "setBool") {
+    code2 = "StoreB";
+  } else if (code1 === "setDouble") {
+    code2 = "StoreD";
+  } else if (code1 === "setInt") {
+    code2 = "Store";
+  }
+  var code3 = block.getFieldValue('Parameter');
+  var code4 = javascriptGenerator.valueToCode(block, 'Set_bool_Type', javascriptGenerator.ORDER_NONE);
+  return code1 + '("' + code2 + '","' + code3 + '",' + code4 + ');\n';
+};
+
+
+Blockly.Blocks.LOAD_Block = {
+  init: function () {
+    this.jsonInit({
+      type: 'LOAD_Block',
+      colour: 45,
+      tooltip: '',
+      helpUrl: '',
+      message0: "加载 %1 数据 %2",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": [
+            [
+              "布尔型",
+              "getBool"
+            ],
+            [
+              "双精度型",
+              "getDouble"
+            ],
+            [
+              "整型",
+              "getInt"
+            ],
+          ]
+        },
+        {
+          "type": "field_input",
+          "name": "Parameter",
+          "text": ""
+        }
+      ],
+    });
+    this.setOutput(true, null);
+  },
+
+};
+javascriptGenerator['LOAD_Block'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  var code2;
+  if (code1 === "getBool") {
+    code2 = "LoadB";
+  } else if (code1 === "getDouble") {
+    code2 = "LoadD";
+  } else if (code1 === "getInt") {
+    code2 = "Load";
+  }
+  var code3 = block.getFieldValue('Parameter');
+  if (code1 === "getBool") {
+    return [code1 + '("' + code2 + '","' + code3 + '",false'  + ')', javascriptGenerator.ORDER_ATOMIC];
+  } else if (code1 === "getDouble") {
+    return [code1 + '("' + code2 + '","' + code3 + '",0.0'  + ')', javascriptGenerator.ORDER_ATOMIC];
+  } else if (code1 === "getInt") {
+    return [code1 + '("' + code2 + '","' + code3 + '",0'  + ')', javascriptGenerator.ORDER_ATOMIC];
+  }
+  
+  
+};
+Blockly.Blocks.LOAD_Block_input = {
+  init: function () {
+    this.jsonInit({
+      type: 'LOAD_Block_input',
+      colour: 45,
+      tooltip: '',
+      helpUrl: '',
+      message0: "加载 %1 数据 %2 并设置默认值为%3",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": [
+            [
+              "布尔型",
+              "getBool"
+            ],
+            [
+              "双精度型",
+              "getDouble"
+            ],
+            [
+              "整型",
+              "getInt"
+            ],
+          ]
+        },
+        {
+          "type": "field_input",
+          "name": "Parameter",
+          "text": ""
+        },
+        {
+          "type": "input_value",
+          "name": "get_bool_Type",
+          "check": ['Number', "Boolean", "FunctionNameBlockType"]
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  },
+
+};
+javascriptGenerator['LOAD_Block_input'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  var code2;
+  if (code1 === "getBool") {
+    code2 = "LoadB";
+  } else if (code1 === "getDouble") {
+    code2 = "LoadD";
+  } else if (code1 === "getInt") {
+    code2 = "Load";
+  }
+  var code3 = block.getFieldValue('Parameter');
+  var code4 = javascriptGenerator.valueToCode(block, 'get_bool_Type', javascriptGenerator.ORDER_NONE);
+
+  return [code1 + '("' + code2 + '","' + code3 + '",'+ code4  + ')', javascriptGenerator.ORDER_ATOMIC];
+
+};
+
+//扩展
+
+Blockly.Blocks.GETEX_Block = {
+  init: function () {
+    this.jsonInit({
+      type: 'GETEX_Block',
+      colour: 0,
+      tooltip: '',
+      helpUrl: '',
+      message0: "获取第 %1个扩展参数",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": [
+            [
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "1"
+            ],
+            [
+              "2",
+              "2"
+            ],
+          ]
+        }
+      ],
+    });
+    this.setOutput(true, null);
+  },
+
+};
+javascriptGenerator['GETEX_Block'] = function (block) {
+  var code1 = "getInt";
+  var code2 = "GetExtParam";
+
+  var code3 = block.getFieldValue('Get_Type');
+  var code4 = 0;
+  return [code1 + '("' + code2 + '","' + code3 + '",' + code4 + ')', javascriptGenerator.ORDER_ATOMIC];
+};
+
+
 
 Blockly.Blocks.Set2_Block = {
   init: function () {
@@ -208,70 +513,8 @@ javascriptGenerator['Set2_Block'] = function (block) {
 };
 
 
-//Get
-Blockly.Blocks.Get_Block = {
-  init: function () {
-    this.jsonInit({
-      type: 'Get_Block',
-      colour: 180,
-      tooltip: '',
-      helpUrl: '',
-      message0: "获取 %1 %2 %3 %4",
-      args0: [
-        {
-          "type": "field_dropdown",
-          "name": "Get_Type",
-          "options": [
-            [
-              "getBool",
-              "getBool"
-            ],
-            [
-              "getDouble",
-              "getDouble"
-            ],
-            [
-              "getInt",
-              "getInt"
-            ],
-          ]
-        },
-        {
-          "type": "field_input",
-          "name": "FunctionName",
-          "text": "调用函数"
-        },
-        {
-          "type": "field_input",
-          "name": "Parameter",
-          "text": "参数"
-        },
-        {
-          "type": "field_dropdown",
-          "name": "Get_bool_Type",
-          "options": [
-            [
-              "false",
-              "false"
-            ],
-            [
-              "true",
-              "true"
-            ]
-          ]
-        },
-      ],
-    });
-    this.setOutput(true, null);
-  }
-};
-javascriptGenerator['Get_Block'] = function (block) {
-  var code1 = block.getFieldValue('Get_Type');
-  var code2 = block.getFieldValue('FunctionName');
-  var code3 = block.getFieldValue('Parameter');
-  var code4 = block.getFieldValue('Get_bool_Type');
-  return [code1 + '("' + code2 + '","' + code3 + '",' + code4 + ')', javascriptGenerator.ORDER_ATOMIC];
-};
+
+
 Blockly.Blocks.Get2_Block = {
   init: function () {
     this.jsonInit({

@@ -101,11 +101,11 @@ const drawPainting = (fakeMsg) => {
 
 #battery {
   box-sizing: content-box;
-  height: 3.9em;
-  width: 8.75em;
-  border: 0.3em solid #82c59c9f;
+  height: 11.5vh;
+  width: 28.75vh;
+  border: 0.4vw solid #82c59c9f;
   margin: auto;
-  border-radius: 0.3em;
+  border-radius: 0.3vw;
   position: relative;
   display: grid;
   place-items: center;
@@ -114,8 +114,8 @@ const drawPainting = (fakeMsg) => {
 #battery:before {
   position: absolute;
   content: '';
-  height: 2.5em;
-  width: 0.55em;
+  height: 10vh;
+  width: 0.55vw;
   background-color: #72af84ac;
   margin: auto;
   top: 0;
@@ -126,8 +126,8 @@ const drawPainting = (fakeMsg) => {
 
 #charge {
   position: absolute;
-  height: 3.25em;
-  width: 8.125em;
+  height: 10vh;
+  width: 28.125vh;
   background-color: #5db975aa;
   top: 0.3em;
   left: 0.3em;
@@ -135,7 +135,7 @@ const drawPainting = (fakeMsg) => {
 
 #charge-level {
   position: absolute;
-  font-size: 1.5em;
+  font-size: 2.5vw;
   font-weight: 200;
 }
 

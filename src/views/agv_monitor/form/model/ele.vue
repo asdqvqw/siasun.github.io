@@ -252,13 +252,13 @@ const sifu = computed(() => {
     bottom: 3%;
     right: 65%;
     width: 8%; */
-    width: 120%;
-    left: 10%;
+    width: 5vw;
+    height: 4vh;
  
   position: relative;
   background-color: #424141d8;
   color: rgb(241, 234, 234);
-  font-size: 12px;
+  font-size: 1vw;
 }
 </style>
 

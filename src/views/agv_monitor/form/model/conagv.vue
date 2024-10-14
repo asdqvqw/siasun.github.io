@@ -24,7 +24,8 @@
             </template>
           </el-table-column>
         </el-table>
-
+        <div style="width: 90%;  margin-top: 3%; margin-left: 5%;
+                  display: flex; justify-content: space-between; align-items: center; ">
         <el-button class="fuwei" type="primary" @click="setzero">复位</el-button>
         <el-button class="shoudongkongzhi" type="primary" @click="shoudongctrol">手动控制</el-button>
 
@@ -35,7 +36,8 @@
 
           <el-radio-button @change="roboSwitch" label="right">自动</el-radio-button>
         </el-radio-group>
-        <div style="width: 100%;  margin-top: 3%;
+      </div>
+        <div style="width: 90%;  margin-top: 3%; margin-left: 5%;
                   display: flex; justify-content: space-between; align-items: center; ">
           <navcontrol></navcontrol>
           <elecontrol></elecontrol>
@@ -189,7 +191,7 @@ const tableData = computed(() => {
   position: absolute;
   top: 20%;
   right: 5%;
-  height: 58%;
+  height: 65vh;
   width: 25%;
 }
 
@@ -199,7 +201,7 @@ const tableData = computed(() => {
   position: absolute;
   top: 20%;
   right: 5%;
-  height: 4%;
+  height: 4vh;
   width: 25%;
 }
 
@@ -208,7 +210,7 @@ const tableData = computed(() => {
   top: 0%;
   width: 100%;
   background-image: linear-gradient(to top right, #141515, #eef1ef);
-  height: 30%;
+  height: 18vh;
 }
 
 .table2 {
@@ -227,50 +229,46 @@ const tableData = computed(() => {
 }
 
 .fuwei {
-  width: 17%;
-  margin-left: 5%;
-  margin-top: 2%;
+  width: 5vw;
+  height: 4vh;
   position: relative;
   background-color: #424141d8;
   color: rgb(241, 234, 234);
-  font-size: 12px;
+  font-size: 1vw;
 }
 
 .shoudongkongzhi {
-  width: 17%;
-  left: 2%;
-  margin-top: 2%;
+  width: 5vw;
+  height: 4vh;
   position: relative;
   background-color: #424141d8;
   color: rgb(241, 234, 234);
-  font-size: 12px;
+  font-size: 1vw;
 }
 
 .sandang {
   width: auto;
-  left: 5%;
-  margin-top: 2%;
+  height: 4vh;
   position: relative;
   /* background-color: #8892925e;
   color: rgb(113, 111, 111); */
-  font-size: 12px;
+  font-size: 1vw;
 }
 
 .datatablecon {
-
-  width: 90%;
+  width: 22vw;
   height: 27vh;
   margin-left: 5%;
   margin-top: -2%;
   position: relative;
-  font-size: 12px;
+  font-size: 0.8vw;
 }
 
 .dianchi {
   margin-left: 10%;
   margin-top: 18%;
   position: relative;
-  font-size: 22px;
+  
 }
 </style>
 

@@ -264,13 +264,13 @@ const tableData = computed(() => {
     bottom: 3%;
     right: 23%;
     width: 8%; */
-    width: 100%;
-  right: 30%;
+    width: 5vw;
+    height: 4vh;
  
   position: relative;
   background-color: #424141d8;
   color: rgb(241, 234, 234);
-  font-size: 12px;
+  font-size: 1vw;
 }
 </style>
 
