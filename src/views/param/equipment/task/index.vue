@@ -80,8 +80,8 @@
           <el-button type="info" @click="checkcode">
             查看/同步代码
           </el-button>
-          <!-- <el-input v-model="functionName" placeholder="输入函数名"></el-input>
-          <el-button type="info" @click="startBlinking">
+          <!-- <el-input v-model.number="functionName2" placeholder="输入函数名"></el-input>
+          <el-button type="info" @click="startBlinking2">
             闪烁
           </el-button> -->
           <el-dialog v-model="dialogVisible" title="代码" :visible="dialogVisible" @close="dialogVisible = false">
@@ -1353,43 +1353,44 @@ javascriptGenerator['Get_Block2'] = function (block) {
   return [code1 + '("' + code2 + '","' + code3 + '",' + code4 + ')', javascriptGenerator.ORDER_ATOMIC];
 };
 
-
-
 Blockly.Blocks.error_Block = {
   init: function () {
     this.jsonInit({
       type: 'error_Block',
       colour: 20,
-      tooltip: '',
+      tooltip: '选择一个数字并添加对应数量的输入',
       helpUrl: '',
     });
 
     this.appendDummyInput('INPUT')
       .appendField("异常个数")
       .appendField(new Blockly.FieldDropdown(
-        Array.from({ length: 20 }, (v, k) => [`${k + 1}`, `${k + 1}`])
-      ), 'NUMBER')
+        Array.from({ length: 10 }, (v, k) => [`${k + 1}`, `${k + 1}`])
+      ), 'NUMBER');
 
-    this.setOutput(true, null);
+    this.setOutput(true, null); // 允许输出
     this.updateInputs(); // 初始化时添加输入字段
     this.setOnChange(this.onChange.bind(this)); // 绑定变化事件
   },
 
   // 更新输入字段的方法
   updateInputs: function () {
-    const numberOfSteps = parseInt(this.getFieldValue('NUMBER'), 10);
-    const currentSteps = this.inputList.filter(input => input.name.startsWith('VALUE_')).length;
+    const numberOfInputs = parseInt(this.getFieldValue('NUMBER'), 10);
+    const currentInputs = this.inputList.filter(input => input.name.startsWith('VALUE_')).length;
 
     // 添加输入字段
-    for (let i = currentSteps; i < numberOfSteps; i++) {
-      const stepInput = this.appendValueInput(`VALUE_${i}`)
+    for (let i = currentInputs; i < numberOfInputs; i++) {
+      this.appendValueInput(`VALUE_${i}`)
+        .setCheck('Number'); // 确保输入字段可以接受数字
     }
 
     // 删除多余的输入字段
-    for (let i = currentSteps - 1; i >= numberOfSteps; i--) {
+    for (let i = currentInputs - 1; i >= numberOfInputs; i--) {
       this.removeInput(`VALUE_${i}`);
-
     }
+
+    // 确保输出状态
+    this.setOutput(numberOfInputs > 0, null); // 只有当有输入时才允许输出
   },
 
   // 监听变化事件
@@ -1397,32 +1398,31 @@ Blockly.Blocks.error_Block = {
     if (event.type === Blockly.Events.CHANGE) {
       if (event.element === 'field' && event.name === 'NUMBER') {
         this.updateInputs();
-      } else if (event.element === 'field' && event.name.startsWith('STEP_NUMBER_')) {
-        const index = parseInt(event.name.split('_')[2], 10);
-        const selectedNumber = parseInt(this.getFieldValue(event.name), 10);
-        this.updateStepInputs(index, selectedNumber);
       }
     }
   },
 
-  // 更新步骤输入的方法
-  updateStepInputs: function (index, selectedNumber) {
-    const currentInputs = this.inputList.filter(input => input.name.startsWith(`STEP_INPUT_${index}_`)).length;
+  // 将积木状态保存到 XML
+  mutationToDom: function () {
+    const container = document.createElement('mutation');
+    const numberOfInputs = this.getFieldValue('NUMBER');
+    container.setAttribute('inputs', numberOfInputs);
+    return container;
+  },
 
-    // 添加或删除步骤输入字段
-    for (let i = currentInputs; i < selectedNumber; i++) {
-      this.appendValueInput(`STEP_INPUT_${index}_${i}`)
-        .appendField(`第 ${index + 1} 步 第 ${i + 1}个异常`)
-        .setCheck('Number'); // 可选：设置输入类型为数字
-    }
-
-    for (let i = currentInputs - 1; i >= selectedNumber; i--) {
-      this.removeInput(`STEP_INPUT_${index}_${i}`);
-    }
+  // 从 XML 恢复积木状态
+  domToMutation: function (xmlElement) {
+    const numberOfInputs = parseInt(xmlElement.getAttribute('inputs'), 10);
+    this.getField('NUMBER').setValue(numberOfInputs.toString());
+    this.updateInputs(); // 更新输入字段
   }
 };
+
+// 生成代码
 javascriptGenerator['error_Block'] = function (block) {
-  return ''; // 根据需要生成代码
+
+
+  return ['', javascriptGenerator.ORDER_FUNCTION_CALL];
 };
 Blockly.Blocks.task_Block = {
   init: function () {
@@ -1452,9 +1452,8 @@ Blockly.Blocks.task_Block = {
 
     // 添加输入字段
     for (let i = currentSteps; i < numberOfSteps; i++) {
-
-      const stepInput = this.appendValueInput(`VALUE_${i}`)
-        .appendField(`第 ${i + 1} 步动作`)
+      this.appendValueInput(`VALUE_${i}`)
+        .appendField(`第 ${i + 1} 步动作`);
 
       this.appendValueInput(`VALUE2_${i}`)
         .appendField('异常');
@@ -1472,30 +1471,27 @@ Blockly.Blocks.task_Block = {
     if (event.type === Blockly.Events.CHANGE) {
       if (event.element === 'field' && event.name === 'NUMBER') {
         this.updateInputs();
-      } else if (event.element === 'field' && event.name.startsWith('STEP_NUMBER_')) {
-        const index = parseInt(event.name.split('_')[2], 10);
-        const selectedNumber = parseInt(this.getFieldValue(event.name), 10);
-        this.updateStepInputs(index, selectedNumber);
       }
     }
   },
 
-  // 更新步骤输入的方法
-  updateStepInputs: function (index, selectedNumber) {
-    const currentInputs = this.inputList.filter(input => input.name.startsWith(`STEP_INPUT_${index}_`)).length;
+  // 将积木状态保存到 XML
+  mutationToDom: function () {
+    const container = document.createElement('mutation');
+    const numberOfSteps = this.getFieldValue('NUMBER');
+    container.setAttribute('steps', numberOfSteps);
+    return container;
+  },
 
-    // 添加或删除步骤输入字段
-    for (let i = currentInputs; i < selectedNumber; i++) {
-      this.appendValueInput(`STEP_INPUT_${index}_${i}`)
-        .appendField(`第 ${index + 1} 步 第 ${i + 1}个异常`)
-        .setCheck('Number'); // 可选：设置输入类型为数字
-    }
-
-    for (let i = currentInputs - 1; i >= selectedNumber; i--) {
-      this.removeInput(`STEP_INPUT_${index}_${i}`);
-    }
+  // 从 XML 恢复积木状态
+  domToMutation: function (xmlElement) {
+    const numberOfSteps = parseInt(xmlElement.getAttribute('steps'), 10);
+    this.getField('NUMBER').setValue(numberOfSteps.toString());
+    this.updateInputs(); // 更新输入字段
   }
 };
+
+// 生成代码
 javascriptGenerator['task_Block'] = function (block) {
   return ''; // 根据需要生成代码
 };
@@ -1505,7 +1501,6 @@ const toolboxXml = `
      <category name="任务" colour="20">
       <block type="task_Block"></block>
       <block type="error_Block"></block>
-   
       
     </category>
     <category name="动作" colour="290" custom="PROCEDURE">
@@ -1715,12 +1710,9 @@ const currentBlinkColor = ref({});
 const startBlinking = () => {
   // 获取所有积木
   const allBlocks = workspace.value.getAllBlocks();
-
   // 查找匹配的函数块
-  const matchingBlocks = allBlocks.filter(b => b.getFieldValue('NAME') === functionName.value);
+  const matchingBlocks = allBlocks.filter(b => b.getCommentText() === functionName.value);
   // 检查是否已经在闪烁状态
-  updateCode();
-
   if (currentBlinkColor.value[matchingBlocks] === 'green') {
 
     return;
@@ -1750,6 +1742,66 @@ const startBlinking = () => {
 
   }
 };
+
+const functionName2 = ref();
+const startBlinking2 = () => {
+
+  if (functionName2.value === 0) {
+    //停止闪烁
+    const allBlocks = workspace.value.getAllBlocks();
+    const matchingBlocks = allBlocks.filter(b => b.type === 'task_Block'
+    );
+
+    if (matchingBlocks.length > 0) {
+      clearInterval(intervalId[matchingBlocks]);
+      matchingBlocks.forEach(block => {
+        block.setHighlighted(false); // 确保在结束后关闭高亮
+
+        currentBlinkColor.value[matchingBlocks] === null;
+      });
+
+    }
+
+    return;
+  }
+
+
+  // 获取所有积木
+  const allBlocks = workspace.value.getAllBlocks();
+  // 查找匹配的函数块
+  const matchingBlocks = allBlocks.filter(b => b.getFieldValue('NUMBER1') === functionName2.value);
+  // 检查是否已经在闪烁状态
+
+
+  if (currentBlinkColor.value[matchingBlocks] === 'green') {
+    return;
+  }
+  if (matchingBlocks.length > 0) {
+    let ishight = false;
+
+    // 定义高亮函数
+    const highlightBlocks = (blocks) => {
+      blocks.forEach(block => {
+        block.setHighlighted(ishight);
+        // 递归高亮子积木
+
+      });
+    };
+
+    highlightBlocks(matchingBlocks); // 初始高亮
+    currentBlinkColor.value[matchingBlocks] = 'green';
+
+    intervalId[matchingBlocks] = setInterval(() => {
+      ishight = !ishight;
+      highlightBlocks(matchingBlocks); // 切换高亮状态
+    }, 500);
+
+
+  } else {
+
+  }
+};
+
 
 
 const getExceptionName = (exceptionKey) => {
@@ -1836,6 +1888,13 @@ const loadBlocks = () => {
         workspace.clear();
 
         Blockly.Xml.domToWorkspace(xmlDoc.documentElement, workspace);
+
+        // 在导入后更新所有块的输入
+        workspace.getAllBlocks().forEach(block => {
+          if (block.type === 'task_Block' || block.type === 'error_Block') {
+            block.updateInputs(); // 确保输入字段更新
+          }
+        });
 
         const metrics = workspace.getMetrics();
         const x = metrics.contentWidth / 2 - metrics.viewWidth / 2;
@@ -1978,6 +2037,9 @@ const fetchVelocity1 = () => {
         //开始闪烁
       }
 
+
+      functionName2.value = responseData.value.curTaskID;
+      startBlinking2();
 
 
     })

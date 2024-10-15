@@ -275,7 +275,20 @@ function addTask() {
   });
 }
 
+const stopAllBlinking = () => {
+  jsondata.value.Task.forEach(task => {
+    const itemId = task.id;
+    clearInterval(blinkIntervals.green[itemId]); // 清除绿色定时器
+    delete blinkIntervals.green[itemId]; // 删除绿色定时器记录
+    blinkingStates.value.green[itemId] = false; // 取消绿色闪烁状态
 
+    clearInterval(blinkIntervals.red[itemId]); // 清除红色定时器
+    delete blinkIntervals.red[itemId]; // 删除红色定时器记录
+    blinkingStates.value.red[itemId] = false; // 取消红色闪烁状态
+
+    currentBlinkColor.value[itemId] = null; // 重置当前闪烁颜色
+  });
+};
 const inputid = ref(0);
 let blinkIntervals = {
   green: {},
@@ -519,6 +532,10 @@ const fetchVelocity1 = () => {
         startBlinkingRed(); // 启动红色闪烁
       }
 
+      if(taskId === 0)
+      {
+        stopAllBlinking();
+      }
 
       const taskStatusact = responseData.value.subTaskStatus.main_result;
       const taskStatusact2 = responseData.value.subTaskStatus.exception_result;
