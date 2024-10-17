@@ -136,7 +136,8 @@
                         row.taskList.indexOf(taskItem) + 1 }}步</span>
                       <el-button type="danger" @click="removeTaskList(row, taskItem)">删除动作</el-button>
                       <el-select v-model="taskItem.main" placeholder="选择动作">
-                        <el-option v-for="aaa in functions" :key="aaa" :label="aaa.name" :value="aaa.key"></el-option>
+                        <el-option v-for="aaa in functions" :key="aaa" :label="aaa.name.replace(/^\/\/\s*/, '')"
+                          :value="aaa.key"></el-option>
                       </el-select>
                     </div>
                   </template>
@@ -154,7 +155,7 @@
                           <div style="width: 95%;
                             display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5%;">
                             <el-select v-model="taskItem.exceptions[exceptionIndex]" placeholder="动作中检测异常">
-                              <el-option v-for="aaa in functions" :key="aaa" :label="aaa.name"
+                              <el-option v-for="aaa in functions" :key="aaa" :label="aaa.name.replace(/^\/\/\s*/, '')"
                                 :value="aaa.key"></el-option>
                             </el-select>
 
@@ -307,15 +308,28 @@ const startBlinkinggreen = () => {
   if (selectedItem.value) {
 
     const item = selectedItem.value;
+
+    // 清除旧的闪烁状态
+    for (const id in currentBlinkColor.value) {
+      if (Number(id) !== item.id) {
+        clearInterval(blinkIntervals.green[Number(id)]);
+        delete blinkIntervals.green[Number(id)];
+        blinkingStates.value.green[Number(id)] = false;
+        clearInterval(blinkIntervals.red[Number(id)]);
+        delete blinkIntervals.red[Number(id)];
+        blinkingStates.value.red[Number(id)] = false;
+        delete currentBlinkColor.value[Number(id)];
+      }
+    }
     // 检查是否已经在闪烁状态
     if (currentBlinkColor.value[item.id] === 'green') {
       return;
     }
-    clearInterval(blinkIntervals.red[item.id]); // 清除对应项目的定时器
-    delete blinkIntervals.red[item.id]; // 删除定时器记录
-    blinkingStates.value.red[item.id] = false; // 取消闪烁状态
-    blinkingStates.value.green[item.id] = true; // 设置为闪烁状态
-    currentBlinkColor.value[item.id] = 'green'; // 更新当前闪烁颜色
+    clearInterval(blinkIntervals.red[item.id]);
+    delete blinkIntervals.red[item.id];
+    blinkingStates.value.red[item.id] = false;
+    blinkingStates.value.green[item.id] = true;
+    currentBlinkColor.value[item.id] = 'green';
     // 如果没有定时器，则创建一个新的定时器
     if (!blinkIntervals.green[item.id]) {
       blinkIntervals.green[item.id] = setInterval(() => {
@@ -331,9 +345,24 @@ const startBlinkinggreen = () => {
 const startBlinkingRed = () => {
   if (selectedItem.value) {
     const item = selectedItem.value;
+
+    // 清除旧的闪烁状态
+    for (const id in currentBlinkColor.value) {
+      if (Number(id) !== item.id) {
+        clearInterval(blinkIntervals.green[Number(id)]);
+        delete blinkIntervals.green[Number(id)];
+        blinkingStates.value.green[Number(id)] = false;
+        clearInterval(blinkIntervals.red[Number(id)]);
+        delete blinkIntervals.red[Number(id)];
+        blinkingStates.value.red[Number(id)] = false;
+        delete currentBlinkColor.value[Number(id)];
+      }
+    }
+
     if (currentBlinkColor.value[item.id] === 'red') {
       return;
     }
+
     clearInterval(blinkIntervals.green[item.id]); // 清除对应项目的定时器
     delete blinkIntervals.green[item.id]; // 删除定时器记录
     blinkingStates.value.green[item.id] = false; // 取消闪烁状态
@@ -382,16 +411,30 @@ const startBlinkinggreenact = () => {
   if (selectedItemact.value) {
 
     const item = selectedItemact.value;
-    console.log('2222', currentBlinkColoract.value[item.main])
+
+    // 清除旧的闪烁状态
+    for (const id in currentBlinkColoract.value) {
+      if (id !== item.main) {
+        console.log('main',id)
+        console.log('itemmain',item.main)
+        clearInterval(blinkIntervalsact.green[id]);
+        delete blinkIntervalsact.green[id];
+        blinkingStatesact.value.green[id] = false;
+        clearInterval(blinkIntervalsact.red[id]);
+        delete blinkIntervalsact.red[id];
+        blinkingStatesact.value.red[id] = false;
+        delete currentBlinkColoract.value[id];
+      }
+    }
     // 检查是否已经在闪烁状态
     if (currentBlinkColoract.value[item.main] === 'green') {
       return;
     }
-    clearInterval(blinkIntervalsact.red[item.main]); // 清除对应项目的定时器
-    delete blinkIntervalsact.red[item.main]; // 删除定时器记录
-    blinkingStatesact.value.red[item.main] = false; // 取消闪烁状态
-    blinkingStatesact.value.green[item.main] = true; // 设置为闪烁状态
-    currentBlinkColoract.value[item.main] = 'green'; // 更新当前闪烁颜色
+    clearInterval(blinkIntervalsact.red[item.main]);
+    delete blinkIntervalsact.red[item.main];
+    blinkingStatesact.value.red[item.main] = false;
+    blinkingStatesact.value.green[item.main] = true;
+    currentBlinkColoract.value[item.main] = 'green';
     // 如果没有定时器，则创建一个新的定时器
     if (!blinkIntervalsact.green[item.main]) {
       blinkIntervalsact.green[item.main] = setInterval(() => {
@@ -407,19 +450,34 @@ const startBlinkinggreenact = () => {
 const startBlinkingRedact = () => {
   if (selectedItemact.value) {
     const item = selectedItemact.value;
+
+    for (const id in currentBlinkColoract.value) {
+      if (id !== item.main) {
+        console.log('main',id)
+        console.log('itemmain',item.main)
+        clearInterval(blinkIntervalsact.green[id]);
+        delete blinkIntervalsact.green[id];
+        blinkingStatesact.value.green[id] = false;
+        clearInterval(blinkIntervalsact.red[id]);
+        delete blinkIntervalsact.red[id];
+        blinkingStatesact.value.red[id] = false;
+        delete currentBlinkColoract.value[id];
+      }
+    }
+
     if (currentBlinkColoract.value[item.main] === 'red') {
       return;
     }
-    clearInterval(blinkIntervalsact.green[item.main]); // 清除对应项目的定时器
-    delete blinkIntervalsact.green[item.main]; // 删除定时器记录
-    blinkingStatesact.value.green[item.main] = false; // 取消闪烁状态
-    blinkingStatesact.value.red[item.main] = true; // 设置为闪烁状态
+    clearInterval(blinkIntervalsact.green[item.main]);
+    delete blinkIntervalsact.green[item.main];
+    blinkingStatesact.value.green[item.main] = false;
+    blinkingStatesact.value.red[item.main] = true;
     currentBlinkColoract.value[item.main] = 'red';
-    // 如果没有定时器，则创建一个新的定时器
+
     if (!blinkIntervalsact.red[item.main]) {
       blinkIntervalsact.red[item.main] = setInterval(() => {
         blinkingStatesact.value.red[item.main] = !blinkingStatesact.value.red[item.main];
-      }, 500); // 每500毫秒切换一次高亮
+      }, 500);
     }
   }
 };
@@ -520,7 +578,7 @@ const fetchVelocity1 = () => {
   })
     .then((res) => {
       responseData.value = res.data;
-      console.log('111111', responseData.value)
+
       // 根据 taskStatus 更新闪烁状态
       const taskId = responseData.value.curTaskID;
       const taskStatus = responseData.value.taskStatus;
@@ -532,8 +590,7 @@ const fetchVelocity1 = () => {
         startBlinkingRed(); // 启动红色闪烁
       }
 
-      if(taskId === 0)
-      {
+      if (taskId === 0) {
         stopAllBlinking();
       }
 
@@ -556,8 +613,8 @@ const fetchVelocity1 = () => {
 
     })
 
-  
-   timer_taskequ.value = setTimeout(fetchVelocity1, 500);
+
+  timer_taskequ.value = setTimeout(fetchVelocity1, 500);
 }
 
 onMounted(() => {

@@ -80,9 +80,14 @@
           <el-button type="info" @click="checkcode">
             查看/同步代码
           </el-button>
-          <!-- <el-input v-model.number="functionName2" placeholder="输入函数名"></el-input>
-          <el-button type="info" @click="startBlinking2">
+          <!-- <el-input v-model.number="functionName3" placeholder="输入函数名"></el-input>
+          <el-input v-model.number="functionName2" placeholder="输入函数名"></el-input>
+          <el-input v-model.number="functionName" placeholder="输入函数名"></el-input>
+          <el-button type="info" @click="startBlinking">
             闪烁
+          </el-button>
+          <el-button type="info" @click="startBlinking2">
+            闪烁2
           </el-button> -->
           <el-dialog v-model="dialogVisible" title="代码" :visible="dialogVisible" @close="dialogVisible = false">
             <DefinScrollbar height="100%" :showUpBt="true">
@@ -1705,103 +1710,194 @@ const checkcode = () => {
   dialogVisible.value = true;
 };
 const functionName = ref('');
+const functionName3 = ref('');
 let intervalId = {};
+let previousFunctionName = '';
+let previousFunctionName3 = '';
 const currentBlinkColor = ref({});
-const startBlinking = () => {
-  // 获取所有积木
-  const allBlocks = workspace.value.getAllBlocks();
-  // 查找匹配的函数块
-  const matchingBlocks = allBlocks.filter(b => b.getCommentText() === functionName.value);
-  // 检查是否已经在闪烁状态
-  if (currentBlinkColor.value[matchingBlocks] === 'green') {
 
+const startBlinking = () => {
+  // 如果两个 functionName 没有变化，则正常执行
+  if (functionName.value === previousFunctionName && functionName3.value === previousFunctionName3) {
     return;
   }
-  if (matchingBlocks.length > 0) {
-    let ishight = false;
 
-    // 定义高亮函数
-    const highlightBlocks = (blocks) => {
-      blocks.forEach(block => {
-        block.setHighlighted(ishight);
-        // 递归高亮子积木
-        highlightBlocks(block.getChildren());
-      });
-    };
+  // 停止所有闪烁
+  Object.keys(intervalId).forEach(key => {
+    clearInterval(intervalId[key]);
+    delete intervalId[key];
+  });
 
-    highlightBlocks(matchingBlocks); // 初始高亮
-    currentBlinkColor.value[matchingBlocks] = 'green';
+  // 清除所有高亮状态
+  Object.keys(currentBlinkColor.value).forEach(key => {
+    delete currentBlinkColor.value[key];
+  });
 
-    intervalId[matchingBlocks] = setInterval(() => {
-      ishight = !ishight;
-      highlightBlocks(matchingBlocks); // 切换高亮状态
-    }, 500);
+  // 获取所有函数定义块
+  const allBlocks = workspace.value.getAllBlocks();
+  const matchingBlocks = allBlocks.filter(b => {
+    const isFunctionBlock = b.type === 'procedures_defnoreturn' || b.type === 'procedures_defreturn'; // 检查块类型
+    return isFunctionBlock; // 确保是函数定义块
+  });
 
+  // 重置匹配块的高亮状态
+  matchingBlocks.forEach(block => {
+    block.setHighlighted(false); // 取消高亮
+  });
 
-  } else {
+  // 更新之前的 functionName
+  previousFunctionName = functionName.value;
+  previousFunctionName3 = functionName3.value;
 
+  // 获取匹配的函数块
+  const matchingBlocksByName = matchingBlocks.filter(b => b.getCommentText() === functionName.value);
+  const matchingBlocks3ByName = matchingBlocks.filter(b => b.getCommentText() === functionName3.value);
+
+  // 检查是否已经在闪烁状态
+  if (currentBlinkColor.value[matchingBlocksByName] === 'green' && currentBlinkColor.value[matchingBlocks3ByName] === 'green') {
+    return;
   }
+
+  // 闪烁逻辑
+  const highlightBlocks = (blocks, isHighlighted) => {
+    blocks.forEach(block => {
+      block.setHighlighted(isHighlighted);
+      highlightBlocks(block.getChildren(), isHighlighted); // 递归高亮子积木
+    });
+  };
+
+  // 高亮并闪烁第一个 functionName
+  if (matchingBlocksByName.length > 0) {
+    let isHighlighted = false;
+    highlightBlocks(matchingBlocksByName, true); // 初始高亮
+    currentBlinkColor.value[matchingBlocksByName] = 'green';
+
+    intervalId[matchingBlocksByName] = setInterval(() => {
+      isHighlighted = !isHighlighted;
+      highlightBlocks(matchingBlocksByName, isHighlighted); // 切换高亮状态
+    }, 500);
+  }
+
+  // 高亮并闪烁第二个 functionName3
+  if (matchingBlocks3ByName.length > 0) {
+    let isHighlighted3 = false;
+    highlightBlocks(matchingBlocks3ByName, true); // 初始高亮
+    currentBlinkColor.value[matchingBlocks3ByName] = 'green';
+
+    intervalId[matchingBlocks3ByName] = setInterval(() => {
+      isHighlighted3 = !isHighlighted3;
+      highlightBlocks(matchingBlocks3ByName, isHighlighted3); // 切换高亮状态
+    }, 500);
+  }
+
+  // 处理与第一个 functionName 相关的其他积木
+  matchingBlocksByName.forEach(block => {
+    const matchingBlocks2 = allBlocks.filter(b => b.getFieldValue('NAME') === block.getFieldValue('NAME'));
+    if (currentBlinkColor.value[matchingBlocks2] === 'green') {
+      return;
+    }
+    if (matchingBlocks2.length > 0) {
+      let isHighlighted = false;
+
+      // 定义高亮函数
+      const highlightBlocks2 = (blocks) => {
+        blocks.forEach(block => {
+          block.setHighlighted(isHighlighted);
+          highlightBlocks2(block.getChildren()); // 递归高亮子积木
+        });
+      };
+
+      highlightBlocks2(matchingBlocks2); // 初始高亮
+      currentBlinkColor.value[matchingBlocks2] = 'green';
+
+      intervalId[matchingBlocks2] = setInterval(() => {
+        isHighlighted = !isHighlighted;
+        highlightBlocks2(matchingBlocks2); // 切换高亮状态
+      }, 500);
+    }
+  });
+
+  // 处理与第二个 functionName3 相关的其他积木
+  matchingBlocks3ByName.forEach(block => {
+    const matchingBlocks2 = allBlocks.filter(b => b.getFieldValue('NAME') === block.getFieldValue('NAME'));
+    if (currentBlinkColor.value[matchingBlocks2] === 'green') {
+      return;
+    }
+    if (matchingBlocks2.length > 0) {
+      let isHighlighted = false;
+
+      // 定义高亮函数
+      const highlightBlocks2 = (blocks) => {
+        blocks.forEach(block => {
+          block.setHighlighted(isHighlighted);
+          highlightBlocks2(block.getChildren()); // 递归高亮子积木
+        });
+      };
+
+      highlightBlocks2(matchingBlocks2); // 初始高亮
+      currentBlinkColor.value[matchingBlocks2] = 'green';
+
+      intervalId[matchingBlocks2] = setInterval(() => {
+        isHighlighted = !isHighlighted;
+        highlightBlocks2(matchingBlocks2); // 切换高亮状态
+      }, 500);
+    }
+  });
 };
+
 
 const functionName2 = ref();
+const lastname2 = ref(-1);
+const currentBlinkColor2 = ref({});
+let intervalId2 = {};
 const startBlinking2 = () => {
+  // 检查是否需要更新闪烁状态
 
-  if (functionName2.value === 0) {
-    //停止闪烁
-    const allBlocks = workspace.value.getAllBlocks();
-    const matchingBlocks = allBlocks.filter(b => b.type === 'task_Block'
-    );
-
-    if (matchingBlocks.length > 0) {
-      clearInterval(intervalId[matchingBlocks]);
-      matchingBlocks.forEach(block => {
-        block.setHighlighted(false); // 确保在结束后关闭高亮
-
-        currentBlinkColor.value[matchingBlocks] === null;
+  if (lastname2.value !== functionName2.value) {
+    // 停止之前的闪烁
+    
+      const allBlocks1 = workspace.value.getAllBlocks();
+      const previousMatchingBlocks = allBlocks1.filter(b => b.getFieldValue('NUMBER1') === lastname2.value);
+      console.log('aaaa:',lastname2.value);
+      previousMatchingBlocks.forEach(block => {
+        clearInterval(intervalId2[previousMatchingBlocks]); // 停止定时器
+        block.setHighlighted(false); // 停止高亮
+        currentBlinkColor2.value[previousMatchingBlocks] = null; // 清除高亮状态
       });
+    
+    lastname2.value = functionName2.value; // 更新最后一次的 functionName2
+    // 获取所有积木
+    const allBlocks = workspace.value.getAllBlocks();
+    // 查找匹配的函数块
+    const matchingBlocks = allBlocks.filter(b => b.getFieldValue('NUMBER1') === functionName2.value);
 
+    // 检查是否已经在闪烁状态
+    if (currentBlinkColor2.value[matchingBlocks] === 'green') {
+      console.log('已经在闪烁:', matchingBlocks);
+      return;
     }
 
-    return;
-  }
+    if (matchingBlocks.length > 0) {
+      let ishight = false;
+
+      // 定义高亮函数
+      const highlightBlocks = (blocks) => {
+        blocks.forEach(block => {
+          block.setHighlighted(ishight);
+        });
+      };
+
+      highlightBlocks(matchingBlocks); // 初始高亮
+      currentBlinkColor2.value[matchingBlocks] = 'green'; // 设置为绿色
 
 
-  // 获取所有积木
-  const allBlocks = workspace.value.getAllBlocks();
-  // 查找匹配的函数块
-  const matchingBlocks = allBlocks.filter(b => b.getFieldValue('NUMBER1') === functionName2.value);
-  // 检查是否已经在闪烁状态
-
-
-  if (currentBlinkColor.value[matchingBlocks] === 'green') {
-    return;
-  }
-  if (matchingBlocks.length > 0) {
-    let ishight = false;
-
-    // 定义高亮函数
-    const highlightBlocks = (blocks) => {
-      blocks.forEach(block => {
-        block.setHighlighted(ishight);
-        // 递归高亮子积木
-
-      });
-    };
-
-    highlightBlocks(matchingBlocks); // 初始高亮
-    currentBlinkColor.value[matchingBlocks] = 'green';
-
-    intervalId[matchingBlocks] = setInterval(() => {
-      ishight = !ishight;
-      highlightBlocks(matchingBlocks); // 切换高亮状态
-    }, 500);
-
-
-  } else {
-
+      intervalId2[matchingBlocks] = setInterval(() => {
+        ishight = !ishight;
+        highlightBlocks(matchingBlocks); // 切换高亮状态
+      }, 500);
+    }
   }
 };
-
 
 
 const getExceptionName = (exceptionKey) => {
@@ -1900,6 +1996,13 @@ const loadBlocks = () => {
         const x = metrics.contentWidth / 2 - metrics.viewWidth / 2;
         const y = metrics.contentHeight / 2 - metrics.viewHeight / 2;
         workspace.scroll(x, y);
+        functionName.value = '';
+        functionName3.value = '';
+
+        previousFunctionName = '';
+        previousFunctionName3 = '';
+        updateCode();
+        lastname2.value = -1;
       } else {
         alert(`只接受名为 task.xml 的文件`);
       }
@@ -1939,10 +2042,27 @@ const loadBlocksfromAGV = () => {
 
       Blockly.Xml.domToWorkspace(xmlDoc.documentElement, workspace);
 
+
+      // 在导入后更新所有块的输入
+      workspace.getAllBlocks().forEach(block => {
+        if (block.type === 'task_Block' || block.type === 'error_Block') {
+          block.updateInputs(); // 确保输入字段更新
+        }
+      });
+
+
       const metrics = workspace.getMetrics();
       const x = metrics.contentWidth / 2 - metrics.viewWidth / 2;
       const y = metrics.contentHeight / 2 - metrics.viewHeight / 2;
       workspace.scroll(x, y);
+
+      functionName.value = '';
+      functionName3.value = '';
+
+      previousFunctionName = '';
+      previousFunctionName3 = '';
+      updateCode();
+      lastname2.value = -1;
     })
     .catch((error) => {
       ElMessage.error('请求失败')
@@ -1999,7 +2119,7 @@ const updateCode = () => {
 onMounted(() => {
   initBlockly();
 });
-
+let curid2 = -1;
 import { timer_task } from '@/timer.js'
 const responseData = ref(null)
 const fetchVelocity1 = () => {
@@ -2032,14 +2152,16 @@ const fetchVelocity1 = () => {
 
         }
       } else {
-        functionName.value = responseData.value.subTaskStatus.main_name;
-        startBlinking();
         //开始闪烁
+        functionName.value = responseData.value.subTaskStatus.main_name;
+        functionName3.value = responseData.value.subTaskStatus.exception_name;
+        startBlinking(); // 开始闪烁
       }
-
 
       functionName2.value = responseData.value.curTaskID;
       startBlinking2();
+
+
 
 
     })
