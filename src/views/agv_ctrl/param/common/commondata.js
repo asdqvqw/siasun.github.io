@@ -8,26 +8,31 @@ export const showAGV = ref(false);
 
 export const jsondata = ref({
   car_type:0,
-  network: [
-    { name: "控制台IP", key: "IP", value: "" },
-    { name: "备用IP", key: "BACKUPIP", value: "" },
-  ],
-  function: [
-    { name: "看门狗功能", des: "安全保护功能", key: "watchDog", value: false },
-    { name: "铁电储存", des: "车体状态记录功能", key: "TSave", value: true },
-    { name: "通讯协议相关", des: "通讯校验和功能", key: "CheckSum", value: true },
-    { name: "设备扩展数据", des: "是否开启设备扩展数据", key: "ExData", value: true },
-    { name: "扩展协议", des: "是否开启扩展协议", key: "ExAgreement", value: true },
-  ],
-  other: {
-    ctrlcycle: 0.05,
-    ThreadTOPro: 1000,
+  // network: [
+  //   { name: "控制台IP", key: "IP", value: "" },
+  //   { name: "备用IP", key: "BACKUPIP", value: "" },
+  // ],
+  NetMan:{
+    tc:"192.168.3.88",
+    screen:"192.168.3.28"
   },
-  com: {
-    com1: false,
-    com2: false,
-    com3: false,
-    com4: false,
+  function: [
+    { ch_key: "看门狗功能", des: "安全保护功能", en_key: "watchDog", value: false },
+    { ch_key: "铁电储存", des: "车体状态记录功能", en_key: "TSave", value: true },
+    { ch_key: "通讯协议相关", des: "通讯校验和功能", en_key: "CheckSum", value: true },
+    { ch_key: "设备扩展数据", des: "是否开启设备扩展数据", en_key: "ExData", value: true },
+    { ch_key: "扩展协议", des: "是否开启扩展协议", en_key: "ExAgreement", value: true },
+  ],
+  // other: {
+  //   ctrlcycle: 0.05,
+  //   ThreadTOPro: 1000,
+  // },
+  Password:'123456',
+  SerialPortMan: {
+    port_1: false,
+    port_2: false,
+    port_3: false,
+    port_4: false,
   },
   can1: {can_pos:[],can_open:[],can_guide:[],can_BMS:[],can_io:[],can_manual:[],can_rfid:[]},
   can2: {can_pos:[],can_open:[],can_guide:[],can_BMS:[],can_io:[],can_manual:[],can_rfid:[]},
@@ -121,6 +126,9 @@ export const MANUALDATA = ref(
 export const OTHERPARM = ref([
   { name: "控制周期", value: "0.05", key: "ctrlcycle" },
   { name: "线程超时保护", value: "1000", key: "ThreadTOPro" },
+]);
+export const UserPermissionsparam = ref([
+  { name: "密码", value: "123456", key: "Password" },
 ]);
 
 export const tableDataCrtl = ref([
@@ -251,16 +259,16 @@ export const AUTOPARM = ref([
 ]);
 
 export const tableDataCrtlnet = ref([
-  { name: "控制台IP", key: "IP", value: "" },
-  { name: "备用IP", key: "BACKUPIP", value: "" },
+  { name: "控制台", key: "tc", value: "192.168.3.88" },
+  { name: "屏幕", key: "screen", value: "192.168.3.28" },
 ]);
 
 export const functioncDate = ref([
-  { name: "看门狗功能", des: "安全保护功能", key: "watchDog", value: false },
-  { name: "铁电储存", des: "车体状态记录功能", key: "TSave", value: true },
-  { name: "通讯协议相关", des: "通讯校验和功能", key: "CheckSum", value: true },
-  { name: "设备扩展数据", des: "是否开启设备扩展数据", key: "ExData", value: true },
-  { name: "扩展协议", des: "是否开启扩展协议", key: "ExAgreement", value: true },
+  { ch_key: "看门狗功能", des: "安全保护功能", en_key: "watchDog", value: false },
+  { ch_key: "铁电储存", des: "车体状态记录功能", en_key: "TSave", value: true },
+  { ch_key: "通讯协议相关", des: "通讯校验和功能", en_key: "CheckSum", value: true },
+  { ch_key: "设备扩展数据", des: "是否开启设备扩展数据", en_key: "ExData", value: true },
+  { ch_key: "扩展协议", des: "是否开启扩展协议", en_key: "ExAgreement", value: true },
 ]);
 
 export const CANPOS = ref([]);

@@ -60,7 +60,7 @@
                             <span v-else>展开</span>
                             <span :class="{ 'rotate-arrow': otherc }">➡️</span>
                         </el-button> -->
-                        <div v-if="otherc">
+                        <!-- <div v-if="otherc">
                             <el-table :data="OTHERPARM" style="width: 100%" class="OTHERPARM">
                                 <el-table-column prop="name" label="⚠️ 控制周期与线程超时保护 ">
                                 </el-table-column>
@@ -73,19 +73,14 @@
                                     </template>
                                 </el-table-column>
                             </el-table>
-                        </div>
+                        </div> -->
 
+                        <UserPermissionsch />
+                       
 
 
                         <hr class="hengxian3">
 
-                        <!-- <h3>⚠️ 功能定制:</h3>
-                        配置车体程序功能开关:
-                        <el-button @click="togglefunctionc" type="text" plain :disabled="false">
-                            <span v-if="!functionc">展开</span>
-                            <span v-else>展开</span>
-                            <span :class="{ 'rotate-arrow': functionc }">➡️</span>
-                        </el-button><br> -->
                         <div v-if="functionc">
                             <functionch />
                         </div>
@@ -113,6 +108,7 @@ import { OTHERPARM } from '@/views/agv_ctrl/param/common/commondata.js'
 import functionch from './function/function.vue'
 import checkbox from '@/views/agv_ctrl/param/check.vue';
 import DefinScrollbar from "@/components/DefinScrollbar.vue";
+import UserPermissionsch from './UserPermissions/index.vue'
 
 const checkdevice = ref(false);
 const handlecheck = () => {
@@ -120,7 +116,7 @@ const handlecheck = () => {
 };
 const dialogVisible = ref(false);
 const functionc = ref(true);
-const otherc = ref(true);
+// const otherc = ref(true);
 
 const handleCtrlStatusChange = (index, row) => {
     jsondata.value.other[row.key] = parseInt(row.value);
@@ -132,9 +128,9 @@ const formattedJsondata = computed(() => {
 const handleExpand11 = () => {
     dialogVisible.value = true;
 };
-const toggleotherc = () => {
-    otherc.value = !otherc.value;
-};
+// const toggleotherc = () => {
+//     otherc.value = !otherc.value;
+// };
 const togglefunctionc = () => {
     functionc.value = !functionc.value;
 };
@@ -162,7 +158,7 @@ const updataAGV = () => {
 
     axios({
         method: 'post',
-        url: '/api/ctrl/jsoneditor',//这里是请求地址
+        url: '/api/ctrl/jsoneditor',
         data: JSON.stringify(userList),
     }).then((res) => {
         ElMessage.success('请求成功')

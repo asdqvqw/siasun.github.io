@@ -18,12 +18,12 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template #default="scope">
-                    <el-button type="danger" @click="deleteRow(scope.row)">删除</el-button>
+                    <!-- <el-button type="danger" @click="deleteRow(scope.row)">删除</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
         <br>
-        <el-button type="primary" @click="addNewRow">添加新数据</el-button>
+        <!-- <el-button type="primary" @click="addNewRow">添加新数据</el-button> -->
 
         <el-dialog :title="title" v-model="dialogVisible" :visible="dialogVisible" width="800px"
             :close-on-click-modal="false" class="edit-data-dialog" draggable style="height: 35%;">
@@ -67,10 +67,21 @@ let newRow = ref({
 });
 const dialogVisible = ref(false);
 const handleCtrlvalueChange = (index, row) => {
-    const rowData = jsondata.value.network.find(item => item.key === row.key);
-    if (rowData) {
-        rowData.value = row.value;
+    // const rowData = jsondata.value.network.find(item => item.key === row.key);
+    // if (rowData) {
+    //     rowData.value = row.value;
+    // }
+    // jsondata.value.NetMan.tv = row.value;
+    if(row.key === 'tc')
+    {
+        jsondata.value.NetMan.tc = row.value;
+        console.log('1111:',jsondata.value.NetMan.tc)
+    }else if(row.key === 'screen')
+    {
+        jsondata.value.NetMan.screen = row.value;
     }
+    
+    console.log('2222:',index)
 };
 
 const addNewRow = () => {

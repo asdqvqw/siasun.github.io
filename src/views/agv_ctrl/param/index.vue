@@ -118,7 +118,7 @@ import { AUTOPARM, AUTOPARMLEV } from './common/commondata.js';
 import { MANUALPARMA, MANUALRAPARM } from './common/commondata.js';
 import { selected } from './common/commondata.js';
 import { delayisChecked, delayinput1, delayinput2 } from './common/commondata.js';
-import { OTHERPARM, functioncDate } from './common/commondata.js';
+import { OTHERPARM, functioncDate,UserPermissionsparam } from './common/commondata.js';
 import { tableDataCrtlswitch, tableDataCrtlswitchEmg } from './common/commondata.js';
 import { tableDataCrtlBumper, tableDataCrtlPLS, tableDataCrtlSound, MANUALDATA } from './common/commondata.js';
 import { tableDataCrtlBetter, tableDataCrtlRelay } from './common/commondata.js';
@@ -144,10 +144,10 @@ const handlecom = (row) => {
         }
     })
 
-    jsondata.value.com.com1 = tableData.value[0].isChecked;
-    jsondata.value.com.com2 = tableData.value[1].isChecked;
-    jsondata.value.com.com3 = tableData.value[2].isChecked;
-    jsondata.value.com.com4 = tableData.value[3].isChecked;
+    jsondata.value.SerialPortMan.port_1 = tableData.value[0].isChecked;
+    jsondata.value.SerialPortMan.port_2 = tableData.value[1].isChecked;
+    jsondata.value.SerialPortMan.port_3 = tableData.value[2].isChecked;
+    jsondata.value.SerialPortMan.port_4 = tableData.value[3].isChecked;
 
 
 }
@@ -175,16 +175,16 @@ import axios from 'axios'
 const tableData = computed(() => {
     return [
         {
-            key: 'COM1', isChecked: jsondata.value.com.com1
+            key: 'COM1', isChecked: jsondata.value.SerialPortMan.port_1
         },
         {
-            key: 'COM2', isChecked: jsondata.value.com.com2
+            key: 'COM2', isChecked: jsondata.value.SerialPortMan.port_2
         },
         {
-            key: 'COM3', isChecked: jsondata.value.com.com3
+            key: 'COM3', isChecked: jsondata.value.SerialPortMan.port_3
         },
         {
-            key: 'COM4', isChecked: jsondata.value.com.com4
+            key: 'COM4', isChecked: jsondata.value.SerialPortMan.port_4
         }
     ]
 });
@@ -221,13 +221,16 @@ const syncAgvParm = () => {
 }
 
 const syncdata = () => {
-    tableDataCrtlnet.value = jsondata.value.network;
+    // tableDataCrtlnet.value = jsondata.value.network;
+    tableDataCrtlnet.value[0].value = jsondata.value.NetMan.tc;
+    tableDataCrtlnet.value[1].value = jsondata.value.NetMan.screen;
     functioncDate.value = jsondata.value.function;
+    UserPermissionsparam.value[0].value =  jsondata.value.Password;
     //com
-    tableData.value[0].isChecked = jsondata.value.com.com1;
-    tableData.value[1].isChecked = jsondata.value.com.com2;
-    tableData.value[2].isChecked = jsondata.value.com.com3;
-    tableData.value[3].isChecked = jsondata.value.com.com4;
+    tableData.value[0].isChecked = jsondata.value.SerialPortMan.port_1;
+    tableData.value[1].isChecked = jsondata.value.SerialPortMan.port_2;
+    tableData.value[2].isChecked = jsondata.value.SerialPortMan.port_3;
+    tableData.value[3].isChecked = jsondata.value.SerialPortMan.port_4;
 
     // canpos
     if (jsondata.value.can1.can_pos !== undefined) {
@@ -502,11 +505,11 @@ const syncdata = () => {
         tableDataCrtl.value = jsondata.value.Kinematic.drive;
     }
     //OTHER
-    OTHERPARM.value.forEach((item) => {
-        if (jsondata.value.other[item.key] !== undefined) {
-            item.value = jsondata.value.other[item.key];
-        }
-    });
+    // OTHERPARM.value.forEach((item) => {
+    //     if (jsondata.value.other[item.key] !== undefined) {
+    //         item.value = jsondata.value.other[item.key];
+    //     }
+    // });
     //ele
     if (jsondata.value.switch.StartButton !== undefined) {
         tableDataCrtlswitch.value = jsondata.value.switch.StartButton;

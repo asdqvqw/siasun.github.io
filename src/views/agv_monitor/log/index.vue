@@ -52,14 +52,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-// 窗口调整
-const onWindowResize = () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-};
 
-window.addEventListener('resize', onWindowResize);
 renderer.setClearColor(0x000000);
 //网格大小
 const size = 500;
@@ -69,18 +62,11 @@ const radius = 2;
 const render = () => {
 
   if (play.value) {
-    // angle += 0.01;
-    // camera.position.x = radius * Math.cos(angle);
-    // camera.position.z = radius * Math.sin(angle)+2;
-    // camera.position.y = 1; // 设置相机高度
-    // camera.lookAt(car.position);
-    controls.enableRotate = false; // 禁用旋转
-  controls.enablePan = false; // 可选：禁用平移
-  controls.enableZoom = false; // 可选：禁用缩放
-  }else{
-    controls.enableRotate = true; // 禁用旋转
-  controls.enablePan = true; // 可选：禁用平移
-  controls.enableZoom = true;
+    angle += 0.01;
+    camera.position.x = radius * Math.cos(angle);
+    camera.position.z = radius * Math.sin(angle)+2;
+    camera.position.y = 1; // 设置相机高度
+    camera.lookAt(car.position);
   }
 
   
@@ -109,7 +95,6 @@ onMounted(() => {
 
 
   controls = new OrbitControls(camera, renderer.domElement);
-
   controls.update();
   //光源
   scene.add(light1);

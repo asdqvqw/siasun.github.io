@@ -12,8 +12,8 @@
                 <el-option label="未使用串口" :value=0></el-option>
 
                 <template v-for="(value, key, index) in filteredJsonData">
-                    <el-option v-if="value === true" :key="index" :label="key"
-                        :value="parseInt(key.slice(3))"></el-option>
+                    <el-option v-if="value === true" :key="index" :label="'串口' + parseInt(key.slice(5))"
+                        :value="parseInt(key.slice(5))"></el-option>
                 </template>
             </el-select><br>
         </el-form-item>
@@ -65,7 +65,7 @@ const canOptions = computed(() => {
 
 const filteredJsonData = computed(() => {
     return Object.fromEntries(
-        Object.entries(jsondata.value.com).filter(([key, value]) => key.startsWith('com') && value === true)
+        Object.entries(jsondata.value.SerialPortMan).filter(([key, value]) => key.startsWith('port_') && value === true)
     );
 });
 </script>

@@ -2,9 +2,9 @@
     <div>
 
         <el-table :data="functioncDate" style="width: 100%" class="functioncDate">
-            <el-table-column prop="name" label="⚠️ 功能定制"></el-table-column>
+            <el-table-column prop="ch_key" label="⚠️ 功能定制"></el-table-column>
             <el-table-column prop="des" label="说明"></el-table-column>
-            <el-table-column prop="key" label="英文名">
+            <el-table-column prop="en_key" label="英文名">
 
             </el-table-column>
 
@@ -36,13 +36,13 @@
             :close-on-click-modal="false" class="edit-data-dialog" style="height: 40%;">
             <el-form ref="form" :model="newRow" label-width="80px">
                 <el-form-item label="名称">
-                    <el-input v-model="newRow.name" placeholder="请输入名称"></el-input>
+                    <el-input v-model="newRow.ch_key" placeholder="请输入名称"></el-input>
                 </el-form-item>
                 <el-form-item label="说明">
                     <el-input v-model="newRow.des" placeholder="请输入说明"></el-input>
                 </el-form-item>
                 <el-form-item label="英文名">
-                    <el-input v-model="newRow.key" placeholder="key值"></el-input>
+                    <el-input v-model="newRow.en_key" placeholder="en_key值"></el-input>
                 </el-form-item>
                 <el-form-item label="是否启用">
                     <el-switch v-model="newRow.value" :active-value=true :inactive-value=false></el-switch>
@@ -70,14 +70,14 @@ import { functioncDate } from '@/views/agv_ctrl/param/common/commondata.js'
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 const title = '添加数据';
 let newRow = ref({
-    name: '',
+    ch_key: '',
     des: '',
-    key: '',
+    en_key: '',
     value: false
 });
 const dialogVisible = ref(false);
 const handleCtrlvalueChange = (index, row) => {
-    const rowData = jsondata.value.function.find(item => item.key === row.key);
+    const rowData = jsondata.value.function.find(item => item.en_key === row.en_key);
     if (rowData) {
         rowData.value = row.value;
     }
@@ -88,7 +88,7 @@ const addNewRow = () => {
 };
 
 const handleAddRow = () => {
-    if (newRow.value.name && newRow.value.des && newRow.value.key ) {
+    if (newRow.value.ch_key && newRow.value.des && newRow.value.en_key ) {
         const newRowData = { ...newRow.value };
         jsondata.value.function.push(newRowData);
         functioncDate.value.push(newRowData);
@@ -100,8 +100,8 @@ const handleAddRow = () => {
 
 
 const deleteRow = (row) => {
-    // 找到jsondata中对应key的数据的索引并删除
-    const index = jsondata.value.function.findIndex(item => item.key === row.key);
+    // 找到jsondata中对应en_key的数据的索引并删除
+    const index = jsondata.value.function.findIndex(item => item.en_key === row.en_key);
     if (index !== -1) {
         jsondata.value.function.splice(index, 1);
     }
