@@ -26,17 +26,22 @@
         </el-table>
         <div style="width: 90%;  margin-top: 3%; margin-left: 5%;
                   display: flex; justify-content: space-between; align-items: center; ">
-        <el-button class="fuwei" type="primary" @click="setzero">复位</el-button>
-        <el-button class="shoudongkongzhi" type="primary" @click="shoudongctrol">手动控制</el-button>
+          <el-button class="fuwei" type="info" @click="setzero">复位</el-button>
+          <el-button class="shoudongkongzhi" type="info" @click="shoudongctrol">手动控制</el-button>
 
-        <el-radio-group class="sandang" v-model="switchPosition">
-          <el-radio-button @change="roboSwitch" label="left">手动</el-radio-button>
+          <!-- <el-radio-group class="sandang" v-model="switchPosition"> -->
+          <div style=" display: flex;  margin-left: 0.5vw; ">
+            <el-button @click="roboSwitch(1)" label="left"
+              :class="[{ active: activeButton === 1 }, { inactive: activeButton !== 1 }]" type="info">手动</el-button>
 
-          <el-radio-button @change="roboSwitch" label="mid">空闲</el-radio-button>
+            <el-button @click="roboSwitch(2)" label="mid"
+              :class="[{ active: activeButton === 2 }, { inactive: activeButton !== 2 }]" type="info">空闲</el-button>
 
-          <el-radio-button @change="roboSwitch" label="right">自动</el-radio-button>
-        </el-radio-group>
-      </div>
+            <el-button @click="roboSwitch(3)" label="right"
+              :class="[{ active: activeButton === 3 }, { inactive: activeButton !== 3 }]" type="info">自动</el-button>
+          </div>
+          <!-- </el-radio-group> -->
+        </div>
         <div style="width: 90%;  margin-top: 3%; margin-left: 5%;
                   display: flex; justify-content: space-between; align-items: center; ">
           <navcontrol></navcontrol>
@@ -72,6 +77,9 @@ import devcontrol from './dev.vue'
 import tccontrol from './tc.vue'
 
 const switchPosition = ref('left')
+const activeButton = ref(null);
+
+
 //复位
 const setzero = () => {
   var userList = {
@@ -93,19 +101,20 @@ const setzero = () => {
 
 // 模式选择
 const roboSwitch = (value) => {
-  let swNum = 1
-  switch (value.target.value) {
-    case 'left':
-      swNum = 1
-      break
-    case 'mid':
-      swNum = 2
-      break
-    case 'right':
-      swNum = 3
-      break
-  }
-  var userList = { triswt: swNum }
+  activeButton.value = value;
+  // let swNum = 1
+  // switch (value.target.value) {
+  //   case 'left':
+  //     swNum = 1
+  //     break
+  //   case 'mid':
+  //     swNum = 2
+  //     break
+  //   case 'right':
+  //     swNum = 3
+  //     break
+  // }
+  var userList = { triswt: value }
 
   console.log(JSON.stringify(userList));
   console.log(typeof JSON.stringify(userList))
@@ -185,6 +194,21 @@ const tableData = computed(() => {
 </script>
 
 <style scoped>
+.active {
+  background-color: #424344d8;
+  width: 3vw;
+  height: 4vh;
+  font-size: 0.9vw;
+}
+
+.inactive {
+  background-color: #a9a8a8;
+  width: 3vw;
+  height: 3.5vh;
+  font-size: 0.9vw;
+  margin-left: 0px;
+}
+
 .agv {
   background-image: linear-gradient(to bottom right, #141515, #eef1ef);
   color: black;
@@ -234,7 +258,7 @@ const tableData = computed(() => {
   position: relative;
   background-color: #424141d8;
   color: rgb(241, 234, 234);
-  font-size: 1vw;
+  font-size: 0.9vw;
 }
 
 .shoudongkongzhi {
@@ -243,17 +267,10 @@ const tableData = computed(() => {
   position: relative;
   background-color: #424141d8;
   color: rgb(241, 234, 234);
-  font-size: 1vw;
+  font-size: 0.9vw;
 }
 
-.sandang {
-  width: auto;
-  height: 4vh;
-  position: relative;
-  /* background-color: #8892925e;
-  color: rgb(113, 111, 111); */
-  font-size: 1vw;
-}
+
 
 .datatablecon {
   width: 22vw;
@@ -268,7 +285,7 @@ const tableData = computed(() => {
   margin-left: 10%;
   margin-top: 18%;
   position: relative;
-  
+
 }
 </style>
 

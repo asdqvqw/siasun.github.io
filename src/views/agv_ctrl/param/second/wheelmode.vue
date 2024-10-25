@@ -65,28 +65,18 @@
 
                         <h3>⚠️ 运行参数</h3>
                         <br>
-                        <!-- <span class="title">🔖 自动参数:</span>
-                        <el-button @click="toggleautoparm" type="text" plain :disabled="false">
-                            <span v-if="!autoparm">展开</span>
-                            <span v-else>展开</span>
-                            <span :class="{ 'rotate-arrow': autoparm }">➡️</span>
-                        </el-button><br> -->
-                        <div v-if="autoparm">
-                            <autoparmh />
-                        </div>
-                        <br>
-                        <span class="title">🔖 手动参数:</span>
-                        <!-- <el-button @click="togglemanualparm" type="text" plain :disabled="false">
-                            <span v-if="!manualparm">展开</span>
-                            <span v-else>展开</span>
-                            <span :class="{ 'rotate-arrow': manualparm }">➡️</span>
-                        </el-button><br> -->
-                        <br><br>
-                        <div v-if="manualparm">
-                            <manualparmh />
-                        </div>
-
-
+                        <el-tabs>
+                            <el-tab-pane label="公共参数">
+                                <autoparmh />
+                            </el-tab-pane>
+                            <el-tab-pane label="手动参数">
+                                <manualparmh />
+                            </el-tab-pane>
+                            <el-tab-pane label="自动参数">
+                                <commonparmh />
+                            </el-tab-pane>
+ 
+                        </el-tabs>
 
                     </div>
                     <hr class="hengxian2">
@@ -104,6 +94,7 @@ import { ref, computed } from 'vue';
 import { jsondata } from '../common/commondata.js';
 import manualparmh from './manualparm.vue';
 import autoparmh from './autoparm.vue';
+import commonparmh from './commonparm.vue';
 import Kinematich from './Kinematic/Kinematic.vue';
 import checkbox from '@/views/agv_ctrl/param/check.vue';
 import DefinScrollbar from "@/components/DefinScrollbar.vue";

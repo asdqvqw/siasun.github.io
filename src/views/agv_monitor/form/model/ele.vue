@@ -258,7 +258,7 @@ const sifu = computed(() => {
   position: relative;
   background-color: #424141d8;
   color: rgb(241, 234, 234);
-  font-size: 1vw;
+  font-size: 0.9vw;
 }
 </style>
 

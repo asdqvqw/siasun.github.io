@@ -7,16 +7,16 @@ export const showCtrl = ref(false);
 export const showAGV = ref(false);
 
 export const jsondata = ref({
-  car_type:0,
+  car_type: 0,
   // network: [
   //   { name: "控制台IP", key: "IP", value: "" },
   //   { name: "备用IP", key: "BACKUPIP", value: "" },
   // ],
-  NetMan:{
-    tc:"192.168.3.88",
-    screen:"192.168.3.28"
+  NetMan: {
+    tc: "192.168.3.88",
+    screen: "192.168.3.28"
   },
-  function: [
+  FuncSet: [
     { ch_key: "看门狗功能", des: "安全保护功能", en_key: "watchDog", value: false },
     { ch_key: "铁电储存", des: "车体状态记录功能", en_key: "TSave", value: true },
     { ch_key: "通讯协议相关", des: "通讯校验和功能", en_key: "CheckSum", value: true },
@@ -27,69 +27,185 @@ export const jsondata = ref({
   //   ctrlcycle: 0.05,
   //   ThreadTOPro: 1000,
   // },
-  Password:'123456',
+  Password: '123456',
   SerialPortMan: {
     port_1: false,
     port_2: false,
     port_3: false,
     port_4: false,
   },
-  can1: {can_pos:[],can_open:[],can_guide:[],can_BMS:[],can_io:[],can_manual:[],can_rfid:[]},
-  can2: {can_pos:[],can_open:[],can_guide:[],can_BMS:[],can_io:[],can_manual:[],can_rfid:[]},
-  can3: {can_pos:[],can_open:[],can_guide:[],can_BMS:[],can_io:[],can_manual:[],can_rfid:[]},
-  OperatingParam: {
-    manualparm: {
-      setSpeed: [[0, 1], [2, 0], [4, 0], [6, 0], [8, 0]],
-      setRadius: [[2, 1], [3, 0], [3, 0]],
+  Panel: {
+    Button: {
+      startBtn: [2, 2, 2, 2, 1],
+      stopBtn: [2, 2, 2, 2, 1],
+      manualSwt: [2, 2, 2, 2, 1],
+      autoSwt: [2, 2, 2, 2, 1],
     },
-    autoparam: {
-      UpSpeed: 0.5,
-      DeSpeed: 0.7,
-      SSSpeed: 0.1,
-      HiSpeed: 1,
-      BeSpeed: 0.1,
-      Bepos: 0.45,
-      MinRadius: 5,
-      SpeedLev: 0,
+    Display: {
+      type: 1,
+      modbus: {
+        type: "TCP"
+      }
+    }
+  },
+  Bumper: [
+    {
+      name: "前保险杠",
+      io_input: [4, 2, 0, 1, 0]
+    }
+  ],
+  Emg: [
+    {
+      name: "前急停",
+			io_input:[4,2,0,1,0]
+    }
+  ],
+  // can1: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
+  // can2: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
+  // can3: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
+  canMan:{canport:[
+    {
+      canpos: [
+      ],
+      canopenpos: [],
+      canguide: [],
+      canencoder: [],
+      canbattery: [],
+      canbms: [],
+      canrfid: [],
+      canopenencoder: [],
+      cangyro: [],
+      canmanualbox: [],
+      canio: []
+    }
+  ]},
+  MotionParam: {
+    manaul_param: {
+      speed_level: [0.1, 0.3, 0.5, 0.7, 1.0],
+      turn_radius: [1.5, 2.0, 2.5],
     },
+    common_param: {
+      up_acc: 0.5,
+      down_acc: 0.7,
+      small_acc: 0.1,
+      max_speed: 1,
+      stop_near_speed: 0.1,
+      stop_open_section: 0.45,
+      min_revise_radius: 5,
+    },
+    auto_param: {
+      speed_level: [
+        0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+      ]
+    }
+  },
+  Battery: {
+    normal_percent: 70,
+    low_percent: 50,
+    lower_percent: 30
   },
   Kinematic: {
     // type: 1,
     delay: {
-      need_delay_time:false,
-      servoenable_delay_time:200,
-      servospeed_delay_time:200
+      need_delay_time: false,
+      servoenable_delay_time: 200,
+      servospeed_delay_time: 200
     },
     drive: [
 
     ],
   },
-  switch: {
-    StartButton: [],
-    EmgButton: [],
+  PowerRelay:
+  {
+    name: "伺服接触器",
+    io_input:[4,2,0,1,0]
   },
-  HardBumper: [],
-  Sound: [],
-  Manual: {
-    manualcom: false,
-    manualcan: false,
-    manualforklift: false,
-    manualonline: false,
-    direction: 1,
-    com: 0,
-    can: 0,
-    // wheel: [0, 0, 0, 0, 0],
-    // steer: [0, 0, 0, 0, 0],
-    // forklift: [0, 0, 0, 0],
-    // switch: []
+  NavSysSensor:[],
+  ManCtrlDevice : {
+    type : 2,
+    com:
+    {
+      com_id:0
+    },
+    can:
+    {
+      can_id:50
+    },
+    remoteDevice:
+    {
+      ip:"192.168.3.99",
+      port:80
+    }
   },
-  Better: {
-    type: 0,
-    elect: 0,
-    param: []
-  },
-  Relay:[],
-  PLS:[]
+  // switch: {
+  //   StartButton: [],
+  //   EmgButton: [],
+  // },
+  // HardBumper: [],
+  // Sound: [],
+  // Manual: {
+  //   manualcom: false,
+  //   manualcan: false,
+  //   manualforklift: false,
+  //   manualonline: false,
+  //   direction: 1,
+  //   com: 0,
+  //   can: 0,
+  //   // wheel: [0, 0, 0, 0, 0],
+  //   // steer: [0, 0, 0, 0, 0],
+  //   // forklift: [0, 0, 0, 0],
+  //   // switch: []
+  // },
+  // Relay: [],
+  // PLS: [],
+  Pls:[
+  	{
+    name:"前硬pls",
+    type:0,
+    config:
+      {
+        io:{
+          type:3,
+          area:[
+          {
+						area_output: [2,2,2,2,1]
+	        }
+          ],
+        	near:[2,2,2,2,1],
+        	center:[2,2,2,2,1],
+        	far:[2,2,2,2,1]
+        },
+        net:
+        {
+            ip:"0.0.0.0",
+        		port:0
+        }
+        
+      }
+		},
+    {
+      name:"前软pls",
+      type:1,
+    	config:
+      {
+
+        io:{
+          type:0,
+          area:[
+          ],
+        	near:[2,2,2,2,1],
+        	center:[2,2,2,2,1],
+        	far:[2,2,2,2,1]
+        },
+        net:
+        {
+            ip:"192.168.3.101",
+        		port:8002
+        }
+        
+      }
+    }
+   ],
 });
 
 export const tableDataCrtlRelay = ref([
@@ -122,7 +238,7 @@ export const MANUALDATA = ref(
 );
 
 
-
+export const adjustbit5 = ref(2);
 export const OTHERPARM = ref([
   { name: "控制周期", value: "0.05", key: "ctrlcycle" },
   { name: "线程超时保护", value: "1000", key: "ThreadTOPro" },
@@ -249,15 +365,29 @@ export const MANUALPARMA = ref([
 
 export const AUTOPARMLEV = ref([{ name: "速度级别设置", value: 0 }]);
 export const AUTOPARM = ref([
-  { name: "加速时加速度(m/s/s)", value: "0.5", key: "UpSpeed" },
-  { name: "减速时加速度(m/s/s)", value: "0.7", key: "DeSpeed" },
-  { name: "启/停加速度(m/s/s)", value: "0.1", key: "SSSpeed" },
-  { name: "最高运行速度(m/s/s)", value: "1", key: "HiSpeed" },
-  { name: "入站前巡行速度(m/s)", value: "0.1", key: "BeSpeed" },
-  { name: "入站前巡行距离(m)", value: "0.45", key: "Bepos" },
-  { name: "最小跟踪调整半径(m)", value: "5", key: "MinRadius" },
+  { name: "加速时加速度(m/s/s)", value: "0.5", key: "up_acc" },
+  { name: "减速时加速度(m/s/s)", value: "0.7", key: "down_acc" },
+  { name: "启/停加速度(m/s/s)", value: "0.1", key: "small_acc" },
+  { name: "最高运行速度(m/s/s)", value: "1", key: "max_speed" },
+  { name: "入站前巡行速度(m/s)", value: "0.1", key: "stop_near_speed" },
+  { name: "入站前巡行距离(m)", value: "0.45", key: "stop_open_section" },
+  { name: "最小跟踪调整半径(m)", value: "5", key: "min_revise_radius" },
 ]);
-
+export const autoParam = ref({
+  speed_level: [
+    0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+  ]
+});
+export const manualvelParam = ref({
+  speed_level: [
+    0.1, 0.3, 0.5, 0.7, 1.0
+  ]
+});
+export const manualradiusParam = ref({
+  speed_level: [
+    1.5, 2.0, 2.5
+  ]
+});
 export const tableDataCrtlnet = ref([
   { name: "控制台", key: "tc", value: "192.168.3.88" },
   { name: "屏幕", key: "screen", value: "192.168.3.28" },

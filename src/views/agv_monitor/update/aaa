@@ -1,176 +1,219 @@
 <template>
   <div class="page-container main-view">
-    <div class="table-box content-container page-content-box">
+    <div class="table-box content-container page-content-box"
+      style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
-      <div v-if="jsondata.item">
-        <div v-if="currentItemIndex_Y <= jsondata.item.length - 1" class="container" >
-          <h2>{{ jsondata.item[currentItemIndex_Y].name }}</h2>
-          <!-- <div v-for="(value, key) in parsedata[currentItemIndex_Y].itemObject" :key="key">
-            {{ key }}: {{ value }}
-          </div> -->
-          <el-table v-if="currentItemIndex_Y <= jsondata.item.length - 1" :data="getTableData" border >
-            <el-table-column prop="key" label="Key" ></el-table-column>
-            <el-table-column prop="value" label="Value"></el-table-column>
-          </el-table>
-        </div>
+      <h2 style="margin-top: 1%; margin-left: 1%;">表格</h2>
+      <div class="hengxian"></div>
+      <div v-if="jsondata.item" class="flex-container">
+        <el-card v-for="(item, index) in jsondata.item.slice(currentItemIndex_Y, currentItemIndex_Y + 4)" :key="index"
+          class="container">
+          <h2>{{ '👉' + item.name }}</h2>
+          <ul class="custom-list">
+            <li v-for="(value, key) in getTableData(currentItemIndex_Y + index)" :key="key">
+              <strong>{{ key }}:</strong> {{ value }}
+            </li>
+          </ul>
+        </el-card>
 
-
-
-        <div v-if="currentItemIndex_Y + 1 <= jsondata.item.length - 1" style="width:24%">
-          <h2>{{ jsondata.item[currentItemIndex_Y + 1].name }}</h2>
-          <!-- <div v-for="(value, key) in parsedata[currentItemIndex_Y + 1].itemObject" :key="key">
-            {{ key }}: {{ value }}
-          </div> -->
-          <el-table v-if="currentItemIndex_Y <= jsondata.item.length - 1" :data="getTableData2" border>
-            <el-table-column prop="key" label="Key"></el-table-column>
-            <el-table-column prop="value" label="Value"></el-table-column>
-          </el-table>
-        </div>
-
-        <div v-if="currentItemIndex_Y + 2 <= jsondata.item.length - 1" style="width:24%">
-          <h2>{{ jsondata.item[currentItemIndex_Y + 2].name }}</h2>
-          <!-- <div v-for="(value, key) in parsedata[currentItemIndex_Y + 2].itemObject" :key="key">
-            {{ key }}: {{ value }}
-          </div> -->
-          <el-table v-if="currentItemIndex_Y <= jsondata.item.length - 1" :data="getTableData3" border>
-            <el-table-column prop="key" label="Key"></el-table-column>
-            <el-table-column prop="value" label="Value"></el-table-column>
-          </el-table>
-        </div>
-        <div v-if="currentItemIndex_Y + 3 <= jsondata.item.length - 1" style="width:24%">
-          <h2>{{ jsondata.item[currentItemIndex_Y + 3].name }}</h2>
-          <!-- <div v-for="(value, key) in parsedata[currentItemIndex_Y + 3].itemObject" :key="key">
-            {{ key }}: {{ value }}
-          </div> -->
-          <el-table v-if="currentItemIndex_Y <= jsondata.item.length - 1" :data="getTableData4" border>
-            <el-table-column prop="key" label="Key"></el-table-column>
-            <el-table-column prop="value" label="Value"></el-table-column>
-          </el-table>
+        <div>
+          <br>
+          <el-button @click="prevItem" class="buttonAA">＜</el-button>
+          <br>
+          <br>
+          <el-button @click="nextItem" class="buttonAA">＞</el-button>
         </div>
       </div>
 
-      <el-button @click="prevItem">＜</el-button>
-      <el-button @click="nextItem">＞</el-button><br>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-const jsondata = ({
+import { ref, onMounted } from 'vue'
+import { timer_from } from '@/timer.js'
+import axios from 'axios'
+
+const jsondata = ref({
   item: [
     {
-      name: "check",
+      name: "测试数据",
       mac: "asd",
       nodefine: 1,
       vvv: "CombinEquipment",
       ma2c: "asd",
       no2define: 1,
       vv2v: "CombinEquipment",
+      ma1c: "asd",
+      no1define: 1,
+      vv1v: "CombinEquipment",
+      ma12c: "asd",
+      no12define: 1,
+      vv32v: "CombinEquipment",
+      m3ac: "asd",
+      no3define: 1,
+      vv3v: "CombinEquipment",
+      ma32c: "asd",
+      no32define: 1,
+      vv32v: "CombinEquipment",
     },
     {
-      name: "CombinEquipment",
+      name: "测试数据",
       json: "4234"
     },
     {
-      name: "ffffffff",
+      name: "测试数据",
       json: true
     },
     {
-      name: "你好",
+      name: "测试数据",
       mac: "asd",
       nodefine: 1
     },
-    {
-      name: "CombinEquipment2",
-      json: "4234"
-    },
-    {
-      name: "ffffffff3",
-      json: "4234"
-    }
   ],
 })
+
 const parsedata = ref([])
 const parse = () => {
-  //item
-  const items = jsondata.item;
+  parsedata.value = [];
+  const items = jsondata.value.item;
   for (const item of items) {
     const itemName = item.name;
     let itemObject = {};
-    // 遍历item对象中的键值对
     for (const key in item) {
       if (key !== "name") {
-        let keyvalue = item[key];
-        if (keyvalue === true) {
-          keyvalue = '触发';
-        }
-        itemObject[key] = keyvalue;
-
+        itemObject[key] = item[key];
       }
     }
     parsedata.value.push({ itemName, itemObject });
-
   }
-  console.log(parsedata.value)
 }
 parse();
 
 const currentItemIndex_Y = ref(0)
 const prevItem = () => {
   if (currentItemIndex_Y.value > 0) {
-    currentItemIndex_Y.value = currentItemIndex_Y.value - 4;
+    currentItemIndex_Y.value -= 4;
   }
 };
 const nextItem = () => {
-  if (currentItemIndex_Y.value < jsondata.item.length - 1) {
-    currentItemIndex_Y.value = currentItemIndex_Y.value + 4;
+  if (currentItemIndex_Y.value < jsondata.value.item.length - 4) {
+    currentItemIndex_Y.value += 4;
   }
 };
-const getTableData = computed(() => {
-  const currentIndex = currentItemIndex_Y.value;
-  if (currentIndex <= jsondata.item.length - 1) {
-    const itemObject = parsedata.value[currentIndex].itemObject;
-    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
-  }
-  return [];
-});
 
-const getTableData2 = computed(() => {
-  const currentIndex = currentItemIndex_Y.value+1;
-  if (currentIndex <= jsondata.item.length - 1) {
-    const itemObject = parsedata.value[currentIndex].itemObject;
-    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
+// 修改 getTableData 函数以返回键值对
+const getTableData = (index) => {
+  if (index <= jsondata.value.item.length - 1) {
+    const itemObject = parsedata.value[index].itemObject;
+    return Object.entries(itemObject); // 返回键值对数组
   }
   return [];
-});
+};
 
-const getTableData3 = computed(() => {
-  const currentIndex = currentItemIndex_Y.value+2;
-  if (currentIndex <= jsondata.item.length - 1) {
-    const itemObject = parsedata.value[currentIndex].itemObject;
-    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
+const responseData = ref(null)
+const fetchVelocity1 = () => {
+  let userList = {
+    group: 'siasun',
+    account: 'test',
+    password: '123456'
   }
-  return [];
-});
+  axios({
+    method: 'post',
+    url: '/api/data/table',
+    data: JSON.stringify(userList)
+  })
+    .then((res) => {
+      responseData.value = res.data
+      jsondata.value.item = responseData.value;
+      parse();
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+    .finally(() => {});
 
-const getTableData4 = computed(() => {
-  const currentIndex = currentItemIndex_Y.value+3;
-  if (currentIndex <= jsondata.item.length - 1) {
-    const itemObject = parsedata.value[currentIndex].itemObject;
-    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
-  }
-  return [];
-});
-</script>
-<style>
-.container {
-  width: 24%;
-  border: 4px solid #615e5e;
-  padding: 10px;
-  margin-top: 10px;
+  timer_from.value = setTimeout(fetchVelocity1, 400);
 }
 
+onMounted(() => {
+  // fetchVelocity1()
+})
+</script>
+
+<style lang="scss" scoped>
+.container {
+  width: 22%;
+  border-radius: 20px;
+  margin-top: 2vh;
+  margin-left: 1vw;
+  overflow: auto;
+  box-shadow: 1vw 1vw 2vw rgba(0, 0, 0, 0.3);
+  text-align: center;
+  background-image: linear-gradient(to top right, #e4e4e4, #c9ccca);
+}
+
+.flex-container {
+  display: flex;
+  height: 63vh;
+  border-radius: 20px;
+  box-shadow: 1vw 1vw 2vw rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  text-align: center;
+  width: 75vw;
+  margin-left: 3vw;
+  margin: 0 auto;
+  background-image: linear-gradient(to top right, #e4e4e4, #f1f5f2);
+}
+
+.buttonAA {
+  margin-left: 50%;
+  width: 10%;
+  border-radius: 25px;
+  background-image: linear-gradient(to bottom right, #2c323295, #d5eedf17);
+}
+
+.hengxian {
+  border: none;
+  border-top: 2px solid #ccc;
+  margin: 20px 0;
+}
+
+.custom-list {
+  list-style-type: none; /* 去掉默认的列表样式 */
+  padding: 0; /* 去掉内边距 */
+}
+
+.custom-list li {
+  padding: 8px 0; /* 增加列表项的上下内边距 */
+  border-bottom: 1px solid #ccc; /* 列表项底部边框 */
+}
 </style>
 
+<style lang="scss" scoped>
+::v-deep .el-table {
+  background: rgba(255, 255, 255, 0);
+}
 
+::v-deep .el-table_expanded-cell {
+  background: rgba(255, 255, 255, 0);
+}
+
+::v-deep .el-table th {
+  background: rgba(255, 255, 255, 0);
+}
+
+::v-deep .el-table tr {
+  background: rgba(255, 255, 255, 0);
+}
+
+::v-deep .el-table td {
+  background: rgba(255, 255, 255, 0);
+}
+</style>
+
+<style>
+.custom-tablebianliang .el-table__body tr:nth-child(2n) {
+  background-color: #768aaa67; /* 隔行背景色 */
+}
+</style>

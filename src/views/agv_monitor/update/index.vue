@@ -3,31 +3,27 @@
     <div class="table-box content-container page-content-box"
       style="background-image: linear-gradient(to bottom right, #d0dcdc95, #d5eedf17)">
 
-      <h2 style="margin-top: 1%; margin-left: 1%;">变量</h2>
+      <h2 style="margin-top: 1%; margin-left: 1%;">表格</h2>
       <div class="hengxian"></div>
       <div v-if="jsondata.item" class="flex-container">
-        <div v-for="(item, index) in jsondata.item.slice(currentItemIndex_Y, currentItemIndex_Y + 4)" :key="index"
+        <el-card v-for="(item, index) in jsondata.item.slice(currentItemIndex_Y, currentItemIndex_Y + itemsPerPage)" :key="index"
           class="container">
-          <h2>{{ '👉' + item.name }}</h2>
-          <el-table :data="getTableData(currentItemIndex_Y + index)" border class="custom-tablebianliang">
-            <el-table-column prop="key" label="💫字段" width="90%"></el-table-column>
-            <el-table-column prop="value" label="内容"></el-table-column>
-          </el-table>
+          <h3>{{ '👉' + item.name }}</h3>
+          <ul class="custom-list">
+            <li v-for="([key, value]) in getTableData(currentItemIndex_Y + index)" :key="key">
+              <strong>{{ key }}</strong>: {{ value }}  <!-- 直接显示键和值 -->
+            </li>
+          </ul>
+        </el-card>
 
-        </div>
-
-        
-        <div>
+        <div style="margin-top: 45vh;">
           <br>
           <el-button @click="prevItem" class="buttonAA">＜</el-button>
-          <br>
-          <br>
+          <br><br>
           <el-button @click="nextItem" class="buttonAA">＞</el-button>
+
         </div>
-
-
       </div>
-
 
     </div>
   </div>
@@ -36,6 +32,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { timer_from } from '@/timer.js'
+import axios from 'axios'
+
 const jsondata = ref({
   item: [
     {
@@ -72,58 +70,55 @@ const jsondata = ref({
       mac: "asd",
       nodefine: 1
     },
-
   ],
 })
-
-
-
 
 const parsedata = ref([])
 const parse = () => {
   parsedata.value = [];
-  //item
   const items = jsondata.value.item;
   for (const item of items) {
     const itemName = item.name;
     let itemObject = {};
-    // 遍历item对象中的键值对
     for (const key in item) {
       if (key !== "name") {
-        let keyvalue = item[key];
-        itemObject[key] = keyvalue;
-
+        itemObject[key] = item[key];
       }
     }
     parsedata.value.push({ itemName, itemObject });
-
   }
-  console.log(parsedata.value)
 }
 parse();
 
 const currentItemIndex_Y = ref(0)
+const itemsPerPage = ref(4) // 默认每页显示4项
+const pageOptions = [4, 6, 8]; // 下拉选项
+
 const prevItem = () => {
   if (currentItemIndex_Y.value > 0) {
-    currentItemIndex_Y.value = currentItemIndex_Y.value - 4;
+    currentItemIndex_Y.value -= itemsPerPage.value;
   }
 };
 const nextItem = () => {
-  if (currentItemIndex_Y.value < jsondata.value.item.length - 4) {
-    currentItemIndex_Y.value = currentItemIndex_Y.value + 4;
+  if (currentItemIndex_Y.value < jsondata.value.item.length - itemsPerPage.value) {
+    currentItemIndex_Y.value += itemsPerPage.value;
   }
 };
+
+// 重置当前索引
+const resetPagination = () => {
+  currentItemIndex_Y.value = 0; // 选择项数后重置为第一页
+};
+
+// 修改 getTableData 函数以返回键值对
 const getTableData = (index) => {
   if (index <= jsondata.value.item.length - 1) {
     const itemObject = parsedata.value[index].itemObject;
-    console.log('11111', Object.entries(itemObject).map(([key, value]) => ({ key, value })))
-    return Object.entries(itemObject).map(([key, value]) => ({ key, value }));
-
+    return Object.entries(itemObject); // 返回键值对数组
   }
   return [];
 };
 
-import axios from 'axios'
 const responseData = ref(null)
 const fetchVelocity1 = () => {
   let userList = {
@@ -142,11 +137,9 @@ const fetchVelocity1 = () => {
       parse();
     })
     .catch((error) => {
-
+      console.error(error);
     })
-    .finally(() => {
-
-    })
+    .finally(() => {});
 
   timer_from.value = setTimeout(fetchVelocity1, 400);
 }
@@ -154,38 +147,31 @@ const fetchVelocity1 = () => {
 onMounted(() => {
   fetchVelocity1()
 })
-
 </script>
 
 <style lang="scss" scoped>
 .container {
   width: 22%;
-  border-style: ridge;
-  border-width: 2px;
   border-radius: 20px;
-  margin-top: -1%;
-  margin-left: 1%;
+  margin-top: 2vh;
+  margin-left: 1vw;
   overflow: auto;
-  border: 1px solid #797474;
-  box-shadow: 4px 4px 10px rgba(103, 102, 102, 0.3);
-  padding: 20px;
+  box-shadow: 1vw 1vw 2vw rgba(0, 0, 0, 0.3);
   text-align: center;
-  background-image: linear-gradient(to top right, #d2d2d2, #c3c3c3);
+  background-image: linear-gradient(to top right, #e4e4e4, #c9ccca);
 }
 
 .flex-container {
   display: flex;
-  height: 70%;
-  border: 5px double #8d8a8a;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+  height: 63vh;
+  border-radius: 20px;
+  box-shadow: 1vw 1vw 2vw rgba(0, 0, 0, 0.3);
   padding: 20px;
   text-align: center;
-  width: 90%;
-  border-radius: 10px;
-  margin-left: 2%;
+  width: 75vw;
+  margin-left: 3vw;
   margin: 0 auto;
   background-image: linear-gradient(to top right, #e4e4e4, #f1f5f2);
-
 }
 
 .buttonAA {
@@ -200,37 +186,49 @@ onMounted(() => {
   border-top: 2px solid #ccc;
   margin: 20px 0;
 }
+
+.custom-list {
+  list-style-type: none; /* 去掉默认的列表样式 */
+  padding: 0; /* 去掉内边距 */
+  text-align: left; /* 左对齐 */
+}
+
+.custom-list li {
+  padding: 8px 0; /* 增加列表项的上下内边距 */
+  border-bottom: 1px solid #ccc; /* 列表项底部边框 */
+  padding-left: 10px; /* 增加左侧内边距，便于阅读 */
+}
+
+.items-per-page-select {
+  width: 5vw;
+  margin-left: 10px; /* 下拉列表左侧间距 */
+}
 </style>
 
 <style lang="scss" scoped>
 ::v-deep .el-table {
-  background: rgba(255, 255, 255, 0)
+  background: rgba(255, 255, 255, 0);
 }
 
 ::v-deep .el-table_expanded-cell {
-  background: rgba(255, 255, 255, 0)
+  background: rgba(255, 255, 255, 0);
 }
 
 ::v-deep .el-table th {
-  background: rgba(255, 255, 255, 0)
+  background: rgba(255, 255, 255, 0);
 }
 
 ::v-deep .el-table tr {
-  background: rgba(255, 255, 255, 0)
+  background: rgba(255, 255, 255, 0);
 }
 
 ::v-deep .el-table td {
-  background: rgba(255, 255, 255, 0)
+  background: rgba(255, 255, 255, 0);
 }
-
-
 </style>
 
 <style>
-
 .custom-tablebianliang .el-table__body tr:nth-child(2n) {
-    background-color: #768aaa67;
-    /* 隔行背景色 */
+  background-color: #768aaa67; /* 隔行背景色 */
 }
 </style>
-

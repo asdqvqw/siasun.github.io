@@ -1,109 +1,183 @@
 <template>
+    <el-tabs>
+        <el-tab-pane v-for="(port, portIndex) in jsondata.canMan.canport" :key="portIndex"
+            :label="'CAN Port ' + (portIndex + 1)">
+            <div v-if="port.canpos.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN Pos:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
 
-    <el-form ref="form" label-width="180px">
-        
-        <el-form-item label="CAN:">
-            <el-button type="primary" @click="handlecheckCAN1">
-                查看CAN1
-            </el-button>
-            <el-dialog v-model="checkcanone" title="CAN1设备" :visible="checkcanone" width="800px"
-                @close="checkcanone = false">
-                <DefinScrollbar height="100%" :showUpBt="true">
-                    <canone></canone>
-                </DefinScrollbar>
-            </el-dialog> &nbsp;
-            <el-button type="primary" @click="handlecheckCAN2">
-                查看CAN2
-            </el-button>
-            <el-dialog v-model="checkcantwo" title="CAN2设备" :visible="checkcantwo" width="800px"
-                @close="checkcantwo = false">
-                <DefinScrollbar height="100%" :showUpBt="true">
-                    <cantwo></cantwo>
-                </DefinScrollbar>
-            </el-dialog> &nbsp;
-            <el-button type="primary" @click="handlecheckCAN3">
-                查看CAN3
-            </el-button>
-            <el-dialog v-model="checkcanthree" title="CAN3设备" :visible="checkcanthree" width="800px"
-                @close="checkcanthree = false">
-                <DefinScrollbar height="100%" :showUpBt="true">
-                    <canthree></canthree>
-                </DefinScrollbar>
-            </el-dialog> &nbsp;
-        </el-form-item>
+                        <div v-for="item in port.canpos" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN Pos 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
 
-        <el-form-item label="网络：">
-            <el-table :data="jsondata.network" style="width: 90%" class="custom-table">
-                <el-table-column prop="name" label=""></el-table-column>
-                <el-table-column prop="value" label="地址"></el-table-column>
+            <div v-if="port.canopenpos.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN Open Pos:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
 
-            </el-table>
-        </el-form-item>
+                        <div v-for="item in port.canopenpos" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN Open Pos 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                                <p>伺服类型:
+                                    <span v-if="item.servotype === 0">Elmo伺服</span>
+                                    <span v-else-if="item.servotype === 1">步科伺服</span>
+                                    <span v-else-if="item.servotype === 2">Motec伺服</span>
+                                    <span v-else-if="item.servotype === 3">AMC伺服</span>
+                                </p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
 
-        <el-form-item label="已开启功能：">
-            <el-table :data="jsondata.function.filter(item => item.value === true)" style="width: 90%"
-                class="custom-table">
-                <el-table-column prop="name" label=""></el-table-column>
-                <el-table-column prop="des" label=""></el-table-column>
-            </el-table>
-        </el-form-item>
+            <div v-if="port.canguide.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN Guide:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
+                        <div v-for="item in port.canguide" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN Guide 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
 
+            <div v-if="port.canencoder.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN Encoder:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
+                        <div v-for="item in port.canencoder" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN Encoder 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
 
- 
-    </el-form>
+            <div v-if="port.canbattery.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN Battery:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
+                        <div v-for="item in port.canbattery" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN Battery 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
 
+            <div v-if="port.canrfid.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN RFID:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
+                        <div v-for="item in port.canrfid" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN RFID 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
 
+            <div v-if="port.canmanualbox.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN Manual Box:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
+                        <div v-for="item in port.canmanualbox" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN Manual Box 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
+
+            <div v-if="port.canio.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN IO:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
+                        <div v-for="item in port.canio" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN IO 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
+
+            <div v-if="port.cangyro.length">
+                <el-card class="custom-card" :body-style="{ padding: '20px' }">
+                    <h4>CAN Gyro:</h4>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
+                        <div v-for="item in port.cangyro" :key="item.canid">
+                            <el-card class="item-card" :body-style="{ padding: '10px' }">
+                                <p>CAN Gyro 编号: {{ item.canid }}</p>
+                                <p>CAN 通讯 ID 号: {{ item.unitid }}</p>
+                            </el-card>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
+        </el-tab-pane>
+    </el-tabs>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
-import { ref } from 'vue'
-import canone from './checkcan/canone.vue'
-import cantwo from './checkcan/cantwo.vue'
-import canthree from './checkcan/canthree.vue'
-import DefinScrollbar from "@/components/DefinScrollbar.vue";
-const checkcanone = ref(false)
-const checkcantwo = ref(false)
-const checkcanthree = ref(false)
-
-const handlecheckCAN1 = () => {
-    checkcanone.value = true;
-}
-const handlecheckCAN2 = () => {
-    checkcantwo.value = true;
-}
-const handlecheckCAN3 = () => {
-    checkcanthree.value = true;
-}
+//   const jsondata.canMan = ref({
+//     canport: [
+//       {
+//         canpos: [{ canid: 2, unitid: 0 }, { canid: 3, unitid: 1 }],
+//         canopenpos: [{ canid: 2, unitid: 0, servotype: 1 }],
+//         canguide: [{ canid: 2, unitid: 0 }, { canid: 2, unitid: 0 }],
+//         canencoder: [{ canid: 2, unitid: 0 }],
+//         canbattery: [{ canid: 2, unitid: 0 }],
+//         canrfid: [{ canid: 2, unitid: 0 }],
+//         jsondata.canManualbox: [],
+//         canio: [{ canid: 2, unitid: 0 }],
+//         cangyro: []
+//       },
+//       {
+//         canpos: [],
+//         canopenpos: [],
+//         canguide: [],
+//         canencoder: [{ canid: 2, unitid: 0 }],
+//         canbattery: [],
+//         canrfid: [{ canid: 2, unitid: 0 }],
+//         jsondata.canManualbox: [{ canid: 2, unitid: 0 }, { canid: 2, unitid: 0 }],
+//         canio: [{ canid: 2, unitid: 0 }],
+//         cangyro: [{ canid: 2, unitid: 0 }]
+//       }
+//       // 可以添加更多的端口
+//     ]
+//   });
 </script>
 
-
 <style>
-.custom-table {
-    border: 2px solid #3e6bd4;
-    /* 添加表格边框 */
-
+.custom-card {
+    margin-bottom: 20px;
 }
 
-.custom-table .el-table__header-wrapper {
-    background-color: #2bcba6;
-    /* 表头背景色 */
-}
-
-.custom-table .el-table__header th {
-    color: #462c1a;
-    /* 表头文字颜色 */
-    font-weight: bold;
-    padding: 12px 16px;
-}
-
-.custom-table .el-table__body td {
-    padding: 10px 16px;
-    /* 单元格内边距 */
-}
-
-.custom-table .el-table__body tr:nth-child(2n) {
-    background-color: #baccebbb;
-    /* 隔行背景色 */
+.item-card {
+    width: 15vw;
+    margin-bottom: 10px;
 }
 </style>

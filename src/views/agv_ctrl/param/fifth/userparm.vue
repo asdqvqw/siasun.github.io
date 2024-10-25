@@ -147,7 +147,7 @@ const updataAGV = () => {
 
     let userList = {
         data: {
-            file: 'SystemParm.json',
+            file: 'agvparam.json',
             value: jsondata.value
         },
         group: 'siasun',

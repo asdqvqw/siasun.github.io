@@ -14,8 +14,8 @@
                         <el-dialog v-model="checkdevice" title="设备总览" :visible="checkdevice" width="900px"
                             @close="checkdevice = false">
                             <DefinScrollbar height="100%" :showUpBt="true">
-                            <checkbox></checkbox>
-                        </DefinScrollbar>
+                                <checkbox></checkbox>
+                            </DefinScrollbar>
                         </el-dialog>
 
                         &nbsp;
@@ -25,8 +25,8 @@
                         <el-dialog v-model="dialogVisible" title="数据" :visible="dialogVisible"
                             @close="dialogVisible = false" modal-class="kk-dialog-class" custom-class="custom-dialog">
                             <DefinScrollbar height="100%" :showUpBt="true">
-                            <pre>{{ formattedJsondata }}</pre>
-                        </DefinScrollbar>
+                                <pre>{{ formattedJsondata }}</pre>
+                            </DefinScrollbar>
                         </el-dialog>
                         &nbsp;
                         <el-button type="primary" @click="syncAgvParm">
@@ -53,19 +53,27 @@
                         
                         启用的串口号： -->
 
-                        <el-table :data="tableData" border class="datatableCOM">
-                            <el-table-column prop="key" label="⚠️ 串口"></el-table-column>
+                        <el-tabs>
+                            <el-tab-pane label="网口设置">
+                                <Consloe />
+                            </el-tab-pane>
+                            <el-tab-pane label="串口设置">
+                                <h5>选择启用串口</h5><br>
+                                <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                    
+                                    <el-card v-for="(port, index) in tableData" :key="port.key" class="port-card"
+                                        :body-style="{ padding: '20px' }">
+                                        <div style="display: flex; align-items: center;">
+                                            <span style="margin-right: 10px;">⚠️ {{ port.key }}:</span>
+                                            <el-checkbox v-model="port.isChecked"
+                                                @change="handlecom(port)"></el-checkbox>
+                                        </div>
+                                    </el-card>
+                                </div>
+                            </el-tab-pane>
 
-                            <el-table-column label="勾选启用的串口号：">
-                                <template v-slot="scope">
-                                    <el-checkbox v-model="scope.row.isChecked"
-                                        @change="handlecom(scope.row)"></el-checkbox>
-                                </template>
-                            </el-table-column>
-                        </el-table>
+                        </el-tabs>
 
-
-                        <hr class="hengxian3">
                         <!-- <h3>⚠️ 网口</h3>
                         配置车体相关所有ip地址: -->
                         <!-- <el-button @click="toggleNetTable" type="text" plain :disabled="false">
@@ -73,9 +81,9 @@
                             <span v-else>展开</span>
                             <span :class="{ 'rotate-arrow': ShowNetSelect }">➡️</span>
                         </el-button><br> -->
-                        <div v-if="ShowNetSelect">
+                        <!-- <div v-if="ShowNetSelect">
                             <Consloe />
-                        </div>
+                        </div> -->
 
                         <hr class="hengxian3">
                         <!-- <h3>⚠️ CAN线</h3>
@@ -105,7 +113,7 @@ import { ref, computed } from 'vue';
 import Consloe from './common/Consloe.vue';
 import CanLine from './common/CanLine.vue';
 import checkbox from '@/views/agv_ctrl/param/check.vue';
-import { jsondata } from './common/commondata.js';
+import { jsondata,adjustbit5 } from './common/commondata.js';
 import { tableDataCrtl, tableDataCrtlnet } from './common/commondata.js';
 import { CANPOS, CANPOS2, CANPOS3 } from './common/commondata.js';
 import { CANOPEN, CANOPEN2, CANOPEN3 } from './common/commondata.js';
@@ -114,11 +122,11 @@ import { CANBMS, CANBMS2, CANBMS3 } from './common/commondata.js';
 import { CANIO, CANIO2, CANIO3 } from './common/commondata.js';
 import { CANMANUAL, CANMANUAL2, CANMANUAL3 } from './common/commondata.js';
 import { CANRFID, CANRFID2, CANRFID3 } from './common/commondata.js';
-import { AUTOPARM, AUTOPARMLEV } from './common/commondata.js';
-import { MANUALPARMA, MANUALRAPARM } from './common/commondata.js';
+import { AUTOPARM, AUTOPARMLEV, autoParam } from './common/commondata.js';
+import { manualvelParam, manualradiusParam } from './common/commondata.js';
 import { selected } from './common/commondata.js';
 import { delayisChecked, delayinput1, delayinput2 } from './common/commondata.js';
-import { OTHERPARM, functioncDate,UserPermissionsparam } from './common/commondata.js';
+import { OTHERPARM, functioncDate, UserPermissionsparam } from './common/commondata.js';
 import { tableDataCrtlswitch, tableDataCrtlswitchEmg } from './common/commondata.js';
 import { tableDataCrtlBumper, tableDataCrtlPLS, tableDataCrtlSound, MANUALDATA } from './common/commondata.js';
 import { tableDataCrtlBetter, tableDataCrtlRelay } from './common/commondata.js';
@@ -128,28 +136,25 @@ const ShowNetSelect = ref(true);
 const ShowCanSelect = ref(true);
 const dialogVisible = ref(false);
 const checkdevice = ref(false);
-const isChecked = ref(false);
-const isChecked1 = ref(false);
-const isChecked2 = ref(false);
-const isChecked3 = ref(false);
+
 
 const formattedJsondata = computed(() => {
     return JSON.stringify(jsondata.value, null, 2);
 });
 const handlecom = (row) => {
     // 更新 tableData 数组中的 isChecked 属性
-    tableData.value.forEach(item => {
-        if (item.key === row.key) {
-            item.isChecked = row.isChecked
-        }
-    })
+    // tableData.value.forEach(item => {
+    //     if (item.key === row.key) {
+    //         item.isChecked = row.isChecked
+    //     }
+    // })
 
-    jsondata.value.SerialPortMan.port_1 = tableData.value[0].isChecked;
-    jsondata.value.SerialPortMan.port_2 = tableData.value[1].isChecked;
-    jsondata.value.SerialPortMan.port_3 = tableData.value[2].isChecked;
-    jsondata.value.SerialPortMan.port_4 = tableData.value[3].isChecked;
+    // jsondata.value.SerialPortMan.port_1 = tableData.value[0].isChecked;
+    // jsondata.value.SerialPortMan.port_2 = tableData.value[1].isChecked;
+    // jsondata.value.SerialPortMan.port_3 = tableData.value[2].isChecked;
+    // jsondata.value.SerialPortMan.port_4 = tableData.value[3].isChecked;
 
-
+    jsondata.value.SerialPortMan[`port_${row.key.charAt(3)}`] = row.isChecked;
 }
 
 const handlecheck = () => {
@@ -194,7 +199,7 @@ const tableData = computed(() => {
 const responseData = ref(null) // 创建响应式变量
 const syncAgvParm = () => {
     let userList = {
-        data: 'SystemParm.json',
+        data: 'agvparam.json',
         group: 'siasun',
         account: 'test',
         password: '123456'
@@ -222,10 +227,16 @@ const syncAgvParm = () => {
 
 const syncdata = () => {
     // tableDataCrtlnet.value = jsondata.value.network;
-    tableDataCrtlnet.value[0].value = jsondata.value.NetMan.tc;
-    tableDataCrtlnet.value[1].value = jsondata.value.NetMan.screen;
-    functioncDate.value = jsondata.value.function;
-    UserPermissionsparam.value[0].value =  jsondata.value.Password;
+    //net
+    tableDataCrtlnet.value.forEach((item) => {
+        if (jsondata.value.NetMan[item.key] !== undefined) {
+            item.value = jsondata.value.NetMan[item.key];
+        }
+    });
+    // tableDataCrtlnet.value[0].value = jsondata.value.NetMan.tc;
+    // tableDataCrtlnet.value[1].value = jsondata.value.NetMan.screen;
+    functioncDate.value = jsondata.value.FuncSet;
+    UserPermissionsparam.value[0].value = jsondata.value.Password;
     //com
     tableData.value[0].isChecked = jsondata.value.SerialPortMan.port_1;
     tableData.value[1].isChecked = jsondata.value.SerialPortMan.port_2;
@@ -233,261 +244,263 @@ const syncdata = () => {
     tableData.value[3].isChecked = jsondata.value.SerialPortMan.port_4;
 
     // canpos
-    if (jsondata.value.can1.can_pos !== undefined) {
-        for (const item of jsondata.value.can1.can_pos) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-            };
-            CANPOS.value.push(newRow);
-        }
-    }
+    // if (jsondata.value.can1.can_pos !== undefined) {
+    //     for (const item of jsondata.value.can1.can_pos) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //         };
+    //         CANPOS.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can2.can_pos !== undefined) {
-        for (const item of jsondata.value.can2.can_pos) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-            };
-            CANPOS2.value.push(newRow);
-        }
-    }
+    // if (jsondata.value.can2.can_pos !== undefined) {
+    //     for (const item of jsondata.value.can2.can_pos) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //         };
+    //         CANPOS2.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can3.can_pos !== undefined) {
-        for (const item of jsondata.value.can3.can_pos) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-            };
-            CANPOS3.value.push(newRow);
-        }
-    }
-    //open
-    if (jsondata.value.can1.can_open !== undefined) {
-        for (const item of jsondata.value.can1.can_open) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-                servo_type: item[2].toString(),
-            };
-            CANOPEN.value.push(newRow);
-        }
-    }
+    // if (jsondata.value.can3.can_pos !== undefined) {
+    //     for (const item of jsondata.value.can3.can_pos) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //         };
+    //         CANPOS3.value.push(newRow);
+    //     }
+    // }
+    // //open
+    // if (jsondata.value.can1.can_open !== undefined) {
+    //     for (const item of jsondata.value.can1.can_open) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //             servo_type: item[2].toString(),
+    //         };
+    //         CANOPEN.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can2.can_open !== undefined) {
-        for (const item of jsondata.value.can2.can_open) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-                servo_type: item[2].toString(),
-            };
-            CANOPEN2.value.push(newRow);
-        }
-    }
+    // if (jsondata.value.can2.can_open !== undefined) {
+    //     for (const item of jsondata.value.can2.can_open) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //             servo_type: item[2].toString(),
+    //         };
+    //         CANOPEN2.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can3.can_open !== undefined) {
-        for (const item of jsondata.value.can3.can_open) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-                servo_type: item[2].toString(),
-            };
-            CANOPEN3.value.push(newRow);
-        }
-    }
-    //guide
-    if (jsondata.value.can1.can_guide !== undefined) {
-        for (const item of jsondata.value.can1.can_guide) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    // if (jsondata.value.can3.can_open !== undefined) {
+    //     for (const item of jsondata.value.can3.can_open) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //             servo_type: item[2].toString(),
+    //         };
+    //         CANOPEN3.value.push(newRow);
+    //     }
+    // }
+    // //guide
+    // if (jsondata.value.can1.can_guide !== undefined) {
+    //     for (const item of jsondata.value.can1.can_guide) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANGUIDE.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANGUIDE.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can2.can_guide !== undefined) {
-        for (const item of jsondata.value.can2.can_guide) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    // if (jsondata.value.can2.can_guide !== undefined) {
+    //     for (const item of jsondata.value.can2.can_guide) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANGUIDE2.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANGUIDE2.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can3.can_guide !== undefined) {
-        for (const item of jsondata.value.can3.can_guide) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    // if (jsondata.value.can3.can_guide !== undefined) {
+    //     for (const item of jsondata.value.can3.can_guide) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANGUIDE3.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANGUIDE3.value.push(newRow);
+    //     }
+    // }
 
-    //BMS
-    if (jsondata.value.can1.can_BMS !== undefined) {
-        for (const item of jsondata.value.can1.can_BMS) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-                subSystem: item[2].toString(),
+    // //BMS
+    // if (jsondata.value.can1.can_BMS !== undefined) {
+    //     for (const item of jsondata.value.can1.can_BMS) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //             subSystem: item[2].toString(),
 
-            };
-            CANBMS.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANBMS.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can2.can_BMS !== undefined) {
-        for (const item of jsondata.value.can2.can_BMS) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-                subSystem: item[2].toString(),
+    // if (jsondata.value.can2.can_BMS !== undefined) {
+    //     for (const item of jsondata.value.can2.can_BMS) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //             subSystem: item[2].toString(),
 
-            };
-            CANBMS2.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANBMS2.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can3.can_BMS !== undefined) {
-        for (const item of jsondata.value.can3.can_BMS) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-                subSystem: item[2].toString(),
+    // if (jsondata.value.can3.can_BMS !== undefined) {
+    //     for (const item of jsondata.value.can3.can_BMS) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //             subSystem: item[2].toString(),
 
-            };
-            CANBMS3.value.push(newRow);
-        }
-    }
-    //io
-    if (jsondata.value.can1.can_io !== undefined) {
-        for (const item of jsondata.value.can1.can_io) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    //         };
+    //         CANBMS3.value.push(newRow);
+    //     }
+    // }
+    // //io
+    // if (jsondata.value.can1.can_io !== undefined) {
+    //     for (const item of jsondata.value.can1.can_io) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANIO.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANIO.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can2.can_io !== undefined) {
-        for (const item of jsondata.value.can2.can_io) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    // if (jsondata.value.can2.can_io !== undefined) {
+    //     for (const item of jsondata.value.can2.can_io) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANIO2.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANIO2.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can3.can_io !== undefined) {
-        for (const item of jsondata.value.can3.can_io) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    // if (jsondata.value.can3.can_io !== undefined) {
+    //     for (const item of jsondata.value.can3.can_io) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANIO3.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANIO3.value.push(newRow);
+    //     }
+    // }
 
-    //MANU
-    if (jsondata.value.can1.can_manual !== undefined) {
-        for (const item of jsondata.value.can1.can_manual) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-            };
-            CANMANUAL.value.push(newRow);
-        }
-    }
+    // //MANU
+    // if (jsondata.value.can1.can_manual !== undefined) {
+    //     for (const item of jsondata.value.can1.can_manual) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //         };
+    //         CANMANUAL.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can2.can_manual !== undefined) {
-        for (const item of jsondata.value.can2.can_manual) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-            };
-            CANMANUAL2.value.push(newRow);
-        }
-    }
+    // if (jsondata.value.can2.can_manual !== undefined) {
+    //     for (const item of jsondata.value.can2.can_manual) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //         };
+    //         CANMANUAL2.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can3.can_manual !== undefined) {
-        for (const item of jsondata.value.can3.can_manual) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
-            };
-            CANMANUAL3.value.push(newRow);
-        }
-    }
+    // if (jsondata.value.can3.can_manual !== undefined) {
+    //     for (const item of jsondata.value.can3.can_manual) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
+    //         };
+    //         CANMANUAL3.value.push(newRow);
+    //     }
+    // }
 
-    //RFID
-    if (jsondata.value.can1.can_rfid !== undefined) {
-        for (const item of jsondata.value.can1.can_rfid) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    // //RFID
+    // if (jsondata.value.can1.can_rfid !== undefined) {
+    //     for (const item of jsondata.value.can1.can_rfid) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANRFID.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANRFID.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can2.can_rfid !== undefined) {
-        for (const item of jsondata.value.can2.can_rfid) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    // if (jsondata.value.can2.can_rfid !== undefined) {
+    //     for (const item of jsondata.value.can2.can_rfid) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANRFID2.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANRFID2.value.push(newRow);
+    //     }
+    // }
 
-    if (jsondata.value.can3.can_rfid !== undefined) {
-        for (const item of jsondata.value.can3.can_rfid) {
-            const newRow = {
-                ID: item[0].toString(),
-                canID: item[1].toString(),
+    // if (jsondata.value.can3.can_rfid !== undefined) {
+    //     for (const item of jsondata.value.can3.can_rfid) {
+    //         const newRow = {
+    //             ID: item[0].toString(),
+    //             canID: item[1].toString(),
 
-            };
-            CANRFID3.value.push(newRow);
-        }
-    }
+    //         };
+    //         CANRFID3.value.push(newRow);
+    //     }
+    // }
 
     //opparam
     AUTOPARM.value.forEach((item) => {
-        if (jsondata.value.OperatingParam.autoparam[item.key] !== undefined) {
-            item.value = jsondata.value.OperatingParam.autoparam[item.key];
+        if (jsondata.value.MotionParam.common_param[item.key] !== undefined) {
+            item.value = jsondata.value.MotionParam.common_param[item.key];
         }
     });
-    if (jsondata.value.OperatingParam.autoparam.SpeedLev !== undefined) {
-        AUTOPARMLEV.value[0].value = jsondata.value.OperatingParam.autoparam.SpeedLev;
-    }
-
-    if (jsondata.value.OperatingParam.manualparm.setSpeed !== undefined) {
-        MANUALPARMA.value = jsondata.value.OperatingParam.manualparm.setSpeed.map((item, index) => ({
-            manSpeLev: index,
-            adAutoSpe: item[0].toString(),
-            value: item[1] === 1 ? true : false,
-        }))
-    }
-    if (jsondata.value.OperatingParam.manualparm.setRadius !== undefined) {
-        MANUALRAPARM.value = jsondata.value.OperatingParam.manualparm.setRadius.map((item, index) => ({
-            manRadLev: index,
-            manRadNum: item[0].toString(),
-            value: item[1] === 1 ? true : false,
-        }))
-    }
+    // if (jsondata.value.MotionParam.auto_param.SpeedLev !== undefined) {
+    //     AUTOPARMLEV.value[0].value = jsondata.value.MotionParam.auto_param.SpeedLev;
+    // }
+    autoParam.value.speed_level = jsondata.value.MotionParam.auto_param.speed_level;
+    manualvelParam.value.speed_level = jsondata.value.MotionParam.manaul_param.speed_level;
+    manualradiusParam.value.speed_level = jsondata.value.MotionParam.manaul_param.turn_radius;
+    // if (jsondata.value.MotionParam.manaul_param.setSpeed !== undefined) {
+    //     MANUALPARMA.value = jsondata.value.MotionParam.manaul_param.setSpeed.map((item, index) => ({
+    //         manSpeLev: index,
+    //         adAutoSpe: item[0].toString(),
+    //         value: item[1] === 1 ? true : false,
+    //     }))
+    // }
+    // if (jsondata.value.MotionParam.manaul_param.setRadius !== undefined) {
+    //     MANUALRAPARM.value = jsondata.value.MotionParam.manaul_param.setRadius.map((item, index) => ({
+    //         manRadLev: index,
+    //         manRadNum: item[0].toString(),
+    //         value: item[1] === 1 ? true : false,
+    //     }))
+    // }
 
     //Kinematic
     if (jsondata.value.Kinematic.type !== undefined) {
@@ -511,39 +524,39 @@ const syncdata = () => {
     //     }
     // });
     //ele
-    if (jsondata.value.switch.StartButton !== undefined) {
-        tableDataCrtlswitch.value = jsondata.value.switch.StartButton;
-    }
+    // if (jsondata.value.switch.StartButton !== undefined) {
+    //     tableDataCrtlswitch.value = jsondata.value.switch.StartButton;
+    // }
 
-    if (jsondata.value.switch.EmgButton !== undefined) {
-        tableDataCrtlswitchEmg.value = jsondata.value.switch.EmgButton;
-    }
+    // if (jsondata.value.switch.EmgButton !== undefined) {
+    //     tableDataCrtlswitchEmg.value = jsondata.value.switch.EmgButton;
+    // }
+  
+    // if (jsondata.value.HardBumper !== undefined) {
+    //     tableDataCrtlBumper.value = jsondata.value.HardBumper;
+    // }
 
-    if (jsondata.value.HardBumper !== undefined) {
-        tableDataCrtlBumper.value = jsondata.value.HardBumper;
-    }
-
-    if (jsondata.value.Relay !== undefined) {
-        tableDataCrtlRelay.value = jsondata.value.Relay;
-    }
-
-
-    if (jsondata.value.Better !== undefined) {
-        tableDataCrtlBetter.value = jsondata.value.Better;
-    }
-
-    if (jsondata.value.Sound !== undefined) {
-        tableDataCrtlSound.value = jsondata.value.Sound;
-    }
-
-    if (jsondata.value.Manual !== undefined) {
-        MANUALDATA.value = jsondata.value.Manual;
-    }
+    // if (jsondata.value.Relay !== undefined) {
+    //     tableDataCrtlRelay.value = jsondata.value.Relay;
+    // }
 
 
-    if (jsondata.value.PLS !== undefined) {
-        tableDataCrtlPLS.value = jsondata.value.PLS;
-    }
+    // if (jsondata.value.Better !== undefined) {
+    //     tableDataCrtlBetter.value = jsondata.value.Better;
+    // }
+
+    // if (jsondata.value.Sound !== undefined) {
+    //     tableDataCrtlSound.value = jsondata.value.Sound;
+    // }
+
+    // if (jsondata.value.Manual !== undefined) {
+    //     MANUALDATA.value = jsondata.value.Manual;
+    // }
+
+
+    // if (jsondata.value.PLS !== undefined) {
+    //     tableDataCrtlPLS.value = jsondata.value.PLS;
+    // }
 }
 
 
@@ -565,6 +578,15 @@ const handleImport = (event) => {
 
 </script>
 <style scoped>
+.port-card {
+    width: 200px;
+    /* 卡片宽度 */
+    border-radius: 8px;
+    /* 圆角 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* 阴影 */
+}
+
 .rotate-arrow {
     transition: transform 0.3s ease-in-out;
     transform: rotate(90deg);

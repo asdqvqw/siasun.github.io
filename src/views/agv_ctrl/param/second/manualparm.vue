@@ -1,128 +1,89 @@
 <template>
-    <div>
-        <el-table :data="MANUALPARMA" style="width: 100%" class="MANUALPARMA">
-            <el-table-column prop="manSpeLev" label="速度级别">
-
-            </el-table-column>
-            <el-table-column prop="adAutoSpe" label="对应的自动速度级别">
-                <template #default="scope">
-                    <el-select v-model="scope.row.adAutoSpe" placeholder="请选择">
-                        <el-option label="0" :value=0></el-option>
-                        <el-option label="1" :value=1></el-option>
-                        <el-option label="2" :value=2></el-option>
-                        <el-option label="3" :value=3></el-option>
-                        <el-option label="4" :value=4></el-option>
-                        <el-option label="5" :value=5></el-option>
-                        <el-option label="6" :value=6></el-option>
-                        <el-option label="7" :value=7></el-option>
-                        <el-option label="8" :value=8></el-option>
-                        <el-option label="9" :value=9></el-option>
-                    </el-select>
-                </template>
-            </el-table-column>
-            <el-table-column prop="value" label="是否省缺">
-                <template #default="scope">
-                    <el-radio v-model="scope.row.value" :label="true" @change="statusChange(scope.row)">
-                        是
-                    </el-radio>
-                </template>
-            </el-table-column>
-            
-        </el-table>
-<!--         
-        <br> -->
-        <el-table :data="MANUALRAPARM" style="width: 100%" class="MANUALPARMA">
-            <el-table-column prop="manRadLev" label="转弯半径级别">
-
-            </el-table-column>
-            <el-table-column prop="manRadNum" label="半径值(m)" >
-                <template #default="scope">
-                    <el-input v-model="scope.row.manRadNum" placeholder="请输入半径" type="number">
-                    </el-input>
-                </template>
-            </el-table-column>
-            <el-table-column prop="value" label="是否省缺">
-                <template #default="scope">
-                    <el-radio v-model="scope.row.value" :label="true" @change="statusChangeR(scope.row)">
-                        是
-                    </el-radio>
-                </template>
-            </el-table-column>
-            
-        </el-table>
-        
+    <h5>· 手动模式下速度等级对应的速度</h5><br>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+      <el-card
+        v-for="(level, index) in speedLevels"
+        :key="index"
+        class="speed-card"
+        :body-style="{ padding: '20px' }"
+      >
+      
+        <div style="display: flex; align-items: center;">
+          <span style="margin-right: 10px;">🔶 速度等级 {{ index + 1 }}:</span>
+          <el-input
+            v-model.number="level.value"
+            type="number"
+            step="0.1"
+            min="0.0"
+            max="1.0"
+            placeholder="请输入速度"
+            @input="updateSpeedLevels"
+            style="width: 100px;"
+          ></el-input>
+        </div>
+      </el-card>
     </div>
-</template>
+    <br>
+    <h5>· 手动模式下转弯半径</h5><br>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+      <el-card
+        v-for="(level, index) in speedLevels2"
+        :key="index"
+        class="speed-card"
+        :body-style="{ padding: '20px' }"
+      >
+      
+        <div style="display: flex; align-items: center;">
+          <span style="margin-right: 10px;">🔶 半径等级 {{ index + 1 }}:</span>
+          <el-input
+            v-model.number="level.value"
+            type="number"
+            step="0.1"
+            min="0.0"
+            max="5.0"
+            placeholder="请输入速度"
+            @input="updateSpeedLevels2"
+            style="width: 100px;"
+          ></el-input>
+        </div>
+      </el-card>
+    </div>
+  </template>
   
-<script setup>
-import { ref, computed, watch } from 'vue'
-import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
-import { MANUALPARMA } from '@/views/agv_ctrl/param/common/commondata.js'
-import { MANUALRAPARM } from '@/views/agv_ctrl/param/common/commondata.js'
-
-
-// jsondata.value.OperatingParam.manualparm = {
-//     ...jsondata.value.OperatingParam.manualparm,
-//     setSpeed: computed(() => {
-//         console.log('2222')
-//         return MANUALPARMA.value.map((row) => [
-//             parseInt(row.adAutoSpe),
-//             row.value === true?1:0,
-//         ]);
-//     })
-// };
-
-// jsondata.value.OperatingParam.manualparm = {
-//     ...jsondata.value.OperatingParam.manualparm,
-//     setRadius: computed(() => {
-//         console.log('1111')
-//         return MANUALRAPARM.value.map((row) => [
-//             parseInt(row.manRadNum),
-//             row.value === true?1:0,
-//         ]);
-//     })
-// };
-
-
-const statusChange = (row) => {
-    MANUALPARMA.value.forEach((data) => {
-    
-    if (data !== row) {
-      data.value = false
-    }
-  })
-
-}
-
-const statusChangeR = (row) => {
-    MANUALRAPARM.value.forEach((data) => {
-    if (data !== row) {
-      data.value = false
-    }
-  })
-}
-watch(MANUALPARMA.value, () => {
-    console.log('111')
-  jsondata.value.OperatingParam.manualparm.setSpeed = MANUALPARMA.value.map((row) => [
-            parseFloat(row.adAutoSpe),
-            row.value === true?1:0,
-        ]);;
-});
-
-watch(MANUALRAPARM.value, () => {
-    console.log('222')
-  jsondata.value.OperatingParam.manualparm.setRadius = MANUALRAPARM.value.map((row) => [
-            parseFloat(row.manRadNum),
-            row.value === true?1:0,
-        ]);
-});
-</script>
-  
+  <script setup>
+  import { ref, computed } from 'vue';
+  import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
+import { manualvelParam,manualradiusParam } from '@/views/agv_ctrl/param/common/commondata.js'
 
   
-<style>
-.MANUALPARMA .el-table__body tr:nth-child(3n) {
-    background-color: #ada7a757;
-    /* 隔行背景色 */
-}
-</style>
+  // 将 speed_level 转换为对象数组以便在 el-card 中使用
+  const speedLevels = computed(() => {
+    return manualvelParam.value.speed_level.map((value) => ({ value }));
+  });
+  
+  // 更新 speed_level 数组
+  function updateSpeedLevels() {
+    jsondata.value.MotionParam.manaul_param.speed_level = speedLevels.value.map(row => row.value);
+    manualvelParam.value.speed_level = speedLevels.value.map(row => row.value);
+  }
+    // 将 speed_level 转换为对象数组以便在 el-card 中使用
+    const speedLevels2 = computed(() => {
+    return manualradiusParam.value.speed_level.map((value) => ({ value }));
+  });
+  
+  // 更新 speed_level 数组
+  function updateSpeedLevels2() {
+    jsondata.value.MotionParam.manaul_param.turn_radius = speedLevels2.value.map(row => row.value);
+    manualradiusParam.value.speed_level = speedLevels2.value.map(row => row.value);
+  }
+  
+
+  </script>
+  
+  <style>
+  .speed-card {
+    width: 200px; /* 卡片宽度 */
+    border-radius: 8px; /* 圆角 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 阴影 */
+  }
+  </style>

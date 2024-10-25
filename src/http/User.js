@@ -260,7 +260,7 @@ const allApi = {
             childs: [
               {
                 name: "update",
-                title: languageflag.value?'实时查看':'Real time viewing',
+                title: languageflag.value?'表格':'Real time viewing',
                 isCache: true,
                 content: "",
                 iconName: "svg:alignleft-fill.svg",

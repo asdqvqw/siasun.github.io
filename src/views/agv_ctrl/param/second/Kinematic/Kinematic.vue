@@ -1,11 +1,36 @@
 <template>
     <div>
-        <div style="margin-left: 2%;">
-            <br>
-            <el-checkbox v-model="delayisChecked" @change="delay">轮或舵因伺服响应慢需要设置延时时间</el-checkbox><br>
-            使能前延时时间(ms):<el-input v-model="delayinput1" :disabled="!delayisChecked" type="number" style="width: 10%;" @change="delay"></el-input>
-            给定前延时时间(ms):<el-input v-model="delayinput2" :disabled="!delayisChecked" type="number" style="width: 10%;" @change="delay"></el-input>
-        </div>
+        <el-tabs>
+            <el-tab-pane label="车体">
+                <five />
+            </el-tab-pane>
+            <el-tab-pane label="伺服延时">
+                <div style="display: flex;  gap: 20px; flex-wrap: nowrap;">
+                    <el-card class="card" style="margin-bottom: 10px;">
+                        <h3>设置延时时间</h3>
+                        <el-checkbox v-model="delayisChecked" @change="delay">
+                            轮或舵因伺服响应慢需要设置延时时间
+                        </el-checkbox>
+                    </el-card>
+
+                    <el-card class="card" v-if="delayisChecked" style="margin-bottom: 10px;">
+                        <h3>使能前延时时间</h3>
+                        <span>前延时时间(ms):</span>
+                        <el-input v-model="delayinput1" :disabled="!delayisChecked" type="number" style="width: 10vw;"
+                            @change="delay"></el-input>
+                    </el-card>
+
+                    <el-card class="card" v-if="delayisChecked">
+                        <h3>给定前延时时间</h3>
+                        <span>给定前延时时间(ms):</span>
+                        <el-input v-model="delayinput2" :disabled="!delayisChecked" type="number" style="width: 10vw;"
+                            @change="delay"></el-input>
+                    </el-card>
+                </div>
+            </el-tab-pane>
+
+        </el-tabs>
+
         <br>
         <div>
             <!-- <el-radio v-for="(item, index) in radios" :key="index" v-model="selected" :label="item.value"
@@ -30,7 +55,7 @@
             </div>
 
             <div v-if="selected5"> -->
-                <five />
+
             <!-- </div> -->
 
         </div>
@@ -40,7 +65,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { jsondata, selected } from '../../common/commondata.js'
-import { delayisChecked, delayinput1,delayinput2} from '../../common/commondata.js'
+import { delayisChecked, delayinput1, delayinput2 } from '../../common/commondata.js'
 // import { tableDataCrtl } from '@/views/agv_ctrl/param/common/commondata.js'
 
 import one from './selectone.vue';
@@ -66,20 +91,19 @@ const selected3 = ref(false);
 const selected4 = ref(false);
 const selected5 = ref(false);
 
-const delay = () =>{
-    
-    if(!delayisChecked.value)
-    {
-        jsondata.value.Kinematic.delay.need_delay_time =false;
-        jsondata.value.Kinematic.delay.servoenable_delay_time =200;
-        jsondata.value.Kinematic.delay.servospeed_delay_time =200;
-    }else{
-        jsondata.value.Kinematic.delay.need_delay_time =true;
-        jsondata.value.Kinematic.delay.servoenable_delay_time =parseInt(delayinput1.value);
-        jsondata.value.Kinematic.delay.servospeed_delay_time =parseInt(delayinput2.value);
+const delay = () => {
+
+    if (!delayisChecked.value) {
+        jsondata.value.Kinematic.delay.need_delay_time = false;
+        jsondata.value.Kinematic.delay.servoenable_delay_time = 200;
+        jsondata.value.Kinematic.delay.servospeed_delay_time = 200;
+    } else {
+        jsondata.value.Kinematic.delay.need_delay_time = true;
+        jsondata.value.Kinematic.delay.servoenable_delay_time = parseInt(delayinput1.value);
+        jsondata.value.Kinematic.delay.servospeed_delay_time = parseInt(delayinput2.value);
         // jsondata.value.Kinematic.delay =[parseInt(delayinput1.value),parseInt(delayinput2.value)];
     }
-    
+
 };
 
 const handleChange = () => {
@@ -136,6 +160,9 @@ watch(selected, handleChange);
 
 
 <style scoped>
+.card{
+    width: 33vw;
+}
 .rotate-arrow {
     transition: transform 0.3s ease-in-out;
     transform: rotate(90deg);
@@ -168,4 +195,3 @@ watch(selected, handleChange);
     margin-top: 20px;
 }
 </style>
-
