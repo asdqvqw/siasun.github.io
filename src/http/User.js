@@ -276,14 +276,14 @@ const allApi = {
               },
             ]
           },
-          {
-            name: "log",
-            title: languageflag.value?'日志':'Log',
-            isCache: true,
-            content: "",
-            iconName: "svg:fankui.svg",
-            showTagIcon: true,
-          },
+          // {
+          //   name: "log",
+          //   title: languageflag.value?'日志':'Log',
+          //   isCache: true,
+          //   content: "",
+          //   iconName: "svg:fankui.svg",
+          //   showTagIcon: true,
+          // },
           {
             name: "bbb_Aqw",
             title: "统计",
