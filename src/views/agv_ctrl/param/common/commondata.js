@@ -367,10 +367,10 @@ export const AUTOPARMLEV = ref([{ name: "速度级别设置", value: 0 }]);
 export const AUTOPARM = ref([
   { name: "加速时加速度(m/s/s)", value: "0.5", key: "up_acc" },
   { name: "减速时加速度(m/s/s)", value: "0.7", key: "down_acc" },
-  { name: "启/停加速度(m/s/s)", value: "0.1", key: "small_acc" },
+  { name: "起步加速度(m/s/s)", value: "0.1", key: "small_acc" },
   { name: "最高运行速度(m/s/s)", value: "1", key: "max_speed" },
-  { name: "入站前巡行速度(m/s)", value: "0.1", key: "stop_near_speed" },
-  { name: "入站前巡行距离(m)", value: "0.45", key: "stop_open_section" },
+  { name: "停车接近速度(m/s)", value: "0.1", key: "stop_near_speed" },
+  { name: "停车开放段(m)", value: "0.45", key: "stop_open_section" },
   { name: "最小跟踪调整半径(m)", value: "5", key: "min_revise_radius" },
 ]);
 export const autoParam = ref({
