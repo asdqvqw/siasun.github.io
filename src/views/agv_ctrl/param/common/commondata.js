@@ -16,13 +16,16 @@ export const jsondata = ref({
     tc: "192.168.3.88",
     screen: "192.168.3.28"
   },
-  FuncSet: [
-    { ch_key: "看门狗功能", des: "安全保护功能", en_key: "watchDog", value: false },
-    { ch_key: "铁电储存", des: "车体状态记录功能", en_key: "TSave", value: true },
-    { ch_key: "通讯协议相关", des: "通讯校验和功能", en_key: "CheckSum", value: true },
-    { ch_key: "设备扩展数据", des: "是否开启设备扩展数据", en_key: "ExData", value: true },
-    { ch_key: "扩展协议", des: "是否开启扩展协议", en_key: "ExAgreement", value: true },
-  ],
+  FuncSet:
+  {
+    keys: [
+      { ch_key: "看门狗功能", des: "安全保护功能", en_key: "watchDog", value: false },
+      { ch_key: "铁电储存", des: "车体状态记录功能", en_key: "TSave", value: true },
+      { ch_key: "通讯协议相关", des: "通讯校验和功能", en_key: "CheckSum", value: true },
+      { ch_key: "设备扩展数据", des: "是否开启设备扩展数据", en_key: "ExData", value: true },
+      { ch_key: "扩展协议", des: "是否开启扩展协议", en_key: "ExAgreement", value: true },
+    ],
+  },
   // other: {
   //   ctrlcycle: 0.05,
   //   ThreadTOPro: 1000,
@@ -57,28 +60,30 @@ export const jsondata = ref({
   Emg: [
     {
       name: "前急停",
-			io_input:[4,2,0,1,0]
+      io_input: [4, 2, 0, 1, 0]
     }
   ],
   // can1: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
   // can2: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
   // can3: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
-  canMan:{canport:[
-    {
-      canpos: [
-      ],
-      canopenpos: [],
-      canguide: [],
-      canencoder: [],
-      canbattery: [],
-      canbms: [],
-      canrfid: [],
-      canopenencoder: [],
-      cangyro: [],
-      canmanualbox: [],
-      canio: []
-    }
-  ]},
+  canMan: {
+    canport: [
+      {
+        canpos: [
+        ],
+        canopenpos: [],
+        canguide: [],
+        canencoder: [],
+        canbattery: [],
+        canbms: [],
+        canrfid: [],
+        canopenencoder: [],
+        cangyro: [],
+        canmanualbox: [],
+        canio: []
+      }
+    ]
+  },
   MotionParam: {
     manaul_param: {
       speed_level: [0.1, 0.3, 0.5, 0.7, 1.0],
@@ -118,23 +123,23 @@ export const jsondata = ref({
   PowerRelay:
   {
     name: "伺服接触器",
-    io_input:[4,2,0,1,0]
+    io_input: [4, 2, 0, 1, 0]
   },
-  NavSysSensor:[],
-  ManCtrlDevice : {
-    type : 2,
+  NavSysSensor: [],
+  ManCtrlDevice: {
+    type: 2,
     com:
     {
-      com_id:0
+      com_id: 0
     },
     can:
     {
-      can_id:50
+      can_id: 50
     },
     remoteDevice:
     {
-      ip:"192.168.3.99",
-      port:80
+      ip: "192.168.3.99",
+      port: 80
     }
   },
   // switch: {
@@ -158,54 +163,54 @@ export const jsondata = ref({
   // },
   // Relay: [],
   // PLS: [],
-  Pls:[
-  	{
-    name:"前硬pls",
-    type:0,
-    config:
+  Pls: [
+    {
+      name: "前硬pls",
+      type: 0,
+      config:
       {
-        io:{
-          type:3,
-          area:[
-          {
-						area_output: [2,2,2,2,1]
-	        }
+        io: {
+          type: 3,
+          area: [
+            {
+              area_output: [2, 2, 2, 2, 1]
+            }
           ],
-        	near:[2,2,2,2,1],
-        	center:[2,2,2,2,1],
-        	far:[2,2,2,2,1]
+          near: [2, 2, 2, 2, 1],
+          center: [2, 2, 2, 2, 1],
+          far: [2, 2, 2, 2, 1]
         },
         net:
         {
-            ip:"0.0.0.0",
-        		port:0
+          ip: "0.0.0.0",
+          port: 0
         }
-        
+
       }
-		},
+    },
     {
-      name:"前软pls",
-      type:1,
-    	config:
+      name: "前软pls",
+      type: 1,
+      config:
       {
 
-        io:{
-          type:0,
-          area:[
+        io: {
+          type: 0,
+          area: [
           ],
-        	near:[2,2,2,2,1],
-        	center:[2,2,2,2,1],
-        	far:[2,2,2,2,1]
+          near: [2, 2, 2, 2, 1],
+          center: [2, 2, 2, 2, 1],
+          far: [2, 2, 2, 2, 1]
         },
         net:
         {
-            ip:"192.168.3.101",
-        		port:8002
+          ip: "192.168.3.101",
+          port: 8002
         }
-        
+
       }
     }
-   ],
+  ],
 });
 
 export const tableDataCrtlRelay = ref([

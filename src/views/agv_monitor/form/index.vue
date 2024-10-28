@@ -301,26 +301,26 @@ onMounted(() => {
   // readparam()
 })
 const plsangel = 60;
-// gltfLoader.load(
-//   './main/test.glb',
-//   (gltf) => {
-//     car = gltf.scene;
-//     // 设置模型的位置、缩放等属性
-//     // car.position.set(0, 0, 0);
-//     // car.scale.set(1, 0.6, 0.7);
-//     // car.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
-//     scene.add(car);
-//     animateWheel2();
-//     animatelight();
-//     animateWheel();
-//   },
-//   (xhr) => {
-//     console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-//   },
-//   (error) => {
-//     console.error('Error loading model:', error);
-//   }
-// );
+let  aaaaa;
+gltfLoader.load(
+  './main/bbb.glb',
+  (gltf) => {
+    car = gltf.scene;
+    // 设置模型的位置、缩放等属性
+    car.position.set(0, 0, 0);
+
+    scene.add(car);
+    // animateWheel2();
+    // animatelight();
+    // animateWheel();
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+  },
+  (error) => {
+    console.error('Error loading model:', error);
+  }
+);
 //光源
 const light1 = new THREE.DirectionalLight(0xffffff, 1);
 light1.position.set(0, 0, 10);
@@ -347,7 +347,7 @@ renderer.setClearColor(0xffffff);
 //网格大小
 const size = 500;
 const render = () => {
-  moveCar();
+  // moveCar();
   renderer.render(scene, camera);
   controls && controls.update();
   requestAnimationFrame(render);

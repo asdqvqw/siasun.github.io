@@ -77,7 +77,7 @@ let newRow = ref({
 });
 const dialogVisible = ref(false);
 const handleCtrlvalueChange = (index, row) => {
-    const rowData = jsondata.value.FuncSet.find(item => item.en_key === row.en_key);
+    const rowData = jsondata.value.FuncSet.keys.find(item => item.en_key === row.en_key);
     if (rowData) {
         rowData.value = row.value;
     }
@@ -90,7 +90,7 @@ const addNewRow = () => {
 const handleAddRow = () => {
     if (newRow.value.ch_key && newRow.value.des && newRow.value.en_key ) {
         const newRowData = { ...newRow.value };
-        jsondata.value.FuncSet.push(newRowData);
+        jsondata.value.FuncSet.keys.push(newRowData);
         functioncDate.value.push(newRowData);
         dialogVisible.value = false;
     } else {
@@ -101,9 +101,9 @@ const handleAddRow = () => {
 
 const deleteRow = (row) => {
     // 找到jsondata中对应en_key的数据的索引并删除
-    const index = jsondata.value.FuncSet.findIndex(item => item.en_key === row.en_key);
+    const index = jsondata.value.FuncSet.keys.findIndex(item => item.en_key === row.en_key);
     if (index !== -1) {
-        jsondata.value.FuncSet.splice(index, 1);
+        jsondata.value.FuncSet.keys.splice(index, 1);
     }
     // 删除tableDataCrtl中对应行
     const tableIndex = functioncDate.value.indexOf(row);
