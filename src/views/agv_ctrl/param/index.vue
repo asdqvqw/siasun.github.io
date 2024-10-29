@@ -252,6 +252,7 @@ const syncdata = () => {
     });
     // tableDataCrtlnet.value[0].value = jsondata.value.NetMan.tc;
     // tableDataCrtlnet.value[1].value = jsondata.value.NetMan.screen;
+
     functioncDate.value = jsondata.value.FuncSet.keys;
     UserPermissionsparam.value[0].value = jsondata.value.Password;
     //com

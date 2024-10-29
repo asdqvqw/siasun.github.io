@@ -9,7 +9,7 @@
             </div>
             <el-tabs>
                 <!-- CAN Pos 配置 -->
-                <el-tab-pane label="CAN Pos">
+                <el-tab-pane label="can pos">
                     <el-card class="input-group">
                         <el-button type="success" @click="addCanPos(portIndex)" style="margin-bottom: 10px;">添加 CAN
                             Pos</el-button>
@@ -39,7 +39,7 @@
                 </el-tab-pane>
 
                 <!-- CAN Open Pos 配置 -->
-                <el-tab-pane label="CAN Open">
+                <el-tab-pane label="can open">
                     <el-card class="input-group">
                         <el-button type="success" @click="addCanOpenPos(portIndex)" style="margin-bottom: 10px;">添加 CAN
                             Open
@@ -82,7 +82,7 @@
                 </el-tab-pane>
 
                 <!-- CAN Guide 配置 -->
-                <el-tab-pane label="惯导">
+                <el-tab-pane label="磁导航">
                     <el-card class="input-group">
                         <el-button type="success" @click="addcanguide(portIndex)" style="margin-bottom: 10px;">添加 CAN
                             Guide</el-button>
@@ -112,7 +112,7 @@
                 </el-tab-pane>
 
                 <!-- CAN canencoder 配置 -->
-                <el-tab-pane label="Canencoder">
+                <el-tab-pane label="can编码器">
                     <el-card class="input-group">
                         <el-button type="success" @click="addcanencoder(portIndex)" style="margin-bottom: 10px;">添加 CAN
                             Canencoder</el-button>
@@ -145,7 +145,7 @@
 
 
                 <!-- CAN canbattery 配置 -->
-                <el-tab-pane label="电池">
+                <el-tab-pane label="can电池">
                     <el-card class="input-group">
                         <el-button type="success" @click="addcanbattery(portIndex)" style="margin-bottom: 10px;">添加 CAN
                             battery</el-button>
@@ -177,7 +177,7 @@
 
 
                 <!-- CAN canbms 配置 -->
-                <el-tab-pane label="电池指示表">
+                <el-tab-pane label="锂电池">
                     <el-card class="input-group">
                         <el-button type="success" @click="addcanbms(portIndex)" style="margin-bottom: 10px;">添加 CAN
                             BMS</el-button>
@@ -239,7 +239,7 @@
                 </el-tab-pane>
 
                 <!-- CAN canopenencoder 配置 -->
-                <el-tab-pane label="canopenencoder">
+                <el-tab-pane label="canopen编码器">
                     <el-card class="input-group">
                         <el-button type="success" @click="addcanopenencoder(portIndex)" style="margin-bottom: 10px;">添加
                             CAN
@@ -302,7 +302,7 @@
 
 
                 <!-- CAN canmanualbox 配置 -->
-                <el-tab-pane label="手控">
+                <el-tab-pane label="can手控盒">
                     <el-card class="input-group">
                         <el-button type="success" @click="addcanmanualbox(portIndex)" style="margin-bottom: 10px;">添加
                             CAN
@@ -334,7 +334,7 @@
 
 
                 <!-- CAN canio 配置 -->
-                <el-tab-pane label="IO">
+                <el-tab-pane label="can io">
                     <el-card class="input-group">
                         <el-button type="success" @click="addcanio(portIndex)" style="margin-bottom: 10px;">添加 CAN
                             io</el-button>

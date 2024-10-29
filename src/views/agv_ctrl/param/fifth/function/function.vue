@@ -1,7 +1,7 @@
 <template>
     <div>
 
-        <el-table :data="functioncDate" style="width: 100%" class="functioncDate">
+        <el-table :data="jsondata.FuncSet.keys" style="width: 100%" class="functioncDate">
             <el-table-column prop="ch_key" label="⚠️ 功能定制"></el-table-column>
             <el-table-column prop="des" label="说明"></el-table-column>
             <el-table-column prop="en_key" label="英文名">
@@ -66,7 +66,7 @@
   
 <script setup>
 import { ref, computed } from 'vue'
-import { functioncDate } from '@/views/agv_ctrl/param/common/commondata.js'
+// import { functioncDate } from '@/views/agv_ctrl/param/common/commondata.js'
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 const title = '添加数据';
 let newRow = ref({
@@ -88,10 +88,12 @@ const addNewRow = () => {
 };
 
 const handleAddRow = () => {
-    if (newRow.value.ch_key && newRow.value.des && newRow.value.en_key ) {
+    //&& newRow.value.des
+    if (newRow.value.ch_key  && newRow.value.en_key&& newRow.value.des ) {
         const newRowData = { ...newRow.value };
         jsondata.value.FuncSet.keys.push(newRowData);
-        functioncDate.value.push(newRowData);
+        console.log('11111',newRowData)
+        // functioncDate.value.push(newRowData);
         dialogVisible.value = false;
     } else {
         ElMessage.error('请填写完整数据');
@@ -106,9 +108,9 @@ const deleteRow = (row) => {
         jsondata.value.FuncSet.keys.splice(index, 1);
     }
     // 删除tableDataCrtl中对应行
-    const tableIndex = functioncDate.value.indexOf(row);
+    const tableIndex = jsondata.value.FuncSet.keys.indexOf(row);
     if (tableIndex !== -1) {
-        functioncDate.value.splice(tableIndex, 1);
+        jsondata.value.FuncSet.keys.splice(tableIndex, 1);
     }
 };
 

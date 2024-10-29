@@ -1,88 +1,129 @@
 <template>
-  <div class="data-container">
-    <div
-      v-for="(item, index) in items"
-      :key="index"
-      :class="{'highlight': item.isHighlighted}"
-      class="data-item"
-    >
-      {{ item.text }}
+  <div id="app">
+    <div class="container" ref="container">
+      <div class="slider" ref="slider"></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-// 示例数据
-const items = ref([
-  { text: 'Item 1', isHighlighted: false },
-  { text: 'Item 2', isHighlighted: false },
-  { text: 'Item 3', isHighlighted: false },
-]);
+const container = ref(null);
+const slider = ref(null);
+let camera, renderer, controls;
+let sceneL, sceneR;
+let sliderPos = window.innerWidth / 2;
 
-// 用于存储定时器ID
-let blinkTimeout;
-
-const updateData = (newData) => {
-  items.value = newData;
-  items.value.forEach(item => item.isHighlighted = false); // 重置高亮状态
-  clearTimeout(blinkTimeout); // 清除之前的定时器
-};
-
-watch(items, (newItems) => {
-  clearTimeout(blinkTimeout);
-  blinkTimeout = setTimeout(() => {
-    newItems.forEach(item => {
-      item.isHighlighted = true; // 设置高亮
-      startBlinking(item); // 启动闪烁
-    });
-  }, 500); // 500毫秒后高亮闪烁
+onMounted(() => {
+  init();
 });
 
-// 启动闪烁效果
-const startBlinking = (item) => {
-  let isHighlighted = true;
-  const blinkInterval = setInterval(() => {
-    isHighlighted = !isHighlighted;
-    item.isHighlighted = isHighlighted;
-  }, 500); // 每500毫秒切换一次高亮
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onWindowResize);
+});
 
-  // 清除闪烁效果（可根据条件停止）
-  // 这里可以添加条件来清除闪烁，示例中使用定时器在下次更新时清除
-  watch(items, () => {
-    clearInterval(blinkInterval);
-  });
-};
+function init() {
+  sceneL = new THREE.Scene();
+  sceneL.background = new THREE.Color(0xBCD48F);
 
-// 示例数据更新（可调用）
-const changeData = () => {
-  updateData([
-    { text: 'Item 1', isHighlighted: false },
-    { text: 'Item 2', isHighlighted: false },
-    { text: 'Item 3', isHighlighted: false },
-  ]);
-};
+  sceneR = new THREE.Scene();
+  sceneR.background = new THREE.Color(0x8FBCD4);
 
-// 模拟数据变化
-setTimeout(() => {
-  changeData();
-}, 2000); // 2秒后更新数据
+  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 6;
+
+  controls = new OrbitControls(camera, container.value);
+
+  const light = new THREE.HemisphereLight(0xffffff, 0x444444, 3);
+  light.position.set(-2, 2, 2);
+  sceneL.add(light.clone());
+  sceneR.add(light.clone());
+
+  initMeshes();
+  initSlider();
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setScissorTest(true);
+  container.value.appendChild(renderer.domElement);
+
+  window.addEventListener('resize', onWindowResize);
+  
+  renderer.setAnimationLoop(animate);
+}
+
+function initMeshes() {
+  const geometry = new THREE.IcosahedronGeometry(1, 3);
+  const meshL = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial());
+  sceneL.add(meshL);
+
+  const meshR = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ wireframe: true }));
+  sceneR.add(meshR);
+}
+
+function initSlider() {
+  slider.value.style.touchAction = 'none'; // disable touch scroll
+  slider.value.addEventListener('pointerdown', onPointerDown);
+}
+
+function onPointerDown(event) {
+  if (event.isPrimary === false) return;
+
+  controls.enabled = false;
+
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+}
+
+function onPointerUp() {
+  controls.enabled = true;
+
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', onPointerUp);
+}
+
+function onPointerMove(event) {
+  if (event.isPrimary === false) return;
+
+  sliderPos = Math.max(0, Math.min(window.innerWidth, event.pageX));
+  slider.value.style.left = sliderPos - (slider.value.offsetWidth / 2) + 'px';
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+  renderer.setScissor(0, 0, sliderPos, window.innerHeight);
+  renderer.render(sceneL, camera);
+
+  renderer.setScissor(sliderPos, 0, window.innerWidth, window.innerHeight);
+  renderer.render(sceneR, camera);
+}
 </script>
 
-<style scoped>
-.data-container {
-  padding: 20px;
+<style>
+.container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
-.data-item {
-  padding: 10px;
-  margin: 5px 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.highlight {
-  background-color: yellow; /* 高亮颜色 */
+.slider {
+  position: absolute;
+  cursor: ew-resize;
+  width: 40px;
+  height: 40px;
+  background-color: #F32196;
+  opacity: 0.7;
+  border-radius: 50%;
+  top: calc(50% - 20px);
+  left: calc(50% - 20px);
 }
 </style>
