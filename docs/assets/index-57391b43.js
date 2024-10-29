@@ -1,0 +1,1 @@
+import{_ as t,o,c,a as e}from"./index-86487876.js";const n={},s={class:"page-container main-view"},a=e("div",{class:"table-box content-container page-content-box"},[e("iframe",{src:"https://www.bejson.com/convert/image_to_svg/",width:"100%",height:"600"})],-1),i=[a];function r(_,d){return o(),c("div",s,i)}const m=t(n,[["render",r]]);export{m as default};
