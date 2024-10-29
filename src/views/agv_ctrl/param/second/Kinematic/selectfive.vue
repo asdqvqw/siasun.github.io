@@ -76,12 +76,13 @@
                         驱动伺服类型&nbsp;&nbsp;
                         <el-select v-model="newRow.wheel.servo_type" placeholder="请选择" :disabled="!newRow.use_wheel"
                             @change="updatashowIndex">
-                            <el-option label="普通MCU" :value=0></el-option>
-                            <el-option label="差速MCU" :value=1></el-option>
-                            <el-option label="Elmo伺服" :value=2></el-option>
-                            <el-option label="步科伺服" :value=3></el-option>
-                            <el-option label="Motec伺服" :value=4></el-option>
-                            <el-option label="AMC伺服" :value=5></el-option>
+                            <el-option label="无" :value=0></el-option>
+                            <el-option label="普通MCU" :value=1></el-option>
+                            <el-option label="差速MCU" :value=2></el-option>
+                            <el-option label="Elmo伺服" :value=5></el-option>
+                            <el-option label="步科伺服" :value=4></el-option>
+                            <el-option label="Motec伺服" :value=6></el-option>
+                            <el-option label="AMC伺服" :value=7></el-option>
                         </el-select>
                     </el-form-item>
 
@@ -91,12 +92,13 @@
                         驱动伺服类型&nbsp;&nbsp;
                         <el-select v-model="newRow.steer.servo_type" placeholder="请选择" :disabled="!newRow.use_steer"
                             @change="updatashowIndexsteer">
-                            <el-option label="普通MCU" :value=0></el-option>
-                            <el-option label="差速MCU" :value=1></el-option>
-                            <el-option label="Elmo伺服" :value=2></el-option>
-                            <el-option label="步科伺服" :value=3></el-option>
-                            <el-option label="Motec伺服" :value=4></el-option>
-                            <el-option label="AMC伺服" :value=5></el-option>
+                            <el-option label="无" :value=0></el-option>
+                            <el-option label="普通MCU" :value=1></el-option>
+                            <el-option label="差速MCU" :value=2></el-option>
+                            <el-option label="Elmo伺服" :value=3></el-option>
+                            <el-option label="步科伺服" :value=4></el-option>
+                            <el-option label="Motec伺服" :value=5></el-option>
+                            <el-option label="AMC伺服" :value=6></el-option>
                         </el-select>
                     </el-form-item>
 

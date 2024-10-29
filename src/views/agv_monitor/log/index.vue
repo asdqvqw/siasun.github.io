@@ -1,548 +1,128 @@
 <template>
-  <el-button type="primary" @click="addCanPort" style="margin-left: 1vw;">添加 CAN 端口</el-button>
-  {{ CanMan }}
-  <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-    <el-card v-for="(port, portIndex) in CanMan.canport" :key="portIndex" class="button-card"
-      :body-style="{ padding: '20px' }">
-      <div>
-        <strong>CAN {{ portIndex + 1 }}</strong>
-        <el-button style="margin-left: 1vw;" type="danger" @click="removeCanPort(portIndex)">删除</el-button>
-      </div>
-      <el-tabs>
-        <!-- CAN Pos 配置 -->
-        <el-tab-pane label="CAN Pos">
-          <el-card class="input-group">
-            <el-button type="success" @click="addCanPos(portIndex)" style="margin-bottom: 10px;">添加 CAN Pos</el-button>
-
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(pos, posIndex) in port.canpos" :key="posIndex" class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removeCanPos(portIndex, posIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="pos.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="pos.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-        <!-- CAN Open Pos 配置 -->
-        <el-tab-pane label="CAN Open">
-          <el-card class="input-group">
-            <el-button type="success" @click="addCanOpenPos(portIndex)" style="margin-bottom: 10px;">添加 CAN Open
-              Pos</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(openPos, openPosIndex) in port.canopenpos" :key="openPosIndex" class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removeCanOpenPos(portIndex, openPosIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="openPos.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="openPos.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>伺服类型:</label>
-                  <el-input v-model.number="openPos.servotype" type="number" placeholder="输入服务类型"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-        <!-- CAN Guide 配置 -->
-        <el-tab-pane label="惯导">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcanguide(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              Guide</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(canguide, canguideIndex) in port.canguide" :key="canguideIndex" class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecanguide(portIndex, canguideIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="canguide.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="canguide.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-        <!-- CAN canencoder 配置 -->
-        <el-tab-pane label="Canencoder">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcanencoder(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              Canencoder</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(canencoder, canencoderIndex) in port.canencoder" :key="canencoderIndex"
-                class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecanencoder(portIndex, canencoderIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="canencoder.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="canencoder.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-
-
-
-        <!-- CAN canbattery 配置 -->
-        <el-tab-pane label="电池">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcanbattery(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              battery</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(canbattery, canbatteryIndex) in port.canbattery" :key="canbatteryIndex"
-                class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecanbattery(portIndex, canbatteryIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="canbattery.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="canbattery.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-
-
-        <!-- CAN canbms 配置 -->
-        <el-tab-pane label="电池指示表">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcanbms(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              BMS</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(canbms, canbmsIndex) in port.canbms" :key="canbmsIndex"
-                class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecanbms(portIndex, canbmsIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="canbms.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="canbms.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-
-
-          <!-- CAN canrfid 配置 -->
-          <el-tab-pane label="RFID">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcanrfid(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              RFID</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(canrfid, canrfidIndex) in port.canrfid" :key="canrfidIndex"
-                class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecanrfid(portIndex, canrfidIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="canrfid.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="canrfid.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-          <!-- CAN canopenencoder 配置 -->
-          <el-tab-pane label="canopenencoder">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcanopenencoder(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              canopenencoder</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(canopenencoder, canopenencoderIndex) in port.canopenencoder" :key="canopenencoderIndex"
-                class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecanopenencoder(portIndex, canopenencoderIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="canopenencoder.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="canopenencoder.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-          <!-- CAN cangyro 配置 -->
-          <el-tab-pane label="陀螺仪">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcangyro(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              cangyro</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(cangyro, cangyroIndex) in port.cangyro" :key="cangyroIndex"
-                class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecangyro(portIndex, cangyroIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="cangyro.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="cangyro.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-
-          <!-- CAN canmanualbox 配置 -->
-          <el-tab-pane label="手控">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcanmanualbox(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              canmanualbox</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(canmanualbox, canmanualboxIndex) in port.canmanualbox" :key="canmanualboxIndex"
-                class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecanmanualbox(portIndex, canmanualboxIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="canmanualbox.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="canmanualbox.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-
-          <!-- CAN canio 配置 -->
-          <el-tab-pane label="IO">
-          <el-card class="input-group">
-            <el-button type="success" @click="addcanio(portIndex)" style="margin-bottom: 10px;">添加 CAN
-              io</el-button>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-
-              <el-card v-for="(canio, canioIndex) in port.canio" :key="canioIndex"
-                class="sensor-input">
-                <div class="button-group">
-                  <el-button type="danger" @click="removecanio(portIndex, canioIndex)"
-                    style="margin-left: 10px;">删除</el-button>
-                </div>
-
-                <div class="input-group">
-                  <label>CAN ID通讯号:</label>
-                  <el-input v-model.number="canio.canid" type="number" placeholder="输入 CAN ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-
-                <div class="input-group">
-                  <label>单元编号:</label>
-                  <el-input v-model.number="canio.unitid" type="number" placeholder="输入 Unit ID"
-                    style="width: 100px; margin-right: 10px;"></el-input>
-                </div>
-              </el-card>
-            </div>
-          </el-card>
-        </el-tab-pane>
-
-
-      </el-tabs>
-    </el-card>
+  <div id="app">
+    <div class="container" ref="container">
+      <div class="slider" ref="slider"></div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-const CanMan = ref({
-  canport: [
-  ]
+const container = ref(null);
+const slider = ref(null);
+let camera, renderer, controls;
+let sceneL, sceneR;
+let sliderPos = window.innerWidth / 2;
+
+onMounted(() => {
+  init();
 });
 
-// 添加 CAN 端口
-const addCanPort = () => {
-  CanMan.value.canport.push({
-    canpos: [],
-    canopenpos: [],
-    canguide: [],
-    canencoder: [],
-    canbattery:[],
-    canbms:[],
-    canrfid:[],
-    canopenencoder:[],
-    cangyro:[],
-    canmanualbox:[],
-    canio:[],
-  });
-};
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onWindowResize);
+});
 
-// 删除 CAN 端口
-const removeCanPort = (index) => {
-  CanMan.value.canport.splice(index, 1);
-};
+function init() {
+  sceneL = new THREE.Scene();
+  sceneL.background = new THREE.Color(0xBCD48F);
 
-// 添加 CAN Pos
-const addCanPos = (portIndex) => {
-  CanMan.value.canport[portIndex].canpos.push({ canid: 2, unitid: 0 });
-};
+  sceneR = new THREE.Scene();
+  sceneR.background = new THREE.Color(0x8FBCD4);
 
-// 删除 CAN Pos
-const removeCanPos = (portIndex, posIndex) => {
-  CanMan.value.canport[portIndex].canpos.splice(posIndex, 1);
-};
+  camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.z = 6;
 
-// 添加 CAN Open Pos
-const addCanOpenPos = (portIndex) => {
-  CanMan.value.canport[portIndex].canopenpos.push({ canid: 2, unitid: 0, servotype: 1 });
-};
+  controls = new OrbitControls(camera, container.value);
 
-// 删除 CAN Open Pos
-const removeCanOpenPos = (portIndex, openPosIndex) => {
-  CanMan.value.canport[portIndex].canopenpos.splice(openPosIndex, 1);
-};
+  const light = new THREE.HemisphereLight(0xffffff, 0x444444, 3);
+  light.position.set(-2, 2, 2);
+  sceneL.add(light.clone());
+  sceneR.add(light.clone());
 
-// 添加 CAN canguide
-const addcanguide = (portIndex) => {
-  CanMan.value.canport[portIndex].canguide.push({ canid: 2, unitid: 0 });
-};
+  initMeshes();
+  initSlider();
 
-// 删除 CAN canguide
-const removecanguide = (portIndex, canguideIndex) => {
-  CanMan.value.canport[portIndex].canguide.splice(canguideIndex, 1);
-};
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setScissorTest(true);
+  container.value.appendChild(renderer.domElement);
 
-// 添加 CAN canencoder
-const addcanencoder = (portIndex) => {
-  CanMan.value.canport[portIndex].canencoder.push({ canid: 2, unitid: 0 });
-};
+  window.addEventListener('resize', onWindowResize);
+  renderer.setAnimationLoop(animate);
+}
 
-// 删除 CAN canencoder
-const removecanencoder = (portIndex, canencoderIndex) => {
-  CanMan.value.canport[portIndex].canencoder.splice(canencoderIndex, 1);
-};
-// 添加 CAN canbattery
-const addcanbattery = (portIndex) => {
-  CanMan.value.canport[portIndex].canbattery.push({ canid: 2, unitid: 0 });
-};
+function initMeshes() {
+  const geometry = new THREE.IcosahedronGeometry(1, 3);
+  const meshL = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial());
+  sceneL.add(meshL);
 
-// 删除 CAN canbattery
-const removecanbattery = (portIndex, canbatteryIndex) => {
-  CanMan.value.canport[portIndex].canbattery.splice(canbatteryIndex, 1);
-};
+  const meshR = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ wireframe: true }));
+  sceneR.add(meshR);
+}
 
-// 添加 CAN canbms
-const addcanbms = (portIndex) => {
-  CanMan.value.canport[portIndex].canbms.push({ canid: 2, unitid: 0 });
-};
+function initSlider() {
+  slider.value.style.touchAction = 'none'; // disable touch scroll
+  slider.value.addEventListener('pointerdown', onPointerDown);
+}
 
-// 删除 CAN canbms
-const removecanbms = (portIndex, canbmsIndex) => {
-  CanMan.value.canport[portIndex].canbms.splice(canbmsIndex, 1);
-};
+function onPointerDown(event) {
+  if (event.isPrimary === false) return;
 
-// 添加 CAN canrfid
-const addcanrfid = (portIndex) => {
-  CanMan.value.canport[portIndex].canrfid.push({ canid: 2, unitid: 0 });
-};
+  controls.enabled = false;
 
-// 删除 CAN canrfid
-const removecanrfid = (portIndex, canrfidIndex) => {
-  CanMan.value.canport[portIndex].canrfid.splice(canrfidIndex, 1);
-};
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+}
 
-// 添加 CAN canopenencoder
-const addcanopenencoder = (portIndex) => {
-  CanMan.value.canport[portIndex].canopenencoder.push({ canid: 2, unitid: 0 });
-};
+function onPointerUp() {
+  controls.enabled = true;
 
-// 删除 CAN canopenencoder
-const removecanopenencoder = (portIndex, canopenencoderIndex) => {
-  CanMan.value.canport[portIndex].canopenencoder.splice(canopenencoderIndex, 1);
-};
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', onPointerUp);
+}
 
+function onPointerMove(event) {
+  if (event.isPrimary === false) return;
 
-// 添加 CAN cangyro
-const addcangyro = (portIndex) => {
-  CanMan.value.canport[portIndex].cangyro.push({ canid: 2, unitid: 0 });
-};
+  sliderPos = Math.max(0, Math.min(window.innerWidth, event.pageX));
+  slider.value.style.left = sliderPos - (slider.value.offsetWidth / 2) + 'px';
+}
 
-// 删除 CAN cangyro
-const removecangyro = (portIndex, cangyroIndex) => {
-  CanMan.value.canport[portIndex].cangyro.splice(cangyroIndex, 1);
-};
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
 
-// 添加 CAN canmanualbox
-const addcanmanualbox = (portIndex) => {
-  CanMan.value.canport[portIndex].canmanualbox.push({ canid: 2, unitid: 0 });
-};
+function animate() {
+  renderer.setScissor(0, 0, sliderPos, window.innerHeight);
+  renderer.render(sceneL, camera);
 
-// 删除 CAN canmanualbox
-const removecanmanualbox = (portIndex, canmanualboxIndex) => {
-  CanMan.value.canport[portIndex].canmanualbox.splice(canmanualboxIndex, 1);
-};
-
-// 添加 CAN canio
-const addcanio = (portIndex) => {
-  CanMan.value.canport[portIndex].canio.push({ canid: 2, unitid: 0 });
-};
-
-// 删除 CAN canio
-const removecanio = (portIndex, canioIndex) => {
-  CanMan.value.canport[portIndex].canio.splice(canioIndex, 1);
-};
-
+  renderer.setScissor(sliderPos, 0, window.innerWidth, window.innerHeight);
+  renderer.render(sceneR, camera);
+}
 </script>
 
-
-
-
-<style lang="scss" scoped>
-.button-card {
-  width: 85vw;
-  padding: 20px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  background: #f9f9f9;
+<style>
+.container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
-.input-group {
-  display: flex;
-  flex-direction: center;
-  margin-bottom: 10px;
-}
-
-.input-group label {
-  margin-right: 10px;
-  /* 标签与输入框之间的间距 */
-  width: auto;
-  /* 标签宽度自适应 */
-}
-
-.sensor-input {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.sensor-input label {
-  width: 8vw;
-  /* Fixed width for labels to align */
-  margin-right: 10px;
-}
-</style>
-
-<style scoped>
-.button-group {
-  display: flex;
-  align-items: center;
-  /* 按钮垂直居中 */
-  margin-bottom: 10px;
-  /* 按钮与输入框的间距 */
+.slider {
+  position: absolute;
+  cursor: ew-resize;
+  width: 40px;
+  height: 40px;
+  background-color: #F32196;
+  opacity: 0.7;
+  border-radius: 50%;
+  top: calc(50% - 20px);
+  left: calc(50% - 20px);
 }
 </style>

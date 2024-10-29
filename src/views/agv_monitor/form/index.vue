@@ -303,7 +303,7 @@ onMounted(() => {
 const plsangel = 60;
 // let  aaaaa;
 // gltfLoader.load(
-//   './main/bbb.glb',
+//   './main/test.glb',
 //   (gltf) => {
 //     car = gltf.scene;
 //     // 设置模型的位置、缩放等属性
