@@ -1,8 +1,8 @@
 <template>
   <el-button type="primary" @click="addCanPort" style="margin-left: 1vw;">添加 CAN 端口</el-button>
-  {{ canMan }}
+  {{ CanMan }}
   <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-    <el-card v-for="(port, portIndex) in canMan.canport" :key="portIndex" class="button-card"
+    <el-card v-for="(port, portIndex) in CanMan.canport" :key="portIndex" class="button-card"
       :body-style="{ padding: '20px' }">
       <div>
         <strong>CAN {{ portIndex + 1 }}</strong>
@@ -360,14 +360,14 @@
 <script setup>
 import { ref } from 'vue';
 
-const canMan = ref({
+const CanMan = ref({
   canport: [
   ]
 });
 
 // 添加 CAN 端口
 const addCanPort = () => {
-  canMan.value.canport.push({
+  CanMan.value.canport.push({
     canpos: [],
     canopenpos: [],
     canguide: [],
@@ -384,117 +384,117 @@ const addCanPort = () => {
 
 // 删除 CAN 端口
 const removeCanPort = (index) => {
-  canMan.value.canport.splice(index, 1);
+  CanMan.value.canport.splice(index, 1);
 };
 
 // 添加 CAN Pos
 const addCanPos = (portIndex) => {
-  canMan.value.canport[portIndex].canpos.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canpos.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN Pos
 const removeCanPos = (portIndex, posIndex) => {
-  canMan.value.canport[portIndex].canpos.splice(posIndex, 1);
+  CanMan.value.canport[portIndex].canpos.splice(posIndex, 1);
 };
 
 // 添加 CAN Open Pos
 const addCanOpenPos = (portIndex) => {
-  canMan.value.canport[portIndex].canopenpos.push({ canid: 2, unitid: 0, servotype: 1 });
+  CanMan.value.canport[portIndex].canopenpos.push({ canid: 2, unitid: 0, servotype: 1 });
 };
 
 // 删除 CAN Open Pos
 const removeCanOpenPos = (portIndex, openPosIndex) => {
-  canMan.value.canport[portIndex].canopenpos.splice(openPosIndex, 1);
+  CanMan.value.canport[portIndex].canopenpos.splice(openPosIndex, 1);
 };
 
 // 添加 CAN canguide
 const addcanguide = (portIndex) => {
-  canMan.value.canport[portIndex].canguide.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canguide.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canguide
 const removecanguide = (portIndex, canguideIndex) => {
-  canMan.value.canport[portIndex].canguide.splice(canguideIndex, 1);
+  CanMan.value.canport[portIndex].canguide.splice(canguideIndex, 1);
 };
 
 // 添加 CAN canencoder
 const addcanencoder = (portIndex) => {
-  canMan.value.canport[portIndex].canencoder.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canencoder.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canencoder
 const removecanencoder = (portIndex, canencoderIndex) => {
-  canMan.value.canport[portIndex].canencoder.splice(canencoderIndex, 1);
+  CanMan.value.canport[portIndex].canencoder.splice(canencoderIndex, 1);
 };
 // 添加 CAN canbattery
 const addcanbattery = (portIndex) => {
-  canMan.value.canport[portIndex].canbattery.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canbattery.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canbattery
 const removecanbattery = (portIndex, canbatteryIndex) => {
-  canMan.value.canport[portIndex].canbattery.splice(canbatteryIndex, 1);
+  CanMan.value.canport[portIndex].canbattery.splice(canbatteryIndex, 1);
 };
 
 // 添加 CAN canbms
 const addcanbms = (portIndex) => {
-  canMan.value.canport[portIndex].canbms.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canbms.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canbms
 const removecanbms = (portIndex, canbmsIndex) => {
-  canMan.value.canport[portIndex].canbms.splice(canbmsIndex, 1);
+  CanMan.value.canport[portIndex].canbms.splice(canbmsIndex, 1);
 };
 
 // 添加 CAN canrfid
 const addcanrfid = (portIndex) => {
-  canMan.value.canport[portIndex].canrfid.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canrfid.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canrfid
 const removecanrfid = (portIndex, canrfidIndex) => {
-  canMan.value.canport[portIndex].canrfid.splice(canrfidIndex, 1);
+  CanMan.value.canport[portIndex].canrfid.splice(canrfidIndex, 1);
 };
 
 // 添加 CAN canopenencoder
 const addcanopenencoder = (portIndex) => {
-  canMan.value.canport[portIndex].canopenencoder.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canopenencoder.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canopenencoder
 const removecanopenencoder = (portIndex, canopenencoderIndex) => {
-  canMan.value.canport[portIndex].canopenencoder.splice(canopenencoderIndex, 1);
+  CanMan.value.canport[portIndex].canopenencoder.splice(canopenencoderIndex, 1);
 };
 
 
 // 添加 CAN cangyro
 const addcangyro = (portIndex) => {
-  canMan.value.canport[portIndex].cangyro.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].cangyro.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN cangyro
 const removecangyro = (portIndex, cangyroIndex) => {
-  canMan.value.canport[portIndex].cangyro.splice(cangyroIndex, 1);
+  CanMan.value.canport[portIndex].cangyro.splice(cangyroIndex, 1);
 };
 
 // 添加 CAN canmanualbox
 const addcanmanualbox = (portIndex) => {
-  canMan.value.canport[portIndex].canmanualbox.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canmanualbox.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canmanualbox
 const removecanmanualbox = (portIndex, canmanualboxIndex) => {
-  canMan.value.canport[portIndex].canmanualbox.splice(canmanualboxIndex, 1);
+  CanMan.value.canport[portIndex].canmanualbox.splice(canmanualboxIndex, 1);
 };
 
 // 添加 CAN canio
 const addcanio = (portIndex) => {
-  canMan.value.canport[portIndex].canio.push({ canid: 2, unitid: 0 });
+  CanMan.value.canport[portIndex].canio.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canio
 const removecanio = (portIndex, canioIndex) => {
-  canMan.value.canport[portIndex].canio.splice(canioIndex, 1);
+  CanMan.value.canport[portIndex].canio.splice(canioIndex, 1);
 };
 
 </script>

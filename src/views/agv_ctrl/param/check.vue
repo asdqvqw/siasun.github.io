@@ -1,6 +1,6 @@
 <template>
     <el-tabs>
-        <el-tab-pane v-for="(port, portIndex) in jsondata.canMan.canport" :key="portIndex"
+        <el-tab-pane v-for="(port, portIndex) in jsondata.CanMan.canport" :key="portIndex"
             :label="'CAN Port ' + (portIndex + 1)">
             <div v-if="port.canpos.length">
                 <el-card class="custom-card" :body-style="{ padding: '20px' }">
@@ -142,7 +142,7 @@
 <script setup>
 import { ref } from 'vue';
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
-//   const jsondata.canMan = ref({
+//   const jsondata.CanMan = ref({
 //     canport: [
 //       {
 //         canpos: [{ canid: 2, unitid: 0 }, { canid: 3, unitid: 1 }],
@@ -151,7 +151,7 @@ import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 //         canencoder: [{ canid: 2, unitid: 0 }],
 //         canbattery: [{ canid: 2, unitid: 0 }],
 //         canrfid: [{ canid: 2, unitid: 0 }],
-//         jsondata.canManualbox: [],
+//         jsondata.CanManualbox: [],
 //         canio: [{ canid: 2, unitid: 0 }],
 //         cangyro: []
 //       },
@@ -162,7 +162,7 @@ import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 //         canencoder: [{ canid: 2, unitid: 0 }],
 //         canbattery: [],
 //         canrfid: [{ canid: 2, unitid: 0 }],
-//         jsondata.canManualbox: [{ canid: 2, unitid: 0 }, { canid: 2, unitid: 0 }],
+//         jsondata.CanManualbox: [{ canid: 2, unitid: 0 }, { canid: 2, unitid: 0 }],
 //         canio: [{ canid: 2, unitid: 0 }],
 //         cangyro: [{ canid: 2, unitid: 0 }]
 //       }

@@ -1,7 +1,7 @@
 <template>
  <el-button type="primary" @click="addCard" style="margin-left: 1vw;" >添加卡片</el-button>
             <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-                <el-card v-for="(item, index) in jsondata.Bumper" :key="index" class="button-card"
+                <el-card v-for="(item, index) in jsondata.SafetyLoop.Bumper" :key="index" class="button-card"
                     :body-style="{ padding: '20px' }">
                     <div class="input-group">
                         <label>名称:</label>
@@ -75,11 +75,12 @@
   
   // 按钮选项
   const buttonOptions = [
-    { label: 'CAN-POS', value: 1 },
-    { label: 'CAN-OPEN', value: 2 },
-    { label: '本地IO', value: 3 },
-    { label: 'CAN-IO', value: 4 },
-    { label: 'GPIO', value: 5 }
+  { label: '不启用', value: 0 },
+    { label: 'CAN-POS', value: 2 },
+    { label: 'CAN-OPEN', value: 3 },
+    { label: '本地IO', value: 1 },
+    { label: 'CAN-IO', value: 5 },
+    { label: 'GPIO', value: 4 }
   ];
   const canOptions = [
     { label: 'CAN1', value: 1 },
@@ -91,7 +92,7 @@
   
   // 添加卡片
   const addCard = () => {
-    jsondata.value.Bumper.push({
+    jsondata.value.SafetyLoop.Bumper.push({
         name: '请输入名称', // 用户输入名称，初始为空
         io_input: [2, 2, 2, 2, 0] // 默认值
     });
@@ -99,23 +100,23 @@
   
   // 删除卡片
   const removeCard = (index) => {
-    jsondata.value.Bumper.splice(index, 1);
+    jsondata.value.SafetyLoop.Bumper.splice(index, 1);
   };
   
   // 处理类型变化
   const handleTypeChange = (index) => {
-    if (![1, 2, 4].includes(jsondata.value.Bumper[index].io_input[0])) {
-        jsondata.value.Bumper[index].io_input[1] = 2; // 重置路数
+    if (![3, 2, 5].includes(jsondata.value.SafetyLoop.Bumper[index].io_input[0])) {
+        jsondata.value.SafetyLoop.Bumper[index].io_input[1] = 2; // 重置路数
     }
-    if (![3].includes(jsondata.value.Bumper[index].io_input[0])) {
-        jsondata.value.Bumper[index].io_input[2] = 2;
-        jsondata.value.Bumper[index].io_input[3] = 2;
+    if (![1].includes(jsondata.value.SafetyLoop.Bumper[index].io_input[0])) {
+        jsondata.value.SafetyLoop.Bumper[index].io_input[2] = 2;
+        jsondata.value.SafetyLoop.Bumper[index].io_input[3] = 2;
     }
   };
   
   // 判断是否显示路数输入框
   const showRouteInput = (index) => {
-    return [1, 2, 4].includes(jsondata.value.Bumper[index].io_input[0]);
+    return [3, 2, 5].includes(jsondata.value.SafetyLoop.Bumper[index].io_input[0]);
   };
   
   // 判断是否显示模块编号输入框
@@ -125,18 +126,18 @@
   
   // 检查是否为GPIO
   const isGPIO = (index) => {
-    return jsondata.value.Bumper[index].io_input[0] === 5; // GPIO 的值
+    return jsondata.value.SafetyLoop.Bumper[index].io_input[0] === 4; // GPIO 的值
   };
   
   // 检查是否为本地IO
   const isLocalIO = (index) => {
-    return jsondata.value.Bumper[index].io_input[0] === 3; // 本地IO 的值
+    return jsondata.value.SafetyLoop.Bumper[index].io_input[0] === 1; // 本地IO 的值
   };
   
   // 格式化 bit5
   const formatbit5 = (index) => {
-    const decimal = parseInt(jsondata.value.Bumper[index].io_input[3], 16);
-    jsondata.value.Bumper[index].io_input[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.Bumper[index].io_input[3], 16);
+    const decimal = parseInt(jsondata.value.SafetyLoop.Bumper[index].io_input[3], 16);
+    jsondata.value.SafetyLoop.Bumper[index].io_input[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.SafetyLoop.Bumper[index].io_input[3], 16);
   };
   </script>
   

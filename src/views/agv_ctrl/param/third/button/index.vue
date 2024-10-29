@@ -1,7 +1,7 @@
 <template>
     <el-tabs>
         <el-tab-pane label="开关设置">
-            <div style="display: flex;  gap: 20px; flex-wrap: nowrap;" >
+            <div style="display: flex;  gap: 20px; flex-wrap: nowrap;">
                 <el-card v-for="(value, key) in jsondata.Panel.Button" :key="key" class="button-card"
                     :body-style="{ padding: '20px' }">
                     <h4>{{ formatButtonKey(key) }}</h4>
@@ -39,7 +39,7 @@
                             <label v-else>模块内输出点编号:</label>
                             <el-select v-if="isLocalIO(key)" v-model="jsondata.Panel.Button[key][3]" placeholder="选择输出点"
                                 style="margin-right: 10px; width: 100px;">
-                                <el-option v-for="num in Array.from({ length: 10 }, (_, i) => i )" :key="num"
+                                <el-option v-for="num in Array.from({ length: 10 }, (_, i) => i)" :key="num"
                                     :label="'bit' + num" :value="num" />
                             </el-select>
                             <el-input v-else-if="isGPIO(key)" style="margin-right: 10px; width: 100px;"
@@ -47,7 +47,7 @@
 
                             <el-select v-else v-model="jsondata.Panel.Button[key][3]" placeholder="选择输出点"
                                 style="margin-right: 10px; width: 100px;">
-                                <el-option v-for="num in Array.from({ length: 100 }, (_, i) => i )" :key="num"
+                                <el-option v-for="num in Array.from({ length: 100 }, (_, i) => i)" :key="num"
                                     :label="num" :value="num" />
                             </el-select>
                         </div>
@@ -100,11 +100,12 @@ import { jsondata, adjustbit5 } from '@/views/agv_ctrl/param/common/commondata.j
 
 // 按钮选项
 const buttonOptions = [
-    { label: 'CAN-POS', value: 1 },
-    { label: 'CAN-OPEN', value: 2 },
-    { label: '本地IO', value: 3 },
-    { label: 'CAN-IO', value: 4 },
-    { label: 'GPIO', value: 5 }
+    { label: '不启用', value: 0 },
+    { label: 'CAN-POS', value: 2 },
+    { label: 'CAN-OPEN', value: 3 },
+    { label: '本地IO', value: 1 },
+    { label: 'CAN-IO', value: 5 },
+    { label: 'GPIO', value: 4 }
 ];
 const canOptions = [
     { label: 'CAN1', value: 1 },
@@ -149,7 +150,7 @@ const handleTypeChange = (key) => {
 
 // 判断是否显示路数输入框
 const showRouteInput = (key) => {
-    return [1, 2, 4].includes(jsondata.value.Panel.Button[key][0]);
+    return [3, 2, 5].includes(jsondata.value.Panel.Button[key][0]);
 };
 
 // 判断是否显示模块编号输入框
@@ -159,12 +160,12 @@ const showModuleInput = (key) => {
 
 // 检查是否为GPIO
 const isGPIO = (key) => {
-    return jsondata.value.Panel.Button[key][0] === 5; // GPIO 的值
+    return jsondata.value.Panel.Button[key][0] === 4; // GPIO 的值
 };
 
 // 检查是否为本地IO
 const isLocalIO = (key) => {
-    return jsondata.value.Panel.Button[key][0] === 3; // 本地IO 的值
+    return jsondata.value.Panel.Button[key][0] === 1; // 本地IO 的值
 };
 </script>
 

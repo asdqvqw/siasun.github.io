@@ -126,8 +126,8 @@
                 <br>
                 信号极性:
                 <el-select v-model="selectedcan1" @change="generateJSON">
-                    <el-option label="输出高电平有效" value="0"></el-option>
-                    <el-option label="输出低电平有效" value="1"></el-option>
+                    <el-option label="输出高电平有效" value="1"></el-option>
+                    <el-option label="输出低电平有效" value="0"></el-option>
                 </el-select>
             </div>
 
@@ -176,7 +176,7 @@ const putJSON = () => {
     
     if (props.wheel !== undefined) {
         console.log('22222', props.wheel)
-        if (props.wheel[0] === 1 || props.wheel[0] === 2 || props.wheel[0] === 4) {
+        if (props.wheel[0] === 3 || props.wheel[0] === 2 || props.wheel[0] === 5) {
             servoabled.value = true;
             selected.value = props.wheel[0].toString();
             handleChange();
@@ -184,21 +184,21 @@ const putJSON = () => {
             selectedcan1.value = props.wheel[2].toString();
             selectedcan2.value = props.wheel[3].toString();
             selectedcan3.value = props.wheel[4].toString();
-        } else if (props.wheel[0] === 3) {
+        } else if (props.wheel[0] === 1) {
             servoabled.value = true;
             selected.value = props.wheel[0].toString();
             handleChange();
-            selectedcan.value = props.wheel[1].toString();
-            selectedcan1.value = props.wheel[2].toString();
-            selectedcan2.value = props.wheel[3].toString();
-        } else if (props.wheel[0] === 5) {
+            selectedcan.value = props.wheel[2].toString();
+            selectedcan1.value = props.wheel[3].toString();
+            selectedcan2.value = props.wheel[4].toString();
+        } else if (props.wheel[0] === 4) {
             servoabled.value = true;
             selected.value = props.wheel[0].toString();
             handleChange();
-            const decimal = parseInt(props.wheel[1], 10);
+            const decimal = parseInt(props.wheel[3], 10);
             hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
             selectedcan.value = hexOutput.value.toString();
-            selectedcan1.value = props.wheel[2].toString();
+            selectedcan1.value = props.wheel[4].toString();
         } else if (props.wheel[0] === 0) {
             servoabled.value = false;
             handleChange();
@@ -207,7 +207,7 @@ const putJSON = () => {
     } else {
         if (props.wheel.value !== undefined) {
             console.log('33333333',props.wheel.value)
-            if (props.wheel.value[0] === 1 || props.wheel.value[0] === 2 || props.wheel.value[0] === 4) {
+            if (props.wheel.value[0] === 3 || props.wheel.value[0] === 2 || props.wheel.value[0] === 5) {
                 servoabled.value = true;
                 selected.value = props.wheel.value[0].toString();
                 handleChange();
@@ -215,21 +215,21 @@ const putJSON = () => {
                 selectedcan1.value = props.wheel.value[2].toString();
                 selectedcan2.value = props.wheel.value[3].toString();
                 selectedcan3.value = props.wheel.value[4].toString();
-            } else if (props.wheel.value[0] === 3) {
+            } else if (props.wheel.value[0] === 1) {
                 servoabled.value = true;
                 selected.value = props.wheel.value[0].toString();
                 handleChange();
-                selectedcan.value = props.wheel.value[1].toString();
-                selectedcan1.value = props.wheel.value[2].toString();
-                selectedcan2.value = props.wheel.value[3].toString();
-            } else if (props.wheel.value[0] === 5) {
+                selectedcan.value = props.wheel.value[2].toString();
+                selectedcan1.value = props.wheel.value[3].toString();
+                selectedcan2.value = props.wheel.value[4].toString();
+            } else if (props.wheel.value[0] === 4) {
                 servoabled.value = true;
                 selected.value = props.wheel.value[0].toString();
                 handleChange();
-                const decimal = parseInt(props.wheel.value[1], 10);
+                const decimal = parseInt(props.wheel.value[3], 10);
                 hexOutput.value = isNaN(decimal) ? '' : decimal.toString(16);
                 selectedcan.value = hexOutput.value.toString();
-                selectedcan1.value = props.wheel.value[2].toString();
+                selectedcan1.value = props.wheel.value[4].toString();
             } else if (props.wheel.value[0] === 0) {
                 servoabled.value = false;
                 handleChange();
@@ -256,14 +256,14 @@ const generateJSON = () => {
     if (!servoabled.value) {
         props.wheel.value = [0, 2, 2, 2, 0];
     } else {
-        if (selected.value === "1" || selected.value === "2" || selected.value === "4") {
+        if (selected.value === "3" || selected.value === "2" || selected.value === "5") {
             props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value), parseInt(selectedcan3.value)]
-        } else if (selected.value === "3") {
-            props.wheel.value = [parseInt(selected.value), parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value)]
-        } else if (selected.value === "5") {
+        } else if (selected.value === "1") {
+            props.wheel.value = [parseInt(selected.value),2, parseInt(selectedcan.value), parseInt(selectedcan1.value), parseInt(selectedcan2.value)]
+        } else if (selected.value === "4") {
             const decimal = parseInt(selectedcan.value, 16);
             decimalOutput.value = isNaN(decimal) ? '' : decimal.toString();
-            props.wheel.value = [parseInt(selected.value), parseInt(decimalOutput.value), parseInt(selectedcan1.value)]
+            props.wheel.value = [parseInt(selected.value),0,0, parseInt(decimalOutput.value), parseInt(selectedcan1.value)]
         }
 
     }
@@ -271,11 +271,11 @@ const generateJSON = () => {
 };
 
 const radios = [
-    { label: 'CAN-POS', value: '1' },
-    { label: 'CAN-OPEN', value: '2' },
-    { label: '本地IO', value: '3' },
-    { label: 'CAN-IO', value: '4' },
-    { label: 'GPIO', value: '5' }
+    { label: 'CAN-POS', value: '2' },
+    { label: 'CAN-OPEN', value: '3' },
+    { label: '本地IO', value: '1' },
+    { label: 'CAN-IO', value: '5' },
+    { label: 'GPIO', value: '4' }
 ];
 
 const conradios = [
@@ -285,7 +285,7 @@ const conradios = [
 ];
 const handleChange = () => {
     switch (selected.value) {
-        case '1':
+        case '2':
             selected1.value = true;
             selected2.value = false;
             selected3.value = false;
@@ -293,7 +293,7 @@ const handleChange = () => {
             selected5.value = false;
             generateJSON();
             return;
-        case '2':
+        case '3':
             selected1.value = false;
             selected2.value = true;
             selected3.value = false;
@@ -301,7 +301,7 @@ const handleChange = () => {
             selected5.value = false;
             generateJSON();
             return;
-        case '3':
+        case '1':
             selected1.value = false;
             selected2.value = false;
             selected3.value = true;
@@ -309,7 +309,7 @@ const handleChange = () => {
             selected5.value = false;
             generateJSON();
             return;
-        case '4':
+        case '5':
             selected1.value = false;
             selected2.value = false;
             selected3.value = false;
@@ -317,7 +317,7 @@ const handleChange = () => {
             selected5.value = false;
             generateJSON();
             return;
-        case '5':
+        case '4':
             selected1.value = false;
             selected2.value = false;
             selected3.value = false;

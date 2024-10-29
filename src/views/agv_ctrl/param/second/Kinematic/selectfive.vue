@@ -11,7 +11,8 @@
 
             <el-table-column label="驱动类型">
                 <template #default="scope">
-                    {{ jsondata.Kinematic.drive[scope.$index].drive_type == 0 ? '普通驱动类型' : '差速驱动类型' }}
+                    
+                    <el-button type="text" @click="reedit(scope.$index)">{{ jsondata.Kinematic.drive[scope.$index].drive_type == 0 ? '普通驱动类型' : '差速驱动类型' }}</el-button>
                 </template>
             </el-table-column>
 

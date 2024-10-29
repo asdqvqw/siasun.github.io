@@ -1,7 +1,7 @@
 <template>
     <el-button type="primary" @click="addCard" style="margin-left: 1vw;">添加卡片</el-button>
     <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-        <el-card v-for="(item, index) in jsondata.Pls" :key="index" class="button-card"
+        <el-card v-for="(item, index) in jsondata.SafetyLoop.Pls" :key="index" class="button-card"
             :body-style="{ padding: '20px' }">
             <div class="input-group">
                 <label>名称:</label>
@@ -249,11 +249,12 @@ import { ref } from 'vue';
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js';
 
 const buttonOptions = [
-    { label: 'CAN-POS', value: 1 },
-    { label: 'CAN-OPEN', value: 2 },
-    { label: '本地IO', value: 3 },
-    { label: 'CAN-IO', value: 4 },
-    { label: 'GPIO', value: 5 }
+{ label: '不启用', value: 0 },
+    { label: 'CAN-POS', value: 2 },
+    { label: 'CAN-OPEN', value: 3 },
+    { label: '本地IO', value: 1 },
+    { label: 'CAN-IO', value: 5 },
+    { label: 'GPIO', value: 4 }
 ];
 
 const canOptions = [
@@ -265,7 +266,7 @@ const canOptions = [
 ];
 
 const addCard = () => {
-    jsondata.value.Pls.push({
+    jsondata.value.SafetyLoop.Pls.push({
         name: '请输入名称',
         type: 0,
         config: {
@@ -285,11 +286,11 @@ const addCard = () => {
 };
 
 const removeCard = (index) => {
-    jsondata.value.Pls.splice(index, 1);
+    jsondata.value.SafetyLoop.Pls.splice(index, 1);
 };
 
 const handleTypeChange = (index) => {
-    const item = jsondata.value.Pls[index];
+    const item = jsondata.value.SafetyLoop.Pls[index];
     if (item.type === 0) {
         item.config = {
             io: {
@@ -320,21 +321,21 @@ const handleTypeChange = (index) => {
     }
 };
 const addAreaOutput = (index) => {
-    jsondata.value.Pls[index].config.io.area.push({ area_output: [0, 0, 0, 0, 0] });
+    jsondata.value.SafetyLoop.Pls[index].config.io.area.push({ area_output: [0, 0, 0, 0, 0] });
 };
 
 const removeAreaOutput = (itemIndex, areaIndex) => {
-    jsondata.value.Pls[itemIndex].config.io.area.splice(areaIndex, 1);
+    jsondata.value.SafetyLoop.Pls[itemIndex].config.io.area.splice(areaIndex, 1);
 };
 
 const showRouteInput = (index) => {
-    return [1, 2, 4].includes(jsondata.value.Pls[index].config.io.near[0]);
+    return [3, 2, 5].includes(jsondata.value.SafetyLoop.Pls[index].config.io.near[0]);
 };
 const showRouteInputcenter = (index) => {
-    return [1, 2, 4].includes(jsondata.value.Pls[index].config.io.center[0]);
+    return [3, 2, 5].includes(jsondata.value.SafetyLoop.Pls[index].config.io.center[0]);
 };
 const showRouteInputfar = (index) => {
-    return [1, 2, 4].includes(jsondata.value.Pls[index].config.io.far[0]);
+    return [3, 2, 5].includes(jsondata.value.SafetyLoop.Pls[index].config.io.far[0]);
 };
 
 
@@ -346,7 +347,7 @@ const showModuleInput = (index) => {
 };
 
 const isGPIO = (index) => {
-    return jsondata.value.Pls[index].config.io.near[0] === 5;
+    return jsondata.value.SafetyLoop.Pls[index].config.io.near[0] === 4;
 };
 
 const showModuleInputcenter = (index) => {
@@ -354,28 +355,28 @@ const showModuleInputcenter = (index) => {
 };
 
 const isGPIOcenter = (index) => {
-    return jsondata.value.Pls[index].config.io.center[0] === 5;
+    return jsondata.value.SafetyLoop.Pls[index].config.io.center[0] === 4;
 };
 const showModuleInputfar = (index) => {
     return !isGPIOfar(index);
 };
 
 const isGPIOfar = (index) => {
-    return jsondata.value.Pls[index].config.io.far[0] === 5;
+    return jsondata.value.SafetyLoop.Pls[index].config.io.far[0] === 4;
 };
 
 
 
 
 const isLocalIO = (index) => {
-    return jsondata.value.Pls[index].config.io.near[0] === 3;
+    return jsondata.value.SafetyLoop.Pls[index].config.io.near[0] === 1;
 };
 const isLocalIOcenter = (index) => {
-    return jsondata.value.Pls[index].config.io.center[0] === 3;
+    return jsondata.value.SafetyLoop.Pls[index].config.io.center[0] === 1;
 };
 
 const isLocalIOfar = (index) => {
-    return jsondata.value.Pls[index].config.io.far[0] === 3;
+    return jsondata.value.SafetyLoop.Pls[index].config.io.far[0] === 1;
 };
 
 // 更新区域输出
@@ -390,18 +391,18 @@ const updateAreaOutput = (area) => {
 
 const formatbit5 = (index) => {
     // Implement your formatting logic here
-    const decimal = parseInt(jsondata.value.Pls[index].config.io.near[3], 16);
-    jsondata.value.Pls[index].config.io.near[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.Pls[index].config.io.near[3], 16);
+    const decimal = parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.near[3], 16);
+    jsondata.value.SafetyLoop.Pls[index].config.io.near[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.near[3], 16);
 };
 const formatbit5center = (index) => {
     // Implement your formatting logic here
-    const decimal = parseInt(jsondata.value.Pls[index].config.io.center[3], 16);
-    jsondata.value.Pls[index].config.io.center[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.Pls[index].config.io.center[3], 16);
+    const decimal = parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.center[3], 16);
+    jsondata.value.SafetyLoop.Pls[index].config.io.center[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.center[3], 16);
 };
 const formatbit5far = (index) => {
     // Implement your formatting logic here
-    const decimal = parseInt(jsondata.value.Pls[index].config.io.far[3], 16);
-    jsondata.value.Pls[index].config.io.far[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.Pls[index].config.io.far[3], 16);
+    const decimal = parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.far[3], 16);
+    jsondata.value.SafetyLoop.Pls[index].config.io.far[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.far[3], 16);
 };
 
 

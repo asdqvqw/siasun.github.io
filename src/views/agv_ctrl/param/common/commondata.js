@@ -51,22 +51,76 @@ export const jsondata = ref({
       }
     }
   },
-  Bumper: [
+  SafetyLoop: {
+    Bumper: [
+      {
+        name: "前保险杠",
+        io_input: [4, 2, 0, 1, 0]
+      }
+    ],
+    Emg: [
+      {
+        name: "前急停",
+        io_input: [4, 2, 0, 1, 0]
+      }
+    ], PowerRelay:
     {
-      name: "前保险杠",
+      name: "伺服接触器",
       io_input: [4, 2, 0, 1, 0]
-    }
-  ],
-  Emg: [
-    {
-      name: "前急停",
-      io_input: [4, 2, 0, 1, 0]
-    }
-  ],
+    }, Pls: [
+      {
+        name: "前硬pls",
+        type: 0,
+        config:
+        {
+          io: {
+            type: 3,
+            area: [
+              {
+                area_output: [2, 2, 2, 2, 1]
+              }
+            ],
+            near: [2, 2, 2, 2, 1],
+            center: [2, 2, 2, 2, 1],
+            far: [2, 2, 2, 2, 1]
+          },
+          net:
+          {
+            ip: "0.0.0.0",
+            port: 0
+          }
+
+        }
+      },
+      {
+        name: "前软pls",
+        type: 1,
+        config:
+        {
+
+          io: {
+            type: 0,
+            area: [
+            ],
+            near: [2, 2, 2, 2, 1],
+            center: [2, 2, 2, 2, 1],
+            far: [2, 2, 2, 2, 1]
+          },
+          net:
+          {
+            ip: "192.168.3.101",
+            port: 8002
+          }
+
+        }
+      }
+    ],
+  },
+
   // can1: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
   // can2: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
   // can3: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
-  canMan: {
+  CanMan: {
     canport: [
       {
         canpos: [
@@ -120,12 +174,8 @@ export const jsondata = ref({
 
     ],
   },
-  PowerRelay:
-  {
-    name: "伺服接触器",
-    io_input: [4, 2, 0, 1, 0]
-  },
-  NavSysSensor: [],
+
+  NavSys: [],
   ManCtrlDevice: {
     type: 2,
     com:
@@ -163,54 +213,7 @@ export const jsondata = ref({
   // },
   // Relay: [],
   // PLS: [],
-  Pls: [
-    {
-      name: "前硬pls",
-      type: 0,
-      config:
-      {
-        io: {
-          type: 3,
-          area: [
-            {
-              area_output: [2, 2, 2, 2, 1]
-            }
-          ],
-          near: [2, 2, 2, 2, 1],
-          center: [2, 2, 2, 2, 1],
-          far: [2, 2, 2, 2, 1]
-        },
-        net:
-        {
-          ip: "0.0.0.0",
-          port: 0
-        }
 
-      }
-    },
-    {
-      name: "前软pls",
-      type: 1,
-      config:
-      {
-
-        io: {
-          type: 0,
-          area: [
-          ],
-          near: [2, 2, 2, 2, 1],
-          center: [2, 2, 2, 2, 1],
-          far: [2, 2, 2, 2, 1]
-        },
-        net:
-        {
-          ip: "192.168.3.101",
-          port: 8002
-        }
-
-      }
-    }
-  ],
 });
 
 export const tableDataCrtlRelay = ref([

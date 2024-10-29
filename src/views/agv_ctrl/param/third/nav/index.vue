@@ -1,7 +1,7 @@
 <template>
     <el-button type="primary" @click="addCard" style="margin-left: 1vw;">添加卡片</el-button>
     <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-        <el-card v-for="(item, index) in jsondata.NavSysSensor" :key="index" class="button-card"
+        <el-card v-for="(item, index) in jsondata.NavSys" :key="index" class="button-card"
             :body-style="{ padding: '20px' }">
             <div class="input-group">
                 <label>名称:</label>
@@ -116,7 +116,7 @@ import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js';
 
 // 添加卡片
 const addCard = () => {
-    jsondata.value.NavSysSensor.push({
+    jsondata.value.NavSys.push({
         name: '请输入名称',
         type: 1,
         sensor: [{
@@ -130,12 +130,12 @@ const addCard = () => {
 
 // 删除卡片
 const removeCard = (index) => {
-    jsondata.value.NavSysSensor.splice(index, 1);
+    jsondata.value.NavSys.splice(index, 1);
 };
 
 // 添加传感器
 const addSensor = (index) => {
-    const newSensor = (jsondata.value.NavSysSensor[index].type === 1) ? {
+    const newSensor = (jsondata.value.NavSys[index].type === 1) ? {
         x_limit: 0,
         thita_limit: 0,
         deadReckoningDist: 0,
@@ -149,12 +149,12 @@ const addSensor = (index) => {
         x_install: 0,
         y_install: 0,
     };
-    jsondata.value.NavSysSensor[index].sensor.push(newSensor);
+    jsondata.value.NavSys[index].sensor.push(newSensor);
 };
 
 // 删除传感器
 const removeSensor = (cardIndex, sensorIndex) => {
-    jsondata.value.NavSysSensor[cardIndex].sensor.splice(sensorIndex, 1);
+    jsondata.value.NavSys[cardIndex].sensor.splice(sensorIndex, 1);
 };
 
 // 切换传感器类型时的处理

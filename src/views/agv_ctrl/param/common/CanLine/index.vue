@@ -1,7 +1,7 @@
 <template>
     <el-button type="primary" @click="addCanPort" style="margin-left: 1vw;">添加 CAN 端口</el-button>
     <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-        <el-card v-for="(port, portIndex) in jsondata.canMan.canport" :key="portIndex" class="button-card"
+        <el-card v-for="(port, portIndex) in jsondata.CanMan.canport" :key="portIndex" class="button-card"
             :body-style="{ padding: '20px' }">
             <div>
                 <strong>CAN {{ portIndex + 1 }}</strong>
@@ -375,7 +375,7 @@ import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 
 // 添加 CAN 端口
 const addCanPort = () => {
-    jsondata.value.canMan.canport.push({
+    jsondata.value.CanMan.canport.push({
         canpos: [],
         canopenpos: [],
         canguide: [],
@@ -392,117 +392,117 @@ const addCanPort = () => {
 
 // 删除 CAN 端口
 const removeCanPort = (index) => {
-    jsondata.value.canMan.canport.splice(index, 1);
+    jsondata.value.CanMan.canport.splice(index, 1);
 };
 
 // 添加 CAN Pos
 const addCanPos = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canpos.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canpos.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN Pos
 const removeCanPos = (portIndex, posIndex) => {
-    jsondata.value.canMan.canport[portIndex].canpos.splice(posIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canpos.splice(posIndex, 1);
 };
 
 // 添加 CAN Open Pos
 const addCanOpenPos = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canopenpos.push({ canid: 2, unitid: 0, servotype: 1 });
+    jsondata.value.CanMan.canport[portIndex].canopenpos.push({ canid: 2, unitid: 0, servotype: 1 });
 };
 
 // 删除 CAN Open Pos
 const removeCanOpenPos = (portIndex, openPosIndex) => {
-    jsondata.value.canMan.canport[portIndex].canopenpos.splice(openPosIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canopenpos.splice(openPosIndex, 1);
 };
 
 // 添加 CAN canguide
 const addcanguide = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canguide.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canguide.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canguide
 const removecanguide = (portIndex, canguideIndex) => {
-    jsondata.value.canMan.canport[portIndex].canguide.splice(canguideIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canguide.splice(canguideIndex, 1);
 };
 
 // 添加 CAN canencoder
 const addcanencoder = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canencoder.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canencoder.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canencoder
 const removecanencoder = (portIndex, canencoderIndex) => {
-    jsondata.value.canMan.canport[portIndex].canencoder.splice(canencoderIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canencoder.splice(canencoderIndex, 1);
 };
 // 添加 CAN canbattery
 const addcanbattery = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canbattery.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canbattery.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canbattery
 const removecanbattery = (portIndex, canbatteryIndex) => {
-    jsondata.value.canMan.canport[portIndex].canbattery.splice(canbatteryIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canbattery.splice(canbatteryIndex, 1);
 };
 
 // 添加 CAN canbms
 const addcanbms = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canbms.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canbms.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canbms
 const removecanbms = (portIndex, canbmsIndex) => {
-    jsondata.value.canMan.canport[portIndex].canbms.splice(canbmsIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canbms.splice(canbmsIndex, 1);
 };
 
 // 添加 CAN canrfid
 const addcanrfid = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canrfid.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canrfid.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canrfid
 const removecanrfid = (portIndex, canrfidIndex) => {
-    jsondata.value.canMan.canport[portIndex].canrfid.splice(canrfidIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canrfid.splice(canrfidIndex, 1);
 };
 
 // 添加 CAN canopenencoder
 const addcanopenencoder = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canopenencoder.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canopenencoder.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canopenencoder
 const removecanopenencoder = (portIndex, canopenencoderIndex) => {
-    jsondata.value.canMan.canport[portIndex].canopenencoder.splice(canopenencoderIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canopenencoder.splice(canopenencoderIndex, 1);
 };
 
 
 // 添加 CAN cangyro
 const addcangyro = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].cangyro.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].cangyro.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN cangyro
 const removecangyro = (portIndex, cangyroIndex) => {
-    jsondata.value.canMan.canport[portIndex].cangyro.splice(cangyroIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].cangyro.splice(cangyroIndex, 1);
 };
 
 // 添加 CAN canmanualbox
 const addcanmanualbox = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canmanualbox.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canmanualbox.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canmanualbox
 const removecanmanualbox = (portIndex, canmanualboxIndex) => {
-    jsondata.value.canMan.canport[portIndex].canmanualbox.splice(canmanualboxIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canmanualbox.splice(canmanualboxIndex, 1);
 };
 
 // 添加 CAN canio
 const addcanio = (portIndex) => {
-    jsondata.value.canMan.canport[portIndex].canio.push({ canid: 2, unitid: 0 });
+    jsondata.value.CanMan.canport[portIndex].canio.push({ canid: 2, unitid: 0 });
 };
 
 // 删除 CAN canio
 const removecanio = (portIndex, canioIndex) => {
-    jsondata.value.canMan.canport[portIndex].canio.splice(canioIndex, 1);
+    jsondata.value.CanMan.canport[portIndex].canio.splice(canioIndex, 1);
 };
 
 </script>

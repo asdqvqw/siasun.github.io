@@ -60,7 +60,7 @@
                             <el-tab-pane label="串口设置">
                                 <h5>选择启用串口</h5><br>
                                 <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                    
+
                                     <el-card v-for="(port, index) in tableData" :key="port.key" class="port-card"
                                         :body-style="{ padding: '20px' }">
                                         <div style="display: flex; align-items: center;">
@@ -113,7 +113,7 @@ import { ref, computed } from 'vue';
 import Consloe from './common/Consloe.vue';
 import CanLine from './common/CanLine.vue';
 import checkbox from '@/views/agv_ctrl/param/check.vue';
-import { jsondata,adjustbit5 } from './common/commondata.js';
+import { jsondata, adjustbit5 } from './common/commondata.js';
 import { tableDataCrtl, tableDataCrtlnet } from './common/commondata.js';
 import { CANPOS, CANPOS2, CANPOS3 } from './common/commondata.js';
 import { CANOPEN, CANOPEN2, CANOPEN3 } from './common/commondata.js';
@@ -177,24 +177,41 @@ const nextstep = () => {
 
 import axios from 'axios'
 
+// const tableData = computed(() => {
+//     return [
+//         {
+//             key: 'COM1', isChecked: jsondata.value.SerialPortMan.port_1  !== undefined ? jsondata.value.SerialPortMan.port_1  : false
+//         },
+//         {
+//             key: 'COM2', isChecked: jsondata.value.SerialPortMan.port_2  !== undefined ? jsondata.value.SerialPortMan.port_2  : false
+//         },
+//         {
+//             key: 'COM3', isChecked: jsondata.value.SerialPortMan.port_3  !== undefined ? jsondata.value.SerialPortMan.port_3  : false
+//         },
+//         {
+//             key: 'COM4', isChecked: jsondata.value.SerialPortMan.port_4  !== undefined ? jsondata.value.SerialPortMan.port_4  : false
+//         }
+//     ]
+// });
+
 const tableData = computed(() => {
+    const serialPortMan = jsondata.value.SerialPortMan;
+
     return [
         {
-            key: 'COM1', isChecked: jsondata.value.SerialPortMan.port_1
+            key: 'COM1', isChecked: serialPortMan && serialPortMan.port_1 !== undefined ? serialPortMan.port_1 : false
         },
         {
-            key: 'COM2', isChecked: jsondata.value.SerialPortMan.port_2
+            key: 'COM2', isChecked: serialPortMan && serialPortMan.port_2 !== undefined ? serialPortMan.port_2 : false
         },
         {
-            key: 'COM3', isChecked: jsondata.value.SerialPortMan.port_3
+            key: 'COM3', isChecked: serialPortMan && serialPortMan.port_3 !== undefined ? serialPortMan.port_3 : false
         },
         {
-            key: 'COM4', isChecked: jsondata.value.SerialPortMan.port_4
+            key: 'COM4', isChecked: serialPortMan && serialPortMan.port_4 !== undefined ? serialPortMan.port_4 : false
         }
-    ]
+    ];
 });
-
-
 
 const responseData = ref(null) // 创建响应式变量
 const syncAgvParm = () => {
@@ -238,10 +255,13 @@ const syncdata = () => {
     functioncDate.value = jsondata.value.FuncSet.keys;
     UserPermissionsparam.value[0].value = jsondata.value.Password;
     //com
-    tableData.value[0].isChecked = jsondata.value.SerialPortMan.port_1;
-    tableData.value[1].isChecked = jsondata.value.SerialPortMan.port_2;
-    tableData.value[2].isChecked = jsondata.value.SerialPortMan.port_3;
-    tableData.value[3].isChecked = jsondata.value.SerialPortMan.port_4;
+    if (jsondata.value.SerialPortMan !== undefined) {
+        tableData.value[0].isChecked = jsondata.value.SerialPortMan.port_1;
+        tableData.value[1].isChecked = jsondata.value.SerialPortMan.port_2;
+        tableData.value[2].isChecked = jsondata.value.SerialPortMan.port_3;
+        tableData.value[3].isChecked = jsondata.value.SerialPortMan.port_4;
+    }
+
 
     // canpos
     // if (jsondata.value.can1.can_pos !== undefined) {
@@ -531,7 +551,7 @@ const syncdata = () => {
     // if (jsondata.value.switch.EmgButton !== undefined) {
     //     tableDataCrtlswitchEmg.value = jsondata.value.switch.EmgButton;
     // }
-  
+
     // if (jsondata.value.HardBumper !== undefined) {
     //     tableDataCrtlBumper.value = jsondata.value.HardBumper;
     // }
