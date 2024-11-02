@@ -1,325 +1,127 @@
-<template>
-    <el-button type="primary" @click="addCard" style="margin-left: 1vw;">添加卡片</el-button>
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-        <el-card v-for="(item, index) in jsondata.SafetyLoop.Pls" :key="index" class="button-card"
-            :body-style="{ padding: '20px' }">
-
-            <div class="input-group">
-                <label>名称:</label>
-                <el-input v-model="item.name" placeholder="输入名称" style="width: 150px; margin-right: 10px;"></el-input>
-                <el-button type="danger" @click="removeCard(index)">删除</el-button>
-            </div>
-            <div class="input-group">
-                <label>类型:</label>
-                <el-select v-model="item.type" placeholder="选择类型" style="margin-right: 10px; width: 100px;"
-                    @change="handleTypeChange(index)">
-                    <el-option label="IO" :value="0"></el-option>
-                </el-select>
-            </div>
-
-            <div>
-                <div class="input-group">
-                    <label>IO类型:</label>
-                    <el-select v-model="item.config.io.type" placeholder="选择IO类型"
-                        style="margin-right: 10px; width: 100px;">
-                        <el-option label="正常类型" :value="1"></el-option>
-                        <el-option label="互斥类型" :value="2"></el-option>
-                        <el-option label="单点切区" :value="3"></el-option>
-                        <el-option label="多点切区" :value="4"></el-option>
-                    </el-select>
-                </div>
-
-                <el-card>
-                    <el-button type="success" @click="addAreaOutput(index)" style="margin-top: 10px;">添加切区</el-button>
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
-                        <div v-for="(area, areaIndex) in item.config.io.area" :key="areaIndex" class="input-group">
-                            <el-card style="flex: 1; min-width: 150px; padding: 10px;">
-                                <label>切区 {{ areaIndex + 1 }}:</label>
-                                {{area.area_output}}
-                                <!-- <el-input v-model="area.area_output" @input="updateAreaOutput(area)"
-                                    placeholder="输入区域输出" style="width: 150px; margin-right: 10px;"></el-input> -->
-                                <el-button type="danger" @click="removeAreaOutput(index, areaIndex)">删除</el-button>
-
-
-                                <div class="button-values">
-                                    <div class="input-group">
-                                        <label>IO:</label>
-                                        <el-select v-model="area.area_output[0]" placeholder="选择类型"
-                                            style="margin-right: 10px; width: 100px;">
-                                            <el-option v-for="option in buttonOptions" :key="option.value"
-                                                :label="option.label" :value="option.value" />
-                                        </el-select>
-                                    </div>
-                                    <div class="input-group" v-if="showRouteInputa(index,areaIndex)">
-                                        <label>can路数:</label>
-                                        <el-select v-model="area.area_output[1]" placeholder="选择类型"
-                                            style="margin-right: 10px; width: 100px;">
-                                            <el-option v-for="option in canOptions" :key="option.value"
-                                                :label="option.label" :value="option.value" />
-                                        </el-select>
-                                    </div>
-                                    <div class="input-group" v-if="showModuleInputa(index,areaIndex)">
-                                        <label v-if="isLocalIOa(index,areaIndex)">本地IO地址:</label>
-                                        <label v-else>模块编号:</label>
-                                        <el-input v-if="isLocalIOa(index,areaIndex)" v-model.number="area.area_output[2]"
-                                            placeholder="模块编号" type="number"
-                                            style="margin-right: 10px; width: 100px;"></el-input>
-                                        <el-select v-else v-model="area.area_output[2]" placeholder="选择模块编号"
-                                            style="margin-right: 10px; width: 100px;">
-                                            <el-option v-for="num in Array.from({ length: 100 }, (_, i) => i)"
-                                                :key="num" :label="num" :value="num" />
-                                        </el-select>
-                                    </div>
-                                    <div class="input-group">
-                                        <label v-if="isLocalIOa(index,areaIndex)">输出点对应位:</label>
-                                        <label v-else-if="isGPIOa(index,areaIndex)">输入点对应位:<br>自动转化</label>
-                                        <label v-else>模块内输出点编号:</label>
-                                        <el-select v-if="isLocalIOa(index,areaIndex)" v-model="area.area_output[3]"
-                                            placeholder="选择输出点" style="margin-right: 10px; width: 100px;">
-                                            <el-option v-for="num in Array.from({ length: 10 }, (_, i) => i)" :key="num"
-                                                :label="'bit' + num" :value="num" />
-                                        </el-select>
-                                        <el-input v-else-if="isGPIOa(index,areaIndex)" style="margin-right: 10px; width: 100px;"
-                                            v-model.number="area.area_output[3]"
-                                            @change="formatbit5a(index,areaIndex)"></el-input>
-                                        <el-select v-else v-model="area.area_output[3]" placeholder="选择输出点"
-                                            style="margin-right: 10px; width: 100px;">
-                                            <el-option v-for="num in Array.from({ length: 100 }, (_, i) => i)"
-                                                :key="num" :label="num" :value="num" />
-                                        </el-select>
-                                    </div>
-                                    <div class="input-group">
-                                        <label>电平:</label>
-                                        <el-select v-model="area.area_output[4]" placeholder="高低电平"
-                                            style="margin-right: 10px; width: 100px;">
-                                            <el-option label="高" :value="1"></el-option>
-                                            <el-option label="低" :value="0"></el-option>
-                                        </el-select>
-                                    </div>
-                                </div>
-
-
-
-
-
-                            </el-card>
-                        </div>
-                    </div>
-                </el-card>
-
-                <div style="display: flex; gap: 20px; flex-wrap: nowrap; margin-top: 2%;">
-                    <el-card class="plscard">
-                        <strong>近:</strong>
-                        <div class="button-values">
-                            <div class="input-group">
-                                <label>IO:</label>
-                                <el-select v-model="item.config.io.near[0]" placeholder="选择类型"
-                                    style="margin-right: 10px; width: 100px;">
-                                    <el-option v-for="option in buttonOptions" :key="option.value" :label="option.label"
-                                        :value="option.value" />
-                                </el-select>
-                            </div>
-                            <div class="input-group" v-if="showRouteInput(index)">
-                                <label>can路数:</label>
-                                <el-select v-model="item.config.io.near[1]" placeholder="选择类型"
-                                    style="margin-right: 10px; width: 100px;">
-                                    <el-option v-for="option in canOptions" :key="option.value" :label="option.label"
-                                        :value="option.value" />
-                                </el-select>
-                            </div>
-                            <div class="input-group" v-if="showModuleInput(index)">
-                                <label v-if="isLocalIO(index)">本地IO地址:</label>
-                                <label v-else>模块编号:</label>
-                                <el-input v-if="isLocalIO(index)" v-model.number="item.config.io.near[2]"
-                                    placeholder="模块编号" type="number"
-                                    style="margin-right: 10px; width: 100px;"></el-input>
-                                <el-select v-else v-model="item.config.io.near[2]" placeholder="选择模块编号"
-                                    style="margin-right: 10px; width: 100px;">
-                                    <el-option v-for="num in Array.from({ length: 100 }, (_, i) => i)" :key="num"
-                                        :label="num" :value="num" />
-                                </el-select>
-                            </div>
-                            <div class="input-group">
-                                <label v-if="isLocalIO(index)">输出点对应位:</label>
-                                <label v-else-if="isGPIO(index)">输入点对应位:<br>自动转化</label>
-                                <label v-else>模块内输出点编号:</label>
-                                <el-select v-if="isLocalIO(index)" v-model="item.config.io.near[3]" placeholder="选择输出点"
-                                    style="margin-right: 10px; width: 100px;">
-                                    <el-option v-for="num in Array.from({ length: 10 }, (_, i) => i)" :key="num"
-                                        :label="'bit' + num" :value="num" />
-                                </el-select>
-                                <el-input v-else-if="isGPIO(index)" style="margin-right: 10px; width: 100px;"
-                                    v-model.number="item.config.io.near[3]" @change="formatbit5(index)"></el-input>
-                                <el-select v-else v-model="item.config.io.near[3]" placeholder="选择输出点"
-                                    style="margin-right: 10px; width: 100px;">
-                                    <el-option v-for="num in Array.from({ length: 100 }, (_, i) => i)" :key="num"
-                                        :label="num" :value="num" />
-                                </el-select>
-                            </div>
-                            <div class="input-group">
-                                <label>电平:</label>
-                                <el-select v-model="item.config.io.near[4]" placeholder="高低电平"
-                                    style="margin-right: 10px; width: 100px;">
-                                    <el-option label="高" :value="1"></el-option>
-                                    <el-option label="低" :value="0"></el-option>
-                                </el-select>
-                            </div>
-                        </div>
-                    </el-card>
-
-                </div>
-            </div>
-
-
-        </el-card>
-
-    </div>
-
-</template>
-
 <script setup>
-import { ref } from 'vue';
-import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js';
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { onMounted, ref, watch } from 'vue';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
+import tongxun from './tongxun/index.vue'
+import {play} from  './condata.js';
+const gltfLoader = new GLTFLoader();
 
-const buttonOptions = [
-    { label: '不启用', value: 0 },
-    { label: 'CAN-POS', value: 2 },
-    { label: 'CAN-OPEN', value: 3 },
-    { label: '本地IO', value: 1 },
-    { label: 'CAN-IO', value: 5 },
-    { label: 'GPIO', value: 4 }
-];
-
-const canOptions = [
-    { label: 'CAN1', value: 1 },
-    { label: 'CAN2', value: 2 },
-    { label: 'CAN3', value: 3 },
-    { label: 'CAN4', value: 4 },
-    { label: 'CAN5', value: 5 },
-];
-
-const addCard = () => {
-    jsondata.value.SafetyLoop.Pls.push({
-        name: '请输入名称',
-        type: 0,
-        config: {
-            io: {
-                type: 3,
-                area: [{ area_output: [2, 2, 2, 2, 1] }],
-                near: [2, 2, 2, 2, 1],
-            }
-        }
-    });
-};
-
-const removeCard = (index) => {
-    jsondata.value.SafetyLoop.Pls.splice(index, 1);
-};
-
-const handleTypeChange = (index) => {
-    const item = jsondata.value.SafetyLoop.Pls[index];
-    if (item.type === 0) {
-        item.config = {
-            io: {
-                type: 3,
-                area: [{ area_output: [2, 2, 2, 2, 1] }],
-                near: [2, 2, 2, 2, 1],
-                center: [2, 2, 2, 2, 1],
-                far: [2, 2, 2, 2, 1]
-            }
-        };
+let controls, gridHelper, car, fanMesh, fanGeometry;
+let canvasDom = ref(null);
+gltfLoader.load(
+  './main/test.glb',
+  (gltf) => {
+    car = gltf.scene;
+    scene.add(car);
+    car.position.set(0, 0, 2.5);
+    const partToHide = car.getObjectByName('rightwheel'); // 替换 'partName' 为实际部件名称
+    if (partToHide) {
+      partToHide.visible = false;
+      const partToHide1 = car.getObjectByName('rightwheel1');
+      const partToHide2 = car.getObjectByName('rightwheel2');
+      partToHide1.visible = false; 
+      partToHide2.visible = false; 
     }
-};
-const addAreaOutput = (index) => {
-    jsondata.value.SafetyLoop.Pls[index].config.io.area.push({ area_output: [0, 0, 0, 0, 0] });
-};
+  },
+  (xhr) => {
+    console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+  },
+  (error) => {
+    console.error('Error loading model:', error);
+  }
+);
+//光源
+const light1 = new THREE.DirectionalLight(0xffffff, 1);
+light1.position.set(0, 0, 10);
 
-const removeAreaOutput = (itemIndex, areaIndex) => {
-    jsondata.value.SafetyLoop.Pls[itemIndex].config.io.area.splice(areaIndex, 1);
-};
+const light2 = new THREE.DirectionalLight(0xffffff, 1);
+light2.position.set(0, 0, -10);
 
-const showRouteInput = (index) => {
-    return [3, 2, 5].includes(jsondata.value.SafetyLoop.Pls[index].config.io.near[0]);
-};
+const light3 = new THREE.DirectionalLight(0xffffff, 1);
+light3.position.set(10, 0, 0);
 
-const showModuleInput = (index) => {
-    return !isGPIO(index);
-};
+const light4 = new THREE.DirectionalLight(0xffffff, 1);
+light4.position.set(-10, 0, 0);
 
-const isGPIO = (index) => {
-    return jsondata.value.SafetyLoop.Pls[index].config.io.near[0] === 4;
-};
+const light5 = new THREE.DirectionalLight(0xffffff, 1);
+light5.position.set(0, 10, 0);
 
-const isLocalIO = (index) => {
-    return jsondata.value.SafetyLoop.Pls[index].config.io.near[0] === 1;
-};
-
-
-
-
-
-// // 更新区域输出
-// const updateAreaOutput = (area) => {
-//     area.area_output = area.area_output
-//         .split(',')
-//         .map(num => Number(num.trim()))
-//         .filter(num => !isNaN(num));
-// };
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+});
+renderer.setSize(window.innerWidth, window.innerHeight);
 
 
+renderer.setClearColor(0x000000);
+//网格大小
+const size = 500;
+// 更新相机位置
+let angle = 0;
+const radius = 2;
+const render = () => {
 
-const formatbit5 = (index) => {
-    // Implement your formatting logic here
-    const decimal = parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.near[3], 16);
-    jsondata.value.SafetyLoop.Pls[index].config.io.near[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.near[3], 16);
-};
-const showRouteInputa = (index,areaIndex) => {
-    return [3, 2, 5].includes(jsondata.value.SafetyLoop.Pls[index].config.io.area[areaIndex].area_output[0]);
-};
+  if (play.value) {
+    angle += 0.01;
+    camera.position.x = radius * Math.cos(angle);
+    camera.position.z = radius * Math.sin(angle)+2;
+    camera.position.y = 1; // 设置相机高度
+    camera.lookAt(car.position);
+  }
 
-const showModuleInputa = (index,areaIndex) => {
-    return !isGPIO(index,areaIndex);
-};
-
-const isGPIOa = (index,areaIndex) => {
-    return jsondata.value.SafetyLoop.Pls[index].config.io.area[areaIndex].area_output[0] === 4;
+  
+  renderer.render(scene, camera);
+  controls && controls.update();
+  requestAnimationFrame(render);
 };
 
-const isLocalIOa = (index,areaIndex) => {
-    return jsondata.value.SafetyLoop.Pls[index].config.io.area[areaIndex].area_output[0] === 1;
-};
-const formatbit5a = (index,areaIndex) => {
-    // Implement your formatting logic here
-    const decimal = parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.area[areaIndex].area_output[3], 16);
-    jsondata.value.SafetyLoop.Pls[index].config.io.area[areaIndex].area_output[3] = isNaN(decimal) ? 2 : parseInt(jsondata.value.SafetyLoop.Pls[index].config.io.area[areaIndex].area_output[3], 16);
-};
+
+
+const mouse = new THREE.Vector2();
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(3, 1, 3);
+
+
+
+
+onMounted(() => {
+  canvasDom.value.appendChild(renderer.domElement);
+  //网格
+  gridHelper = new THREE.GridHelper(size, size);
+  gridHelper.material.opacity = 0.8;
+  gridHelper.material.transparent = true;
+  scene.add(gridHelper);
+
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.update();
+  //光源
+  scene.add(light1);
+  scene.add(light2);
+  scene.add(light3);
+  scene.add(light4);
+  scene.add(light5);
+
+  render();
+});
+
 </script>
 
-<style lang="scss" scoped>
-.button-card {
-    margin-left: 1.5vw;
-    width: 80vw;
-    padding: 20px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    background: #f9f9f9;
-}
 
-.plscard {
-    width: 20vw;
-    padding: 20px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    background: #f9f9f9;
-}
 
-.input-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
 
-.input-group label {
-    margin-right: 10px;
-}
+<template>
+  <div class="home">
+    <div class="canvas-container" ref="canvasDom">
+      <tongxun></tongxun>
+    </div>
+  </div>
+</template>
+
+
+
+<style scoped>
+
 </style>
+

@@ -126,7 +126,7 @@ import { AUTOPARM, AUTOPARMLEV, autoParam } from './common/commondata.js';
 import { manualvelParam, manualradiusParam } from './common/commondata.js';
 import { selected } from './common/commondata.js';
 import { delayisChecked, delayinput1, delayinput2 } from './common/commondata.js';
-import { OTHERPARM, functioncDate, UserPermissionsparam } from './common/commondata.js';
+import { OTHERPARM, functioncDate, UserPermissionsparam,versionparam } from './common/commondata.js';
 import { tableDataCrtlswitch, tableDataCrtlswitchEmg } from './common/commondata.js';
 import { tableDataCrtlBumper, tableDataCrtlPLS, tableDataCrtlSound, MANUALDATA } from './common/commondata.js';
 import { tableDataCrtlBetter, tableDataCrtlRelay } from './common/commondata.js';
@@ -254,6 +254,7 @@ const syncdata = () => {
     // tableDataCrtlnet.value[1].value = jsondata.value.NetMan.screen;
 
     functioncDate.value = jsondata.value.FuncSet.keys;
+    versionparam.value[0].value = jsondata.value.version;
     UserPermissionsparam.value[0].value = jsondata.value.Password;
     //com
     if (jsondata.value.SerialPortMan !== undefined) {

@@ -507,12 +507,10 @@ function removeTask(task) {
 
 function addTaskList(task) {
   task.taskList.push({
-    main: '',
-    exceptions: [''],
+    main: '动作',
+    exceptions: [],
     jump: [
-      {
 
-      },
     ],
   });
 }

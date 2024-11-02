@@ -16,6 +16,7 @@ export const jsondata = ref({
     tc: "192.168.3.88",
     screen: "192.168.3.28"
   },
+  version:"3.0.0.0",
   FuncSet:
   {
     keys: [
@@ -254,7 +255,9 @@ export const OTHERPARM = ref([
 export const UserPermissionsparam = ref([
   { name: "密码", value: "123456", key: "Password" },
 ]);
-
+export const versionparam = ref([
+  { name: "版本号", value: "3.0.0.0", key: "version" },
+]);
 export const tableDataCrtl = ref([
   //   {
   //     name: '左轮驱动', install_x: '', install_y: '', use_wheel: true, drive_type: 0, use_steer: true,wheel: {

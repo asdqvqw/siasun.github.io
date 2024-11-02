@@ -1,18 +1,13 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
-import {play} from '../condata.js'
 
-// 切换小车可见性
-const toggleCarVisibility = () => {
-    play.value = !play.value;
-};
 const isOpen = ref(false)
 </script>
 
 
 <template>
     <div class="drawer" :class="{ open: isOpen }">
-    <el-button @click="toggleCarVisibility">播放</el-button>
+    <el-button @click="toggleCarVisibility">删除</el-button>
     </div>
     <el-button class="toggle-button" :class="{ open: isOpen }"  @click="isOpen = !isOpen">{{ isOpen ? '×' : '通讯' }}</el-button>
 </template>

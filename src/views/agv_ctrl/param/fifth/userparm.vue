@@ -49,6 +49,7 @@
 
                         <h2>⚠️ 用户配置：</h2>
                         配置用户参数，功能等：
+
                         <hr class="hengxian2">
 
 
@@ -74,7 +75,8 @@
                                 </el-table-column>
                             </el-table>
                         </div> -->
-
+                        <version />
+                        <hr class="hengxian3">
                         <UserPermissionsch />
                        
 
@@ -109,7 +111,7 @@ import functionch from './function/function.vue'
 import checkbox from '@/views/agv_ctrl/param/check.vue';
 import DefinScrollbar from "@/components/DefinScrollbar.vue";
 import UserPermissionsch from './UserPermissions/index.vue'
-
+import version from './version/index.vue'
 const checkdevice = ref(false);
 const handlecheck = () => {
     checkdevice.value = true;

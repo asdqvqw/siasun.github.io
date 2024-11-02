@@ -37,7 +37,7 @@ export default {
     display: flex;
     flex-direction: column;
     overflow: auto;
-    height: 600px;
+    height: 90vh;
 
     >.page-query-box {
         margin: 0 0 10px 0 !important;

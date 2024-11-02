@@ -929,12 +929,12 @@ javascriptGenerator['set_pos_zero'] = function (block) {
 Blockly.Blocks.AGV_STOP = {
   init: function () {
     // 获取设备选项
-    const deviceOptions = jsondata.value.servo.kinco.map(device => {
-      return [device.key, device.name]; // 显示名称和实际值
-    });
-    if (deviceOptions.length === 0) {
-      deviceOptions.push(["", ""]); // 添加一个默认选项
-    }
+    // const deviceOptions = jsondata.value.servo.kinco.map(device => {
+    //   return [device.key, device.name]; // 显示名称和实际值
+    // });
+    // if (deviceOptions.length === 0) {
+    //   deviceOptions.push(["", ""]); // 添加一个默认选项
+    // }
     this.jsonInit({
       type: 'AGV_STOP',
       colour: 60,
@@ -950,7 +950,23 @@ javascriptGenerator['AGV_STOP'] = function (block) {
   var code1 = "rack";
   return 'setBool("agvStop", "' + code1 + '",true);\n'
 };
-
+Blockly.Blocks.ComplexRun = {
+  init: function () {
+    this.jsonInit({
+      type: 'ComplexRun',
+      colour: 75,
+      tooltip: '',
+      helpUrl: '',
+      message0: "运行纠偏",
+    });
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+  }
+};
+javascriptGenerator['ComplexRun'] = function (block) {
+  var code1 = "rack";
+  return 'getInt("complexRun", "' + code1 + '",0);\n'
+};
 Blockly.Blocks.check_x = {
   init: function () {
     // 获取设备选项
@@ -1540,6 +1556,12 @@ const toolboxXml = `
 
       
     </category>
+      <category name="纠偏" colour="75">
+      <block type="AGV_STOP"></block>
+      <block type="ComplexRun"></block>
+
+      
+    </category>
     <category name="交互数据" colour="10">
             <block type="TCSET_Block"></block>
             <block type="TCSHOW_Block"></block>
@@ -1572,6 +1594,7 @@ const toolboxXml = `
       <block type="Set_Block"></block>
       
       <block type="Get_Block"></block>
+      <block type="re_Block"></block>
       
       <block type="Counter_Block"></block>
       <block type="Get_Block2"></block>

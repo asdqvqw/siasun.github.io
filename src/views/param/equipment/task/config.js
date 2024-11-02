@@ -75,6 +75,53 @@ javascriptGenerator['Return_Block'] = function (block) {
   var code = block.getFieldValue('Get_Type')
   return 'return ' + code + ' ;';
 };
+
+//强转
+Blockly.Blocks.re_Block = {
+  init: function () {
+    this.jsonInit({
+      type: 're_Block',
+      colour: 180,
+      tooltip: '',
+      helpUrl: '',
+      message0: "强转 %2 为 %1",
+      args0: [
+        {
+          "type": "field_dropdown",
+          "name": "Get_Type",
+          "options": [
+            [
+              "整型",
+              "int"
+            ],
+            [
+              "布尔型",
+              "bool"
+            ],
+            [
+              "双精度型",
+              "double"
+            ],
+          ]
+        },
+        {
+          "type": "input_value",
+          "name": "Parameter",
+          "check": ['Number', "Boolean", "FunctionNameBlockType"]
+        },
+      ],
+    });
+    this.setOutput(true, null);
+  }
+};
+javascriptGenerator['re_Block'] = function (block) {
+  var code1 = block.getFieldValue('Get_Type');
+  var code = javascriptGenerator.valueToCode(block, 'Parameter', javascriptGenerator.ORDER_NONE);
+  return ['('+ code1 + ')'+ '('+code+')', javascriptGenerator.ORDER_ATOMIC];
+};
+
+
+
 //输入字符串
 Blockly.Blocks.String_Block = {
   init: function () {
