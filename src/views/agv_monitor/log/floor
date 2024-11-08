@@ -1,0 +1,26 @@
+// Load the floor with textures
+const loadFloor = () => {
+  const textureLoader = new THREE.TextureLoader();
+
+  const floorColor = textureLoader.load('/main/aaa.jpg');
+  floorColor.wrapS = THREE.RepeatWrapping;
+  floorColor.wrapT = THREE.RepeatWrapping;
+  floorColor.colorSpace = THREE.SRGBColorSpace;
+
+  const floorNormal = textureLoader.load('/main/aaa.jpg');
+  floorNormal.wrapS = THREE.RepeatWrapping;
+  floorNormal.wrapT = THREE.RepeatWrapping;
+
+  // Create floor material using MeshPhongMaterial
+  const floorMaterial = new THREE.MeshPhongMaterial({
+    map: floorColor,
+    normalMap: floorNormal,
+  });
+
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(50, 0.001, 50), floorMaterial);
+  floor.receiveShadow = true;
+
+  floor.position.set(0, 0, 0);
+  scene.add(floor);
+};
+loadFloor();

@@ -16,7 +16,7 @@ export const jsondata = ref({
     tc: "192.168.3.88",
     screen: "192.168.3.28"
   },
-  version:"3.0.0.0",
+  version: "3.0.0.0",
   FuncSet:
   {
     keys: [
@@ -41,9 +41,10 @@ export const jsondata = ref({
   Panel: {
     Button: {
       startBtn: [2, 2, 2, 2, 1],
-      stopBtn: [2, 2, 2, 2, 1],
+      brakeBtn: [2, 2, 2, 2, 1],
       manualSwt: [2, 2, 2, 2, 1],
       autoSwt: [2, 2, 2, 2, 1],
+      emgBtn: [2, 2, 2, 2, 1],
     },
     Display: {
       type: 1,
@@ -52,6 +53,13 @@ export const jsondata = ref({
       }
     }
   },
+  Relay: {
+    PowerRelay:
+    {
+      name: "伺服接触器",
+      io_input: [4, 2, 0, 1, 0]
+    },
+  },
   SafetyLoop: {
     Bumper: [
       {
@@ -59,16 +67,14 @@ export const jsondata = ref({
         io_input: [4, 2, 0, 1, 0]
       }
     ],
-    Emg: [
-      {
-        name: "前急停",
-        io_input: [4, 2, 0, 1, 0]
-      }
-    ], PowerRelay:
-    {
-      name: "伺服接触器",
-      io_input: [4, 2, 0, 1, 0]
-    }, Pls: [
+    // Emg: [
+    //   {
+    //     name: "前急停",
+    //     io_input: [4, 2, 0, 1, 0]
+    //   }
+    // ],
+
+    Pls: [
       {
         name: "前硬pls",
         type: 0,
@@ -117,7 +123,12 @@ export const jsondata = ref({
       }
     ],
   },
-
+  Sensors:{
+    Laser:[],
+    Magnet:[],
+    Gyro:[],
+    QR_Code_Siasun:[]
+  },
   // can1: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
   // can2: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
   // can3: { can_pos: [], can_open: [], can_guide: [], can_BMS: [], can_io: [], can_manual: [], can_rfid: [] },
@@ -135,7 +146,8 @@ export const jsondata = ref({
         canopenencoder: [],
         cangyro: [],
         canmanualbox: [],
-        canio: []
+        canio: [],
+        cancamera: []
       }
     ]
   },
@@ -176,7 +188,7 @@ export const jsondata = ref({
     ],
   },
 
-  NavSys: [],
+  // NavSys: [],
   ManCtrlDevice: {
     type: 2,
     com:

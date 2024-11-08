@@ -75,12 +75,10 @@
 
 
 
-                            <el-tab-pane label="继电器">
-                                <relay></relay>
-                            </el-tab-pane>
-                            <el-tab-pane label="急停">
+
+                            <!-- <el-tab-pane label="急停">
                                 <switchhemg></switchhemg>
-                            </el-tab-pane>
+                            </el-tab-pane> -->
                             
 
                         </el-tabs>
@@ -140,7 +138,7 @@
 
                         <hr class="hengxian3">
 
-                    <h3>⚠️ 导航:</h3>
+                    <h3>⚠️ 传感器:</h3>
                     <navparm></navparm>
                     </div>
 
@@ -162,7 +160,7 @@
 import { ref, computed } from 'vue';
 import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js';
 import hardBump from './Bumper/index.vue';
-import relay from './Relay/index.vue';
+
 import switchburron from './button/index.vue'
 import switchh from './StartButton/switch.vue';
 import switchhemg from './EmgButton/index.vue';

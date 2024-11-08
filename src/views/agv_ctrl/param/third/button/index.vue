@@ -88,13 +88,17 @@
                 </el-card>
             </div>
         </el-tab-pane>
+
+        <el-tab-pane label="继电器">
+            <relay></relay>
+        </el-tab-pane>
     </el-tabs>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { jsondata, adjustbit5 } from '@/views/agv_ctrl/param/common/commondata.js'
-
+import relay from '../Relay/index.vue';
 
 
 
@@ -124,8 +128,10 @@ const formatButtonKey = (key) => {
             return '手动';
         case 'autoSwt':
             return '自动';
-        case 'stopBtn':
+        case 'brakeBtn':
             return '抱闸';
+        case 'emgBtn':
+            return '急停';
         default:
             return key;
     }

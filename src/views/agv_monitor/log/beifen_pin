@@ -1,0 +1,1773 @@
+<script setup>
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { onMounted, ref, watch ,onBeforeUnmount, reactive, toRaw, unref} from 'vue';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
+
+const gltfLoader = new GLTFLoader();
+
+import _, { isArray } from 'lodash';
+
+import axios from 'axios';
+import { ElMessage } from "element-plus";
+import { GLTFExporter } from "three/examples/jsm/Addons.js";
+const firstload = ref(false);
+const responseData = ref(null); // 创建响应式变量
+
+let selectedModel = null;
+const selectedmodelParam = ref();
+let selectedmodelname = '';
+
+let ctxMenuX = 0,ctxMenuY = 0;
+let g_modelid = 0;
+
+const raycaster = new THREE.Raycaster();
+
+const sliderValueDX = ref(0);  // 默认值为0
+const sliderValueDY = ref(0);  // 默认值为0
+const sliderValueDZ = ref(0);  // 默认值为0
+const PX = ref(0);  // 默认值为0
+const PY = ref(0);  // 默认值为0
+const PZ = ref(0);  // 默认值为0
+
+const updateValueDX = (event) => {
+  // 虽然 v-model 会自动更新 sliderValue，但这里可以添加额外的逻辑
+  // 例如，处理非数字输入等
+  let tmp = sliderValueDX.value / 180.0 * Math.PI;
+  updateParam('dx', tmp);
+  
+};
+const updateValueDY = (event) => {
+  // 虽然 v-model 会自动更新 sliderValue，但这里可以添加额外的逻辑
+  // 例如，处理非数字输入等
+  let tmp = sliderValueDY.value / 180.0 * Math.PI;
+  updateParam('dy', tmp);
+
+};
+const updateValueDZ = (event) => {
+  // 虽然 v-model 会自动更新 sliderValue，但这里可以添加额外的逻辑
+  // 例如，处理非数字输入等
+  let tmp = sliderValueDZ.value / 180.0 * Math.PI;
+  updateParam('dz', tmp);
+
+};
+
+// let g_model = null;
+const modelsMap = ref(new Map());
+
+// const loadModel = (pathName) => {
+//   id += 1;
+//   console.log('loadModel:', modelName, pathName , dx, dy, dz, px, py, pz);
+//   gltfLoader.load(
+//     pathName,
+//     (gltf) => {
+//       const tmpmodel = ref(gltf.scene);
+        
+//       //W 将模型存储在数组中
+//       modelsMap.value.set(id,reactive({name:id,model:tmpmodel}));
+//       // 可选：触发加载完成的回调
+//       if (typeof onLoadComplete === 'function') {
+//         console.log('Model loaded compelete:', id);
+//         onLoadComplete(id);
+//       }
+//     },
+//     (xhr) => {
+//       console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+//     },
+//     (error) => {
+//       console.error('Error loading model:', error);
+//     }
+//   );
+// };
+
+const loadModelFromPath = (pathName) => {
+  console.log('load model from path:', pathName);
+  g_modelid += 1;
+  gltfLoader.load(
+    pathName,
+    (gltf) => {
+      const tmpmodel = gltf.scene;   
+      // 可选：触发加载完成的回调
+      if (typeof onLoadComplete === 'function') {
+        console.log('Model loaded compelete!' + g_modelid);
+        onLoadComplete(g_modelid, tmpmodel);
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+};
+
+// 添加模型到场景的方法
+const addModelToScene = () => {
+  console.log('addModelToScene:', model);
+  if (selectedModel) {
+    // 设置模型的位置、缩放等属性
+    // modelsMap.value.get(selectedModelId).value.model.rotation.set( 0, 0, 0);
+    // modelsMap.value.get(selectedModelId).value.model.position.set(0, 0, 0);
+    // const modelEntry = toRaw(modelsMap.value.get(selectedModelId));
+    // console.log(modelEntry.model);
+    scene.add(selectedModel);
+  }
+};
+
+const info = ref();
+
+// 加载完成的回调
+const onLoadComplete = (model_id, modelLoaded) => {
+  const params = {dx:0, dy:0, dz:0, px:0, py:0, pz:0};
+  info.value = {
+    id : model_id,
+    model : modelLoaded,
+    param : params
+  };
+
+  modelsMap.value.set(model_id, info);
+  
+  // selectedModelId = model_id;
+
+  addModelToScene(modelLoaded);
+  console.log('models:', modelsMap.value);
+  showPopup(info.value.id, info.value.param);
+};
+
+const showPopup = (model_id, params) => {
+  document.getElementById('id').value = model_id;
+  document.getElementById('dx').value = params.dx;
+  document.getElementById('dy').value = params.dy;
+  document.getElementById('dz').value = params.dz;
+  document.getElementById('px').value = params.px;
+  document.getElementById('py').value = params.py;
+  document.getElementById('pz').value = params.pz;
+};
+
+const updateParam = (var_name, value) => {
+  console.log('updateParam:', var_name, " , ",value);
+
+  if(!selectedModel|| selectedmodelname === '' || selectedmodelParam.value === null)
+  {
+    console.log('selectedModel is null');
+    return; 
+  }
+  if (var_name === 'dx') {
+    selectedmodelParam.value.dx = value;
+    if(selectedModel)
+    {
+      selectedModel.rotation.x = value;
+    }
+  } else if (var_name === 'dy') {
+    selectedmodelParam.value.dy = value;
+    if(selectedModel)
+    {
+      selectedModel.rotation.y = value;
+    }
+  } else if (var_name === 'dz') {
+    selectedmodelParam.value.dz = value;
+    if(selectedModel)
+    {
+      selectedModel.rotation.z = value;
+    }
+  } else if (var_name === 'px') {
+    selectedmodelParam.value.px = parseFloat(value);
+    if(selectedModel)
+    {
+      selectedModel.position.x = selectedmodelParam.value.px;
+    }
+  } else if (var_name === 'py') {
+    selectedmodelParam.value.py = parseFloat(value);
+    if(selectedModel)
+    {
+      selectedModel.position.y = selectedmodelParam.value.py;
+    }
+  } else if (var_name === 'pz') {
+    selectedmodelParam.value.pz = parseFloat(value);
+    if(selectedModel)
+    {
+      selectedModel.position.z = selectedmodelParam.value.pz;
+    }
+  }
+};
+
+const confirmModelParam = (param) => {
+  if(!selectedModel)
+  {
+    console.log('selectedModel is null');
+    return;
+  }
+
+  selectedModel = null;
+  selectedmodelname = '';
+  selectedmodelParam.value = null;
+};
+
+let modelList = [
+  { name: 'carBody', path: './main/box.glb' , param:'{"dx":-53,"dy":29,"dz":70,"px":-0.05,"py":0,"pz":0}' },
+  { name: 'carWheel', path: './main/wheel.glb' , param:'{"dx":0,"dy":0,"dz":90,"px":-0.35,"py":0.25,"pz":0}'}
+];
+//光源
+const light1 = new THREE.DirectionalLight(0xffffff, 1);
+light1.position.set(0, 0, 10);
+
+const light2 = new THREE.DirectionalLight(0xffffff, 1);
+light2.position.set(0, 0, -10);
+const light3 = new THREE.DirectionalLight(0xffffff, 1);
+light3.position.set(10, 0, 0);
+
+const light4 = new THREE.DirectionalLight(0xffffff, 1);
+light4.position.set(-10, 0, 0);
+
+const light5 = new THREE.DirectionalLight(0xffffff, 1);
+light5.position.set(0, 10, 0);
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+});
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+
+renderer.setClearColor(0xffffff);
+//网格大小
+const size = 500;
+const render = () => {
+  // moveCar(models['carTest']);
+  renderer.render(scene, camera);
+  controls && controls.update();
+  requestAnimationFrame(render);
+};
+
+let controls, gridHelper, fanMesh, fanGeometry;
+let canvasDom = ref(null);
+
+const mouse = new THREE.Vector2();
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 2, 6);
+
+
+const onWindowResize = () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+};
+
+// const dragModelByMouseMove = (x, y) => {
+//   console.log("drag car moved: x+= " + x + " , y+= " + y);
+//   const speed = 0.001; // 调整拖动速度
+//   selectedCtrlModel.model.position.x += x * speed;
+//   if(!bYAxisMove){
+//     selectedCtrlModel.model.position.z += y * speed;
+//   }
+//   else
+//   {
+//     selectedCtrlModel.model.position.y -= y * speed;
+//   }
+// };
+
+// const rotateModelByMouseMove = (x, y) => {
+//   console.log("rotating car to" + x + " ," + y);
+//   const rotationSpeed = 0.01; // 调整旋转速度
+//   // 计算一个方向向量
+//   if (!bYAxisMove){
+//     // 绕 Y 轴旋转
+//     selectedCtrlModel.model.rotation.y += x * rotationSpeed; // 调整旋转速度
+//     // 绕 X 轴旋转
+//     selectedCtrlModel.model.rotation.x += y * rotationSpeed; // 调整旋转速度
+//   }
+//   else
+//   {
+//     console.log("Y axis rotate");
+//     // 绕 X 轴旋转
+//     selectedCtrlModel.model.rotation.y += x * rotationSpeed; // 调整旋转速度
+//     // 绕 z 轴旋转模型
+//     selectedCtrlModel.model.rotation.z += y * rotationSpeed;
+//   }
+// };
+
+const checkIntersection = (object, label) => {
+  try {
+    if (!object) {
+      console.warn(`Object is undefined for label: ${label}`);
+      return false;
+    }
+    // 确保 raycaster 已经设置好
+    if (!raycaster) {
+      console.error('Raycaster is not defined');
+      return false;
+    }
+    const intersects = raycaster.intersectObjects([object]);
+    if (intersects.length > 0) {
+      console.log(`Mouse clicked on ${label}`);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error(`Error in checkIntersection: ${error.message}`);
+    return false;
+  }
+};
+
+function updateMousePosition(event) {
+  // 更新鼠标位置
+  const innerWidth = window.innerWidth || 1; // 避免除以零
+  const innerHeight = window.innerHeight || 1; // 避免除以零
+  mouse.x = (event.clientX / innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / innerHeight) * 2 + 1;
+}
+
+let lastX = 0, lastY = 0;
+const handleMouseDown = (event) => {
+  console.log('mouse down');
+  try {
+    
+
+    updateMousePosition(event);
+    // 设置射线起点
+    raycaster.setFromCamera(mouse, camera);
+    if (body && checkIntersection(body, 'body')) {
+
+      console.log('selected model body');
+      showPopup('body', parambody.value);
+      selectedModel = body;
+      selectedmodelname = 'body';
+      selectedmodelParam.value = parambody.value;
+    }
+    else if (wheelL && checkIntersection(wheelL, 'wheelL')) {
+
+      console.log('selected model wheelL');
+      showPopup('wheelL', paramWheelL.value);
+      selectedModel = wheelL;
+      selectedmodelname = 'wheelL';
+      selectedmodelParam.value = paramWheelL.value;
+    }
+    else if ( wheelR && checkIntersection(wheelR, 'wheelR')) {
+
+      console.log('selected model wheelR');
+      showPopup('wheelR',paramWheelR.value);
+      selectedModel = wheelR;
+      selectedmodelname = 'wheelR';
+      selectedmodelParam.value = paramWheelR.value;
+    }
+    else if ( bodyup && checkIntersection(bodyup, 'bodyUp')) {
+      console.log('selected model bodyUp');
+      showPopup('bodyUp',parambodyup.value);
+      selectedModel = bodyup;
+      selectedmodelname = 'bodyUp';
+      selectedmodelParam.value = paramBodyUp.value;
+    }
+    else if ( bodydown && checkIntersection(bodydown, 'bodyDown')) {
+      console.log('selected model bodyDown');
+      showPopup('bodyDown',parambodydown.value);
+      selectedModel = bodydown;
+      selectedmodelname = 'bodydown';
+      selectedmodelParam.value = parambodydown.value;
+    }
+    else if ( lidarF && checkIntersection(lidarF, 'lidarF')) {
+      console.log('selected model lidarF');
+      showPopup('lidarF',paramLidarF.value);
+      selectedModel = lidarF;
+      selectedmodelname = 'lidarF';
+      selectedmodelParam.value = paramLidarF.value;
+    }
+    else if ( lidarB && checkIntersection(lidarB, 'lidarB')) {
+      console.log('selected model lidarB');
+      showPopup('lidarB',paramLidarB.value);
+      selectedModel = lidarB;
+      selectedmodelname = 'lidarB';
+      selectedmodelParam.value = paramLidarB.value;
+    }
+    else if ( sickLidarF && checkIntersection(sickLidarF, 'sickLidarF')) {
+      console.log('selected model sickLidarF');
+      showPopup('sickLidarF',paramSickLidarF.value);
+      selectedModel = sickLidarF;
+      selectedmodelname = 'sickLidarF';
+      selectedmodelParam.value = paramSickLidarF.value;
+    }
+    else if ( sickLidarB && checkIntersection(sickLidarB, 'sickLidarB')) {
+      console.log('selected model sickLidarB');
+      showPopup('sickLidarB',paramSickLidarB.value);
+      selectedModel = sickLidarB;
+      selectedmodelname = 'sickLidarB';
+      selectedmodelParam.value = paramSickLidarB.value;
+    }
+    else if ( plateUp && checkIntersection(plateUp, 'plateUp')) {
+      console.log('selected model plateUp');
+      showPopup('plateUp',paramPlateUp.value);
+      selectedModel = plateUp;
+      selectedmodelname = 'plateUp';
+      selectedmodelParam.value = paramPlateUp.value;
+    }
+    else if ( lightLF && checkIntersection(lightLF, 'lightLF')) {
+      console.log('selected model lightLF');
+      showPopup('lightLF',paramLightLF.value);
+      selectedModel = lightLF;
+      selectedmodelname = 'lightLF';
+      selectedmodelParam.value = paramLightLF.value;
+    }
+    else if ( lightRF && checkIntersection(lightRF, 'lightRF')) {
+      console.log('selected model lightRF');
+      showPopup('lightRF',paramLightRF.value);
+      selectedModel = lightRF;
+      selectedmodelname = 'lightRF';
+      selectedmodelParam.value = paramLightRF.value;
+    }
+    else if ( lightLB && checkIntersection(lightLB, 'lightLB')) {
+      console.log('selected model lightLB');
+      showPopup('lightLB',paramLightLB.value);
+      selectedModel = lightLB;
+      selectedmodelname = 'lightLB';
+      selectedmodelParam.value = paramLightLB.value;
+    }
+    else if ( lightRB && checkIntersection(lightRB, 'lightRB')) {
+      console.log('selected model lightRB');
+      showPopup('lightRB',paramLightRB.value);
+      selectedModel = lightRB;
+      selectedmodelname = 'lightRB';
+      selectedmodelParam.value = paramLightRB.value;
+    }
+    else if ( touchScreen && checkIntersection(touchScreen, 'touchScreen')) {
+      console.log('selected model touchScreen');
+      showPopup('touchScreen',paramTouchScreen.value);
+      selectedModel = touchScreen;
+      selectedmodelname = 'touchScreen';
+      selectedmodelParam.value = paramTouchScreen.value;
+    }
+    else if ( emgBtnF && checkIntersection(emgBtnF, 'emgBtnF')) {
+      console.log('selected model emgBtnF');
+      showPopup('emgBtnF',paramEmgBtnF.value);
+      selectedModel = emgBtnF;
+      selectedmodelname = 'emgBtnF';
+      selectedmodelParam.value = paramEmgBtnF.value;
+    }
+    else if ( emgBtnB && checkIntersection(emgBtnB, 'emgBtnB')) {
+      console.log('selected model emgBtnB');
+      showPopup('emgBtnB',paramEmgBtnB.value);
+      selectedModel = emgBtnB;
+      selectedmodelname = 'emgBtnB';
+      selectedmodelParam.value = paramEmgBtnB.value;
+    }
+    else if ( newLidar && checkIntersection(newLidar, 'newLidar')) {
+      console.log('selected model newLidar');
+      showPopup('newLidar',paramEmgBtnB.value);
+      selectedModel = newLidar;
+      selectedmodelname = 'newLidar';
+      selectedmodelParam.value = paramNewLidar.value;
+    }
+    else{
+      console.log('No object selected');
+      // document.getElementById("ctxMenu").style.display = 'none';
+      showPopup('', { dx: 0, dy: 0, dz: 0, px: 0, py: 0, pz: 0 });
+      selectedModel = null;
+      selectedmodelname = '';
+      selectedmodelParam.value = null;
+    }
+  } catch (error) {
+    console.error(`Error in handleMouseDown: ${error.message}`);
+  }
+};
+
+const popupCtxMenu = (x, y) => {
+  ctxMenuX = x;
+  ctxMenuY = y;
+  document.getElementById("ctxMenu").style.left = x +'px';
+  document.getElementById("ctxMenu").style.top = y +'px';
+  document.getElementById("ctxMenu").style.display = 'block';
+}; 
+
+const deleteModel = () => {
+  deleteSelectedModel();
+  // document.getElementById("ctxMenu").style.display = 'none'; // 关闭菜单
+};
+
+const deleteSelectedModel = () => {
+  scene.remove(selectedModel);
+  selectedModel.removeFromParent();
+  // modelsMap.value.get(selectedModelId).value.model.removeFromParent();
+
+  if (selectedModel) {
+    // modelsMap.value.delete();
+  }
+
+  selectedModel = null;
+
+  console.log('Deleted selected model..., '+models.value.size+" models left");
+
+  // for(let model of models.value)
+  // {
+  //     console.log('model eefefwefsdfsfadsfsadf  ' + model[1].name);
+  // }
+};
+
+const handleMouseUp = (event) => {
+  // if (modelCtrlMode.value !== model_ctrl_status.value.none) 
+  // {
+  console.log('mouse up release');
+    // isCtrling = false;
+    // modelCtrlMode.value = model_ctrl_status.value.none;
+    // selectedCtrlModel.model = null;
+    // selectedCtrlModel.name = '';
+    // selectedCtrlModel.param = null;
+  // }
+  controls.enablePan = false;
+  controls.enableRotate = false;
+  controls.enableZoom = false;
+  controls.update();
+};
+
+let fileNames = ['lidar-716mini.glb','lidar-F31.glb','lidar-TIM320.glb'];
+// const loadFileNames = () => {
+//   try {
+//     const req = require.context('./main/pls',false, /\.js$/); // 替换为实际的API地址
+//     fileNames = req.keys().map(path => path.replace(/\.\//,'').replace(/\.js/, ''));
+//     console.log('Files:', fileNames);
+//   } catch (error) {
+//     console.error('Error fetching files:', error);
+//   }
+// };
+
+onBeforeUnmount(() => {
+  document.removeEventListener('resize', onWindowResize);
+  
+  // window.removeEventListener('mousemove', handleMouseMove);
+  // window.removeEventListener('mouseout', handleMouseOut);
+  document.removeEventListener('mousedown', handleMouseDown);
+  document.removeEventListener('mouseup', handleMouseUp);
+  document.removeEventListener('keydown', handleKeyDown);
+  document.removeEventListener('keyup', handleKeyUp);
+
+  // window.removeEventListener('click', () => {
+  //   screenRef.value.handleMouseClick(car);
+  // });
+  // window.removeEventListener('click', () => {
+  //   wheelRef.value.handleMouseClickwheel(car);
+  // });
+  // window.removeEventListener('click', () => {
+  //   navwindows.value.handleMouseClicknav(car);
+  // });
+  // window.removeEventListener('click', () => {
+  //   devwindows.value.handleMouseClickdev(car);
+  // });
+  // window.removeEventListener('click', () => {
+  //   elewindows.value.handleMouseClickele(car);
+  // });
+})
+
+
+
+const handleKeyDown = (event) => {
+  console.log('key', event.key)
+  if (event.key === 'Control' || event.key === 'Ctrl') {
+    controls.enablePan = true;
+    controls.enableZoom = true;
+    controls.enableRotate = true;
+    controls.update();
+  }
+  if (event.key === 'Alt' || event.key === 'alt') {
+    bYAxisMove = true;
+  }
+  if (event.key === 'Delete' || event.key === 'Del') {
+    deleteModel();
+  }
+}
+
+const handleKeyUp = (event) => {
+  console.log('key', event.key)
+  if (event.key === 'Control' || event.key === 'Ctrl') {
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.enableRotate = false;
+    controls.update();
+      // modelCtrlMode.value = model_ctrl_status.value.none;
+      // isCtrling = false;
+      // selectedCtrlModel = null;
+  }
+  if (event.key === 'Alt' || event.key === 'alt') {
+    bYAxisMove = false;
+  }
+  if (event.key === 'Delete' || event.key === 'Del') {
+    
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('resize', onWindowResize);
+  // 鼠标移入移出
+
+  // window.addEventListener('mousemove', handleMouseMove);
+  // window.addEventListener('mouseout', handleMouseOut);
+  document.addEventListener('mousedown', handleMouseDown);
+  document.addEventListener('mouseup', handleMouseUp);
+  document.addEventListener('keydown', handleKeyDown);
+  document.addEventListener('keyup', handleKeyUp);
+
+  // window.addEventListener('click', () => {
+  //   screenRef.value.handleMouseClick(car);
+  // });
+  // window.addEventListener('click', () => {
+  //   wheelRef.value.handleMouseClickwheel(car);
+  // });
+  // window.addEventListener('click', () => {
+  //   navwindows.value.handleMouseClicknav(car);
+  // });
+  // window.addEventListener('click', () => {
+  //   devwindows.value.handleMouseClickdev(car);
+  // });
+  // window.addEventListener('click', () => {
+  //   elewindows.value.handleMouseClickele(car);
+  // });
+  canvasDom.value.appendChild(renderer.domElement);
+  //网格
+  // gridHelper = new THREE.GridHelper(size, size);
+  // gridHelper.material.opacity = 0.8;
+  // gridHelper.material.transparent = true;
+  // scene.add(gridHelper);
+
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  // 禁用默认的鼠标事件处理
+  controls.enablePan = false;
+  controls.enableZoom = false;
+  controls.enableRotate = false;
+  controls.update();
+  //光源
+  scene.add(light1);
+  scene.add(light2);
+  scene.add(light3);
+  scene.add(light4);
+  scene.add(light5);
+
+  render();
+
+  // loadFileNames();
+});
+
+let mm1 = null;
+
+const addAModel = () => {
+  gltfLoader.load(
+    "./main/v.glb",
+    (gltf) => {
+      mm1 = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      mm1.rotation.set( 0, 0,  0);
+      mm1.position.set(0, 0, 0);
+      scene.add(mm1);
+      //W 将模型存储在数组中
+      
+      // 可选：触发加载完成的回调
+      if (typeof onLoadComplete === 'function') {
+        console.log('Model loaded compelete:', modelName);
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+};
+
+const delAModel = () => {
+  scene.remove(mm1);
+};
+
+const dimentionBodyUp   = {dx:0,dy:1.57,dz:0,px:-1,py:0,pz:-0.5};
+const dimentionBodyDown = {dx:1.57,dy:0,dz:1.57,px:-1,py:0,pz:-1};
+const dimentionBody   = {dx:0,dy:0,dz:0,px:0,py:0,pz:0};
+const dimentionWheelL = {dx:0,dy:0,dz:1.57,px:-0.58,py:0.05,pz:-1.0};
+const dimentionWheelR = {dx:0,dy:0,dz:1.57,px:-1.38,py:0.05,pz:-1.0};
+//TIM320
+const dimentionLidarF = null;//{dx:0,dy:1.57,dz:1.57,px:-1,py:0.05,pz:-0.55};
+const dimentionLidarB = null;//{dx:0,dy:-1.57,dz:1.57,px:-1,py:0.05,pz:-1.45};
+// Sick
+const dimentionSickLidarF = null;//{dx:0,dy:1.57,dz:1.57,px:-1,py:0.25,pz:-0.55};
+const dimentionSickLidarB = null;//{dx:0,dy:-1.57,dz:1.57,px:-1,py:0.25,pz:-1.45};
+// plate up
+const dimentionPlateUp = {dx:1.57,dy:0,dz:0,px:-1,py:0.55,pz:-1.05};
+// plate lifter
+const dimentionPlateLifter = {dx:0,dy:0,dz:0,px:-1,py:0,pz:-1.05};
+//light
+const dimentionLightLF = {dx:0,dy:-0.785,dz:-1.57,px:-0.7,py:0.16,pz:-0.621};
+const dimentionLightRF = {dx:0,dy:0.785,dz:1.57,px:-1.3,py:0.14,pz:-0.621};
+const dimentionLightLB = {dx:0,dy:0.785,dz:-1.57,px:-0.7,py:0.16,pz:-1.381};
+const dimentionLightRB = {dx:0,dy:-0.785,dz:1.57,px:-1.3,py:0.14,pz:-1.381};
+//touch screen
+const dimentionTouchScreen = {dx:-1.25,dy:0,dz:0,px:-1.02,py:0.47,pz:-1.472};
+// controler
+const dimentionControler = {dx:0,dy:0,dz:0,px:-1,py:0.25,pz:-0.75};
+// emerge Btn
+const dimentionEmgBtnF = {dx:1.57,dy:0,dz:0,px:-1.255,py:0.37,pz:-0.465};
+const dimentionEmgBtnB = {dx:-1.57,dy:0,dz:0,px:-0.735,py:0.37,pz:-1.535};
+
+
+const dimentionNewLidar = {dx:0,dy:1.57,dz:1.57,px:0,py:0.7,pz:0};
+let newLidar = null;
+let paramNewLidar = ref(dimentionNewLidar);
+
+let body = null,bodyup = null, bodydown = null;
+let wheelL = null, wheelR = null;
+let lidarF = null, lidarB = null, sickLidarF = null,sickLidarB = null;
+let plateUp = null;
+let plateLifter = null;
+let lightLF = null, lightRF = null, lightLB = null, lightRB = null;
+let touchScreen = null;
+let controler = null;
+let emgBtnF = null, emgBtnB = null;
+let bodymodel = ref([body, bodyup ,bodydown, 
+                    wheelL, wheelR, 
+                    lidarF, lidarB, sickLidarF, sickLidarB, 
+                    plateUp,
+                    plateLifter,
+                    lightLF, lightRF, lightLB, lightRB,
+                    touchScreen,
+                    controler,
+                    emgBtnF, emgBtnB]);
+
+let parambodyup = ref(dimentionBodyUp);
+let parambodydown = ref(dimentionBodyDown);
+let parambody = ref(dimentionBody);
+
+let paramWheelL = ref(dimentionWheelL);
+let paramWheelR = ref(dimentionWheelR);
+
+let paramLidarF     = null;//ref(dimentionLidarF);
+let paramLidarB     = null;//ref(dimentionLidarB);
+let paramSickLidarF = null;//ref(dimentionSickLidarF);
+let paramSickLidarB = null;//ref(dimentionSickLidarB);
+
+let paramPlateUp = ref(dimentionPlateUp);
+let paramPlateLifter = ref(dimentionPlateLifter);
+
+let paramLightLF = ref(dimentionLightLF);
+let paramLightLB = ref(dimentionLightLB);
+let paramLightRF = ref(dimentionLightRF);
+let paramLightRB = ref(dimentionLightRB);
+
+let paramTouchScreen = ref(dimentionTouchScreen);
+let paramControler = ref(dimentionControler);
+
+let paramEmgBtnF = ref(dimentionEmgBtnF);
+let paramEmgBtnB = ref(dimentionEmgBtnB);
+
+
+const addModel = (modelname, _model, modelParam, defaultdimention, modelPath) => {
+  if(_model)
+  {
+    scene.remove(_model);
+    _model.removeFromParent();
+    _model = null;
+    _model.value = defaultdimention;
+  }
+  gltfLoader.load(
+    modelPath,
+    (gltf) => {
+      _model = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      _model.rotation.set( modelParam.value.dx, modelParam.value.dy, modelParam.value.dz);
+      _model.position.set(modelParam.value.px, modelParam.value.py, modelParam.value.pz);
+      
+      scene.add(_model);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup(modelname, modelParam.value);
+      selectedModel = _model;
+      selectedmodelname = modelname;
+      selectedmodelParam.value = modelParam.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', modelname);
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+};
+
+const addBodyModel = () => {
+  // addModel('bodyup', bodyup, parambodyup, dimentionBodyUp, "./main/上车壳壳体.glb");
+  // addModel('bodydown', bodydown, parambodydown, dimentionBodyDown, "./main/下车壳.glb");
+  // addModel('body', body, parambody, dimentionBody, './main/rack_body.glb');
+  // loadModelFromPath("./main/rack_body.glb");
+  // loadModelFromPath("./main/下车壳.glb");
+
+  if(body)
+  {
+    scene.remove(body);
+    body.removeFromParent();
+    body = null;
+    parambody.value = dimentionBody;
+  }
+  gltfLoader.load(
+    // './main/rack_body.glb',
+    './main/test.glb',
+    (gltf) => {
+      body = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      body.rotation.set( parambody.value.dx, parambody.value.dy, parambody.value.dz);
+      body.position.set(parambody.value.px, parambody.value.py, parambody.value.pz);
+      
+      scene.add(body);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('body', parambody.value);
+      selectedModel = body;
+      selectedmodelname = 'body';
+      selectedmodelParam.value = parambody.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'body');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+}
+
+const addWheelModel = () => {
+  // addModel('wheelL', wheelL, paramWheelL, dimentionWheelL, "./main/wheel.glb");
+  // addModel('wheelR', wheelR, paramWheelR, dimentionWheelR, "./main/wheel.glb");
+  if(wheelL)
+  {
+    scene.remove(wheelL);
+    wheelL.removeFromParent();
+    wheelL = null;
+    paramWheelL.value = dimentionWheelL;
+  }
+  gltfLoader.load(
+    './main/wheel.glb',
+    (gltf) => {
+      wheelL = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      wheelL.rotation.set( paramWheelL.value.dx, paramWheelL.value.dy, paramWheelL.value.dz);
+      wheelL.position.set(paramWheelL.value.px, paramWheelL.value.py, paramWheelL.value.pz);
+      
+      scene.add(wheelL);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('wheelL', paramWheelL.value);
+      selectedModel = wheelL;
+      selectedmodelname = 'wheelL';
+      selectedmodelParam.value = paramWheelL.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'wheelL');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+
+  if(wheelR)
+  {
+    scene.remove(wheelR);
+    wheelR.removeFromParent();
+    wheelR = null;
+    paramWheelR.value = dimentionWheelR;
+  }
+  gltfLoader.load(
+    './main/wheel.glb',
+    (gltf) => {
+      wheelR = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      wheelR.rotation.set( paramWheelR.value.dx, paramWheelR.value.dy, paramWheelR.value.dz);
+      wheelR.position.set(paramWheelR.value.px, paramWheelR.value.py, paramWheelR.value.pz);
+      
+      scene.add(wheelR);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('wheelR', paramWheelR.value);
+      selectedModel = wheelR;
+      selectedmodelname = 'wheelR';
+      selectedmodelParam.value = paramWheelR.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'wheelR');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+}
+
+const addLidarModel = () => {
+  // addModel('lidarF', lidarF, paramLidarF, dimentionLidarF, "./main/lidar.glb");
+  // addModel('lidarB', lidarB, paramLidarB, dimentionLidarB, "./main/lidar.glb");
+  // addModel('sickLidarF', sickLidarF, paramSickLidarF, dimentionSickLidarF, "./main/lidar.glb");
+  // addModel('sickLidarB', sickLidarB, paramSickLidarB, dimentionSickLidarB, "./main/lidar.glb");
+  if(newLidar)
+  {
+    scene.remove(newLidar);
+    newLidar.removeFromParent();
+    newLidar = null;
+    paramNewLidar.value = dimentionNewLidar;
+  }
+  gltfLoader.load(
+    './main/8轴控制器.glb',
+    (gltf) => {
+      newLidar = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      newLidar.rotation.set( paramNewLidar.value.dx, paramNewLidar.value.dy, paramNewLidar.value.dz);
+      newLidar.position.set(paramNewLidar.value.px, paramNewLidar.value.py, paramNewLidar.value.pz);
+      
+      scene.add(newLidar);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('newLidar', paramNewLidar.value);
+      selectedModel = newLidar;
+      selectedmodelname = 'newLidar';
+      selectedmodelParam.value = paramNewLidar.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'newLidar');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+/*  if(lidarF)
+  {
+    scene.remove(lidarF);
+    lidarF.removeFromParent();
+    lidarF = null;
+    paramLidarF.value = dimentionLidarF;
+  }
+  gltfLoader.load(
+    './main/lidar.glb',
+    (gltf) => {
+      lidarF = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      lidarF.rotation.set( paramLidarF.value.dx, paramLidarF.value.dy, paramLidarF.value.dz);
+      lidarF.position.set(paramLidarF.value.px, paramLidarF.value.py, paramLidarF.value.pz);
+      
+      scene.add(lidarF);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('lidarF', paramLidarF.value);
+      selectedModel = lidarF;
+      selectedmodelname = 'lidarF';
+      selectedmodelParam.value = paramLidarF.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'lidarF');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+
+  if(lidarB)
+  {
+    scene.remove(lidarB);
+    lidarB.removeFromParent();
+    lidarB = null;
+    paramLidarB.value = dimentionLidarB;
+  }
+  gltfLoader.load(
+    './main/lidar.glb',
+    (gltf) => {
+      lidarB = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      lidarB.rotation.set( paramLidarB.value.dx, paramLidarB.value.dy, paramLidarB.value.dz);
+      lidarB.position.set(paramLidarB.value.px, paramLidarB.value.py, paramLidarB.value.pz);
+      
+      scene.add(lidarB);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('lidarB', paramLidarB.value);
+      selectedModel = lidarB;
+      selectedmodelname = 'lidarB';
+      selectedmodelParam.value = paramLidarB.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'lidarB');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+
+  if(sickLidarF)
+  {
+    scene.remove(sickLidarF);
+    sickLidarF.removeFromParent();
+    sickLidarF = null;
+    paramSickLidarF.value = dimentionSickLidarF;
+  }
+  gltfLoader.load(
+    './main/lidar.glb',
+    (gltf) => {
+      sickLidarF = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      sickLidarF.rotation.set( paramSickLidarF.value.dx, paramSickLidarF.value.dy, paramSickLidarF.value.dz);
+      sickLidarF.position.set(paramSickLidarF.value.px, paramSickLidarF.value.py, paramSickLidarF.value.pz);
+      
+      scene.add(sickLidarF);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('sickLidarF', paramSickLidarF.value);
+      selectedModel = sickLidarF;
+      selectedmodelname = 'sickLidarF';
+      selectedmodelParam.value = paramSickLidarF.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'sickLidarF');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+
+  if(sickLidarB)
+  {
+    scene.remove(sickLidarB);
+    sickLidarB.removeFromParent();
+    sickLidarB = null;
+    paramSickLidarB.value = dimentionSickLidarB;
+  }
+  gltfLoader.load(
+    './main/lidar.glb',
+    (gltf) => {
+      sickLidarB = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      sickLidarB.rotation.set( paramSickLidarB.value.dx, paramSickLidarB.value.dy, paramSickLidarB.value.dz);
+      sickLidarB.position.set(paramSickLidarB.value.px, paramSickLidarB.value.py, paramSickLidarB.value.pz);
+      
+      scene.add(sickLidarB);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('sickLidarB', paramSickLidarB.value);
+      selectedModel = sickLidarB;
+      selectedmodelname = 'sickLidarB';
+      selectedmodelParam.value = paramSickLidarB.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'sickLidarB');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+  */
+}
+
+const addPlateModel = () => {
+  // addModel('plateUp', plateUp, paramPlateUp, dimentionPlateUp, "./main/托盘.glb");
+  if(plateUp)
+  {
+    scene.remove(plateUp);
+    plateUp.removeFromParent();
+    plateUp = null;
+    paramPlateUp.value = dimentionPlateUp;
+  }
+  gltfLoader.load(
+    './main/托盘.glb',
+    (gltf) => {
+      plateUp = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      plateUp.rotation.set( paramPlateUp.value.dx, paramPlateUp.value.dy, paramPlateUp.value.dz);
+      plateUp.position.set(paramPlateUp.value.px, paramPlateUp.value.py, paramPlateUp.value.pz);
+      
+      scene.add(plateUp);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('plateUp', paramPlateUp.value);
+      selectedModel = plateUp;
+      selectedmodelname = 'plateUp';
+      selectedmodelParam.value = paramPlateUp.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'plateUp');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+}
+
+const addPlateLifterModel = () => {
+  // addModel('plateUp', plateUp, paramPlateUp, dimentionPlateUp, "./main/托盘.glb");
+  if(plateLifter)
+  {
+    scene.remove(plateLifter);
+    plateLifter.removeFromParent();
+    plateLifter = null;
+    paramPlateLifter.value = dimentionPlateLifter;
+  }
+  gltfLoader.load(
+    './main/提升驱动组件.glb',
+    (gltf) => {
+      plateLifter = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      plateLifter.rotation.set( paramPlateLifter.value.dx, paramPlateLifter.value.dy, paramPlateLifter.value.dz);
+      plateLifter.position.set(paramPlateLifter.value.px, paramPlateLifter.value.py, paramPlateLifter.value.pz);
+      
+      scene.add(plateLifter);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('plateLifter', paramPlateLifter.value);
+      selectedModel = plateLifter;
+      selectedmodelname = 'plateLifter';
+      selectedmodelParam.value = paramPlateLifter.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'plateLifter');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+}
+
+const addLightModel = () => {
+  // addModel('lightLF', lightLF, paramLightLF, dimentionLightLF, "./main/AGV-light.glb");
+  // addModel('lightRF', lightRF, paramLightRF, dimentionLightRF, "./main/AGV-light.glb");
+  // addModel('lightLB', lightLB, paramLightLB, dimentionLightLB, "./main/AGV-light.glb");
+  // addModel('lightRB', lightRB, paramLightRB, dimentionLightRB, "./main/AGV-light.glb");
+  if(lightLF)
+  {
+    scene.remove(lightLF);
+    lightLF.removeFromParent();
+    lightLF = null;
+    paramLightLF.value = dimentionLightLF;
+  }
+  gltfLoader.load(
+    './main/AGV-light.glb',
+    (gltf) => {
+      lightLF = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      lightLF.rotation.set( paramLightLF.value.dx, paramLightLF.value.dy, paramLightLF.value.dz);
+      lightLF.position.set(paramLightLF.value.px, paramLightLF.value.py, paramLightLF.value.pz);
+      
+      scene.add(lightLF);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('lightLF', paramLightLF.value);
+      selectedModel = lightLF;
+      selectedmodelname = 'lightLF';
+      selectedmodelParam.value = paramLightLF.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'lightLF');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+
+  if(lightRF)
+  {
+    scene.remove(lightRF);
+    lightRF.removeFromParent();
+    lightRF = null;
+    paramLightRF.value = dimentionLightRF;
+  }
+  gltfLoader.load(
+    './main/AGV-light.glb',
+    (gltf) => {
+      lightRF = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      lightRF.rotation.set( paramLightRF.value.dx, paramLightRF.value.dy, paramLightRF.value.dz);
+      lightRF.position.set(paramLightRF.value.px, paramLightRF.value.py, paramLightRF.value.pz);
+      
+      scene.add(lightRF);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('lightRF', paramLightRF.value);
+      selectedModel = lightRF;
+      selectedmodelname = 'lightRF';
+      selectedmodelParam.value = paramLightRF.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'lightRF');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+
+  if(lightLB)
+  {
+    scene.remove(lightLB);
+    lightLB.removeFromParent();
+    lightLB = null;
+    paramLightLB.value = dimentionLightLB;
+  }
+  gltfLoader.load(
+    './main/AGV-light.glb',
+    (gltf) => {
+      lightLB = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      lightLB.rotation.set( paramLightLB.value.dx, paramLightLB.value.dy, paramLightLB.value.dz);
+      lightLB.position.set(paramLightLB.value.px, paramLightLB.value.py, paramLightLB.value.pz);
+      
+      scene.add(lightLB);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('lightLB', paramLightLB.value);
+      selectedModel = lightLB;
+      selectedmodelname = 'lightLB';
+      selectedmodelParam.value = paramLightLB.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'lightLB');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+
+  if(lightRB)
+  {
+    scene.remove(lightRB);
+    lightRB.removeFromParent();
+    lightRB = null;
+    paramLightRB.value = dimentionLightRB;
+  }
+  gltfLoader.load(
+    './main/AGV-light.glb',
+    (gltf) => {
+      lightRB = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      lightRB.rotation.set( paramLightRB.value.dx, paramLightRB.value.dy, paramLightRB.value.dz);
+      lightRB.position.set(paramLightRB.value.px, paramLightRB.value.py, paramLightRB.value.pz);
+      
+      scene.add(lightRB);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('lightRB', paramLightRB.value);
+      selectedModel = lightRB;
+      selectedmodelname = 'lightRB';
+      selectedmodelParam.value = paramLightRB.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'lightRB');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+}
+
+const addScreenModel = () => {
+  // addModel('touchScreen', touchScreen, paramTouchScreen, dimentionTouchScreen, "./main/触摸屏.glb");
+
+  if(touchScreen)
+  {
+    scene.remove(touchScreen);
+    touchScreen.removeFromParent();
+    touchScreen = null;
+    paramTouchScreen.value = dimentionTouchScreen;
+  }
+  gltfLoader.load(
+    './main/触摸屏.glb',
+    (gltf) => {
+      touchScreen = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      touchScreen.rotation.set( paramTouchScreen.value.dx, paramTouchScreen.value.dy, paramTouchScreen.value.dz);
+      touchScreen.position.set(paramTouchScreen.value.px, paramTouchScreen.value.py, paramTouchScreen.value.pz);
+      
+      scene.add(touchScreen);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('touchScreen', paramTouchScreen.value);
+      selectedModel = touchScreen;
+      selectedmodelname = 'touchScreen';
+      selectedmodelParam.value = paramTouchScreen.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'touchScreen');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+}
+
+const addControlerModel = () => {
+  // addModel('touchScreen', touchScreen, paramTouchScreen, dimentionTouchScreen, "./main/触摸屏.glb");
+
+  if(controler)
+  {
+    scene.remove(controler);
+    controler.removeFromParent();
+    controler = null;
+    paramControler.value = dimentionControler;
+  }
+  gltfLoader.load(
+    './main/8轴控制器.glb',
+    (gltf) => {
+      controler = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      controler.rotation.set( paramControler.value.dx, paramControler.value.dy, paramControler.value.dz);
+      controler.position.set(paramControler.value.px, paramControler.value.py, paramControler.value.pz);
+      
+      scene.add(controler);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('controler', paramControler.value);
+      selectedModel = controler;
+      selectedmodelname = 'controler';
+      selectedmodelParam.value = paramControler.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'controler');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+}
+
+const addEmgBtnModel = () => {
+  // addModel('emgBtnF', emgBtnF, paramEmgBtnF, dimentionEmgBtnF, "./main/急停.glb");
+  // addModel('emgBtnB', emgBtnB, paramEmgBtnB, dimentionEmgBtnB, "./main/急停.glb");
+  if(emgBtnF)
+  {
+    scene.remove(emgBtnF);
+    emgBtnF.removeFromParent();
+    emgBtnF = null;
+    paramEmgBtnF.value = dimentionLightLB;
+  }
+  gltfLoader.load(
+    './main/急停.glb',
+    (gltf) => {
+      emgBtnF = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      emgBtnF.rotation.set( paramEmgBtnF.value.dx, paramEmgBtnF.value.dy, paramEmgBtnF.value.dz);
+      emgBtnF.position.set(paramEmgBtnF.value.px, paramEmgBtnF.value.py, paramEmgBtnF.value.pz);
+      
+      scene.add(emgBtnF);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('emgBtnF', paramEmgBtnF.value);
+      selectedModel = emgBtnF;
+      selectedmodelname = 'emgBtnF';
+      selectedmodelParam.value = paramEmgBtnF.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'emgBtnF');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+
+  if(emgBtnB)
+  {
+    scene.remove(emgBtnB);
+    emgBtnB.removeFromParent();
+    emgBtnB = null;
+    paramEmgBtnB.value = dimentionLightRB;
+  }
+  gltfLoader.load(
+    './main/急停.glb',
+    (gltf) => {
+      emgBtnB = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      emgBtnB.rotation.set( paramEmgBtnB.value.dx, paramEmgBtnB.value.dy, paramEmgBtnB.value.dz);
+      emgBtnB.position.set(paramEmgBtnB.value.px, paramEmgBtnB.value.py, paramEmgBtnB.value.pz);
+      
+      scene.add(emgBtnB);
+      // bodymodel.value.push(selectedCtrlModel);
+      showPopup('emgBtnB', paramEmgBtnB.value);
+      selectedModel = emgBtnB;
+      selectedmodelname = 'emgBtnB';
+      selectedmodelParam.value = paramEmgBtnB.value;
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        console.log('Model loaded compelete:', 'emgBtnB');
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+}
+
+
+
+const assembleModel = () => {
+  const exporter = new GLTFExporter();
+  exporter.parse(
+        scene,
+        (result) => {
+          if (result instanceof ArrayBuffer) {
+            saveArrayBuffer(result, 'test.glb');
+          } else {
+            const output = JSON.stringify(result, null, 2);
+            saveString(output, 'assemble.gltf');
+          }
+        },
+        (error) => {
+          console.error('导出失败:', error);
+        },
+        {
+          binary: true // 导出为 .glb 文件
+        }
+      );
+};
+
+
+let jsonData = null;
+const loadJsonFile = () => {
+  axios.get("./main/agvparam.json")
+    .then(response => {
+      // 处理响应数据
+      jsonData = response.data;
+      console.log(jsonData);
+      let safetyLoop = jsonData.SafetyLoop;
+      console.log(safetyLoop.Pls);
+      paramLidarF = ref(safetyLoop.Pls[0].model.rot_pos);
+      paramLidarB = ref(safetyLoop.Pls[1].model.rot_pos);
+      paramSickLidarF = ref(safetyLoop.Pls[2].model.rot_pos);
+      paramSickLidarB = ref(safetyLoop.Pls[3].model.rot_pos);
+      console.log(paramLidarF);
+      console.log(paramLidarB);
+      console.log(paramSickLidarF);
+      console.log(paramSickLidarB);
+
+      if(isArray(safetyLoop.Pls)) {
+        safetyLoop.Pls.forEach(element => {
+          console.log(element.name);
+        });
+      }
+    })
+    .catch(error => {
+      // 处理错误
+      console.error(error);
+    });
+};
+
+function saveArrayBuffer(buffer, filename) {
+  const blob = new Blob([buffer], { type: 'application/octet-stream' });
+  saveBlob(blob, filename);
+};
+
+function saveString(text, filename) {
+  const blob = new Blob([text], { type: 'text/plain' });
+  saveBlob(blob, filename);
+};
+
+function saveBlob(blob, filename) {
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+};
+
+let assemble = null;
+
+const loadAssemble = () => {
+  if(assemble)
+  {
+    scene.remove(assemble);
+    assemble = null;
+  }
+  gltfLoader.load(
+    "./main/test.glb",
+    (gltf) => {
+      assemble = gltf.scene;
+      // 设置模型的位置、缩放等属性
+      assemble.rotation.set(0, 0, 0);
+      assemble.position.set(2, 0, 2);
+      
+      scene.add(assemble);
+      // bodymodel.value.push(selectedCtrlModel);
+      //showPopup('wheelR',paramWheelR.value);
+      // 可选：触发加载完成的回调
+      if (typeof onLoadBodyComplete === 'function') {
+        // console.log('Model loaded compelete:', ;
+      }
+    },
+    (xhr) => {
+      console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    },
+    (error) => {
+      console.error('Error loading model:', error);
+    }
+  );
+};
+
+const cancelPopupMouseDown = (event) => {
+  event.stopPropagation();
+};
+
+</script>
+
+<template>
+  <div class="home">
+    <div id="canvas" class="canvas-container" ref="canvasDom"></div>
+  </div>
+
+  <!-- <div id="ctxMenu" style=" left:0 ;top: 0;display: none;" class="menu" @click.stop>
+    <button @click="deleteModel">Delete</button>
+  </div> -->
+
+  
+  <div id="model-list" class="floating-menu" width="200px" @click.stop>
+    <ul>
+      <!-- <li v-for="(model, index) in modelList" :key="index" :data-model="model.path" :model-param="model.param" @click="loadModelFromPath(model.path)">
+        {{ model.name }}
+      </li> -->
+      <!-- <li @click="loadJsonFile()" @click.stop> loadJsonFile</li> -->
+      <li @click="addBodyModel()" @click.stop> AddBodyModel</li>
+      <!-- <li @click="addWheelModel()" @click.stop>addWheelModel</li> -->
+      <li @click="addLidarModel()" @click.stop>addLidarModel</li>
+
+      <!-- <li @click="addPlateModel()" @click.stop>addPlateModel</li>
+      <li @click="addPlateLifterModel()" @click.stop>addPlateLifter</li>
+      <li @click="addLightModel()" @click.stop>addLightModel</li>
+      <li @click="addScreenModel()" @click.stop>addScreenModel</li>
+      <li @click="addEmgBtnModel()" @click.stop>addEmgBtnModel</li>
+
+      <li @click="addControlerModel()" @click.stop>addControler</li> -->
+
+      <li @click="assembleModel()" @click.stop>Assemble</li>
+      <!-- <li @click="loadAssemble()" @click.stop>loadAssemble</li> -->
+    </ul>
+  </div>
+  <div id = "model-params" class="popup" @mousedown="cancelPopupMouseDown">
+      <div class="popup-content" @click.stop>
+        <h3>Model Parameters</h3>
+        <!-- <select v-model="selected">
+          <option v-for="item in fileNames" :key="item" :value="item">{{ item }}</option>
+        </select>
+        <input type="button" onclick="loadModel({})" title="load"/>
+        <br /> -->
+        <label for="dx">Name:</label>
+        <input type="text" id="id"/>
+        <br />
+        <label for="dx">DX(°): <span>{{ sliderValueDX }}</span></label>
+        <input id="dx" type="range" min="-180" max="180"
+          v-model="sliderValueDX"
+          @input="updateValueDX"
+        />
+        <br />
+        <label for="dy">DY(°):<span>{{ sliderValueDY }}</span></label>
+        <input id="dy" type="range" min="-180" max="180"
+          v-model="sliderValueDY"
+          @input="updateValueDY"
+        />
+        <br />
+        <label for="dz">DZ(°):<span>{{ sliderValueDZ }}</span></label>
+        <input id="dz" type="range" min="-180" max="180"
+          v-model="sliderValueDZ"
+          @input="updateValueDZ"
+        />
+        <br />
+        <label for="px">PX(m):</label>
+        <input type="number" id="px" @input="updateParam('px', $event.target.value)" />
+        <br />
+        <label for="py">PY(m):</label>
+        <input type="number" id="py" @input="updateParam('py', $event.target.value)" />
+        <br />
+        <label for="pz">PZ(m):</label>
+        <input type="number" id="pz" @input="updateParam('pz', $event.target.value)" />
+      </div>
+  </div>
+</template>
+
+<style scoped>
+.home {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.menu {
+  position: fixed;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 1002;
+}
+
+.floating-menu {
+  position: fixed;
+  top: 120px;
+  left: 280px;
+  width: 200px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+.floating-menu ul {
+  list-style-type: none;
+  padding: 0;
+}
+.floating-menu li {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.popup {
+  position: fixed;
+  top: 220px;
+  right: 20px;
+  width: 240px;
+  height: 250px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+}
+
+.popup-content label {
+  display: block;
+  margin-bottom: 5px;
+}
+.popup-content input[type="text"],
+.popup-content input[type="number"] {
+  margin-bottom: 10px;
+}
+
+.popup-content button {
+  margin-top: 10px;
+}
+
+.canvas-container {
+  position: relative;
+  width: calc(100% - 200px); /* 宽度减去浮动菜单宽度 */
+  height: 100vh; /* 设置高度为视口高度 */
+}
+
+.slider {
+  position: relative;
+  width: 200px;
+  height: 10px;
+  background-color: #ccc;
+}
+
+.track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #409eff;
+}
+
+.thumb {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #409eff;
+  cursor: pointer;
+}
+
+</style>
+
+<style>
+.kkk-dialog-class {
+  pointer-events: none;
+}
+
+.el-dialog {
+  pointer-events: auto;
+}
+
+.el-dialog__body {
+  overflow: auto;
+
+  height: 200px;
+  /* 根据需要设置高度 */
+}
+
+.ele-dialog {
+  height: 40%;
+  width: 35%;
+  background-color: #f1f1f1;
+}
+
+.ele-dialog .el-dialog__header {
+  background-color: rgba(255, 255, 255, 0.315);
+}
+
+.eleee-dialog {
+  height: 40%;
+  background-color: #f1f1f1;
+}
+
+.eleee-dialog .el-dialog__header {
+  background-color: rgba(255, 255, 255, 0.315);
+}
+
+</style>

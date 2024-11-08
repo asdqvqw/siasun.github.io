@@ -363,6 +363,34 @@
                 </el-tab-pane>
 
 
+                <!-- CAN camera 配置 -->
+                <el-tab-pane label="can相机">
+                    <el-card class="input-group">
+                        <el-button type="success" @click="addcancamera(portIndex)" style="margin-bottom: 10px;">添加 CAN
+                            camera</el-button>
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
+
+                            <el-card v-for="(cancamera, cancameraIndex) in port.cancamera" :key="cancameraIndex" class="sensor-input">
+                                <div class="button-group">
+                                    <el-button type="danger" @click="removecancamera(portIndex, cancameraIndex)"
+                                        style="margin-left: 10px;">删除</el-button>
+                                </div>
+
+                                <div class="input-group">
+                                    <label>CAN ID通讯号:</label>
+                                    <el-input v-model.number="cancamera.canid" type="number" placeholder="输入 CAN ID"
+                                        style="width: 100px; margin-right: 10px;"></el-input>
+                                </div>
+
+                                <div class="input-group">
+                                    <label>单元编号:</label>
+                                    <el-input v-model.number="cancamera.unitid" type="number" placeholder="输入 Unit ID"
+                                        style="width: 100px; margin-right: 10px;"></el-input>
+                                </div>
+                            </el-card>
+                        </div>
+                    </el-card>
+                </el-tab-pane>
             </el-tabs>
         </el-card>
     </div>
@@ -387,6 +415,7 @@ const addCanPort = () => {
         cangyro: [],
         canmanualbox: [],
         canio: [],
+        cancamera:[]
     });
 };
 
@@ -503,6 +532,16 @@ const addcanio = (portIndex) => {
 // 删除 CAN canio
 const removecanio = (portIndex, canioIndex) => {
     jsondata.value.CanMan.canport[portIndex].canio.splice(canioIndex, 1);
+};
+
+// 添加 CAN camera
+const addcancamera = (portIndex) => {
+    jsondata.value.CanMan.canport[portIndex].cancamera.push({ canid: 2, unitid: 0 });
+};
+
+// 删除 CAN camera
+const removecancamera = (portIndex, cancameraIndex) => {
+    jsondata.value.CanMan.canport[portIndex].cancamera.splice(cancameraIndex, 1);
 };
 
 </script>

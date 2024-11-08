@@ -100,6 +100,14 @@ export const constantRoutes = [
                 },
             },
             {
+                path: 'param_under/index',
+                component: () => import('@/views/agv_monitor/param_under/index.vue'),
+                name: 'under_param',
+                meta: { 
+                    isMenu:true,
+                },
+            },
+            {
                 path: 'motion/index',
                 component: () => import('@/views/agv_monitor/motion/index.vue'),
                 name: 'motion',

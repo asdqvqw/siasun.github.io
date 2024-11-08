@@ -33,7 +33,7 @@
     "sass": "1.57.1",
     "sass-loader": "13.2.0",
     "storages-js": "0.0.4",
-    "three": "^0.161.0",
+    "three": "^0.170.0",
     "vite-plugin-ali-oss": "1.0.9",
     "vite-plugin-html": "3.2.1",
     "vue": "3.3.4",

@@ -347,7 +347,7 @@ renderer.setClearColor(0xffffff);
 //网格大小
 const size = 500;
 const render = () => {
-  // moveCar();
+  moveCar();
   renderer.render(scene, camera);
   controls && controls.update();
   requestAnimationFrame(render);
@@ -574,7 +574,11 @@ const animateWheel = () => {
 // 鼠标移动事件处理
 const handleMouseMove = (event) => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  console.log('mouse.x:',mouse.x)
+  console.log('event.clientX:',event.clientX)
+  console.log('event.clientY:',event.clientY)
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  console.log('mouse.y:',mouse.y)
   raycaster.setFromCamera(mouse, camera);
   if (car !== undefined) {
     const intersects = raycaster.intersectObjects([car]);

@@ -1,207 +1,288 @@
 <template>
-    <el-button type="primary" @click="addCard" style="margin-left: 1vw;">添加卡片</el-button>
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 2%;">
-        <el-card v-for="(item, index) in jsondata.NavSys" :key="index" class="button-card"
-            :body-style="{ padding: '20px' }">
-            <div class="input-group">
-                <label>名称:</label>
-                <el-input v-model="item.name" placeholder="输入名称" style="width: 150px; margin-right: 10px;"></el-input>
-                <el-button type="danger" @click="removeCard(index)">删除</el-button>
+    <el-tabs>
+        <el-tab-pane label="激光导航">
+            <el-button type="primary" @click="addCard" style="margin-left: 1vw;">添加卡片</el-button>
+            <div style="display: flex;  gap: 20px; flex-wrap: wrap;">
+                <el-card v-for="(item, index) in jsondata.Sensors.Laser" :key="index" class="button-card"
+                    :body-style="{ padding: '20px' }">
+                    <div class="input-group">
+                        <label>名称:</label>
+                        <el-input v-model="item.name" placeholder="输入名称"
+                            style="width: 150px; margin-right: 10px;"></el-input>
+                        <el-button type="danger" @click="removeCard(index)">删除</el-button>
+                    </div>
+                </el-card>
             </div>
+        </el-tab-pane>
 
-            <div class="input-group">
-                <label>类型:</label>
-                <el-select v-model="item.type" @change="onTypeChange(item)" placeholder="选择类型"
-                    style="width: 150px; margin-right: 10px;">
-                    <el-option label="轮廓导航" :value="1"></el-option>
-                    <el-option label="磁导航" :value="2"></el-option>
-                    <el-option label="惯性导航" :value="3"></el-option>
-                    <el-option label="二维码导航" :value="4"></el-option>
-                </el-select>
+        <el-tab-pane label="磁导航">
+            <el-button type="primary" @click="addCardMagnet" style="margin-left: 1vw;">添加卡片</el-button>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+                <el-card v-for="(item, index) in jsondata.Sensors.Magnet" :key="index" class="button-card"
+                    :body-style="{ padding: '20px' }">
+                    <div class="input-group">
+                        <label>名称:</label>
+                        <el-input v-model="item.name" placeholder="输入名称"
+                            style="width: 150px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>传感器类型:</label>
+                        <el-input v-model.number="item.type" placeholder="输入传感器类型" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>方向:</label>
+                        <el-input v-model.number="item.dir" placeholder="输入方向" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>分辨率:</label>
+                        <el-input v-model.number="item.resolution" placeholder="输入分辨率" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>CAN 端口 ID:</label>
+                        <el-input v-model.number="item.canport_id" placeholder="输入 CAN 端口 ID" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>单元 ID:</label>
+                        <el-input v-model.number="item.unit_id" placeholder="输入单元 ID" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>X 安装位置:</label>
+                        <el-input v-model.number="item.x_install" placeholder="输入 X 安装位置" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>Y 安装位置:</label>
+                        <el-input v-model.number="item.y_install" placeholder="输入 Y 安装位置" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <el-button type="danger" @click="removeCardMagnet(index)">删除</el-button>
+                </el-card>
             </div>
+        </el-tab-pane>
 
-            <div v-if="item.sensor">
-                <h4>传感器配置:</h4>
-                <div v-for="(sensor, sensorIndex) in item.sensor" :key="sensorIndex" class="sensor-group">
-                    <el-card v-if="item.type === 1">
-                        
-                        <div class="input-group">
-                            <label>X 限制:</label>
-                            <el-input v-model="sensor.x_limit" placeholder="输入 X 限制"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>角度限制:</label>
-                            <el-input v-model="sensor.thita_limit" placeholder="输入角度限制"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>死算距离:</label>
-                            <el-input v-model="sensor.deadReckoningDist" placeholder="输入死算距离"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>高级死算距离:</label>
-                            <el-input v-model="sensor.highLevel_deadReckoningDist" placeholder="输入高级死算距离"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <el-button type="danger" @click="removeSensor(index, sensorIndex)">删除传感器</el-button>
-                    </el-card>
-
-                    <el-card v-else-if="item.type === 2">
-                        
-                        <div class="input-group">
-                            <label>传感器类型:</label>
-                            <el-input v-model="sensor.type" placeholder="输入传感器类型"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>方向:</label>
-                            <el-input v-model="sensor.dir" placeholder="输入方向"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>分辨率:</label>
-                            <el-input v-model="sensor.resolution" placeholder="输入分辨率"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>CAN 端口 ID:</label>
-                            <el-input v-model="sensor.canport_id" placeholder="输入 CAN 端口 ID"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>单元 ID:</label>
-                            <el-input v-model="sensor.unit_id" placeholder="输入单元 ID"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>X 安装位置:</label>
-                            <el-input v-model="sensor.x_install" placeholder="输入 X 安装位置"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>Y 安装位置:</label>
-                            <el-input v-model="sensor.y_install" placeholder="输入 Y 安装位置"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <el-button type="danger" @click="removeSensor(index, sensorIndex)">删除传感器</el-button>
-                    </el-card>
-
-                    <el-card v-else-if="item.type === 3 || item.type === 4">
-                        
-                        <div class="input-group">
-                            <label>X 安装位置:</label>
-                            <el-input v-model="sensor.x_install" placeholder="输入 X 安装位置"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <div class="input-group">
-                            <label>Y 安装位置:</label>
-                            <el-input v-model="sensor.y_install" placeholder="输入 Y 安装位置"
-                                style="width: 100px; margin-right: 10px;"></el-input>
-                        </div>
-                        <el-button type="danger" @click="removeSensor(index, sensorIndex)">删除传感器</el-button>
-                    </el-card>
-                    
-                </div>
-                <el-button type="success" @click="addSensor(index)">添加传感器</el-button>
+        <el-tab-pane label="惯导">
+            <el-button type="primary" @click="addCardGyro" style="margin-left: 1vw;">添加卡片</el-button>
+            <div style="display: flex;  gap: 20px; flex-wrap: wrap;">
+                <el-card v-for="(item, index) in jsondata.Sensors.Gyro" :key="index" class="button-card"
+                    :body-style="{ padding: '20px' }">
+                    <div class="input-group">
+                        <label>名称:</label>
+                        <el-input v-model="item.name" placeholder="输入名称"
+                            style="width: 150px; margin-right: 10px;"></el-input>
+                        <el-button type="danger" @click="removeCardGyro(index)">删除</el-button>
+                    </div>
+                </el-card>
             </div>
-        </el-card>
-    </div>
+        </el-tab-pane>
+
+        <el-tab-pane label="二维码">
+            <el-button type="primary" @click="addCardQR_Code_Siasun" style="margin-left: 1vw;">添加卡片</el-button>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+
+                <el-card v-for="(item, index) in jsondata.Sensors.QR_Code_Siasun" :key="index" class="button-card"
+                    :body-style="{ padding: '20px' }">
+                    <div class="input-group">
+                        <label>名称:</label>
+                        <el-input v-model="item.name" placeholder="输入名称"
+                            style="width: 150px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>can端口号:</label>
+                        <el-input v-model.number="item.canPortID" placeholder="can端口号" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>单元编号:</label>
+                        <el-input v-model.number="item.unitID" placeholder="单元编号" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>can id:</label>
+                        <el-input v-model.number="item.canID" placeholder="can id" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>类型</label>
+                        <el-input v-model.number="item.type" placeholder="类型" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>延时计数:</label>
+                        <el-input v-model.number="item.delayCount" placeholder="延时计数" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>X 位置:</label>
+                        <el-input v-model.number="item.x" placeholder="输入 X 位置" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>Y 位置:</label>
+                        <el-input v-model.number="item.y" placeholder="输入 Y 位置" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>角度位置:</label>
+                        <el-input v-model.number="item.fAngle" placeholder="角度位置" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>gain:</label>
+                        <el-input v-model.number="item.gain" placeholder="gain" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>snack:</label>
+                        <el-input v-model.number="item.snack" placeholder="snack" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>gain2:</label>
+                        <el-input v-model.number="item.gain2" placeholder="gain2" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>snack2:</label>
+                        <el-input v-model.number="item.snack2" placeholder="snack2" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>同步时间:</label>
+                        <el-input v-model.number="item.syncTime" placeholder="同步时间" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>心跳:</label>
+                        <el-input v-model.number="item.heartTime" placeholder="心跳" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>相机分辨率:</label>
+                        <el-input v-model.number="item.cameraResolution" placeholder="分辨率" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <div class="input-group">
+                        <label>转换:</label>
+                        <el-select v-model.number="item.bEnableTransform" placeholder="是否启用" type="number"
+                            style="width: 100px; margin-right: 10px;">
+                            <el-option  label='启用'
+                                :value="true"></el-option>
+                            <el-option  label='禁用'
+                                :value="false"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="input-group">
+                        <label>转换数据:</label>
+                        <el-input v-model.number="item.fTransformData" placeholder="转换数据" type="number"
+                            style="width: 100px; margin-right: 10px;"></el-input>
+                    </div>
+                    <el-button type="danger" @click="removeCardQR_Code_Siasun(index)">删除</el-button>
+                </el-card>
+            </div>
+        </el-tab-pane>
+
+    </el-tabs>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js';
+import { jsondata } from '@/views/agv_ctrl/param/common/commondata.js'
 
-// 添加卡片
 const addCard = () => {
-    jsondata.value.NavSys.push({
+    jsondata.value.Sensors.Laser.push({
         name: '请输入名称',
-        type: 1,
-        sensor: [{
-            x_limit: 0.10,
-            thita_limit: 0.174,
-            deadReckoningDist: 0.30,
-            highLevel_deadReckoningDist: 0.10,
-        }] // 初始化一个传感器对象
     });
 };
 
-// 删除卡片
 const removeCard = (index) => {
-    jsondata.value.NavSys.splice(index, 1);
+    jsondata.value.Sensors.Laser.splice(index, 1);
 };
 
-// 添加传感器
-const addSensor = (index) => {
-    const newSensor = (jsondata.value.NavSys[index].type === 1) ? {
-        x_limit: 0,
-        thita_limit: 0,
-        deadReckoningDist: 0,
-        highLevel_deadReckoningDist: 0,
-    } : {
-        type: 1,
+const addCardGyro = () => {
+    jsondata.value.Sensors.Gyro.push({
+        name: '请输入名称',
+    });
+};
+
+const removeCardGyro = (index) => {
+    jsondata.value.Sensors.Gyro.splice(index, 1);
+};
+
+const addCardMagnet = () => {
+    jsondata.value.Sensors.Magnet.push({
+        name: '请输入名称',
+        type: 0,
         dir: 0,
         resolution: 0,
         canport_id: 0,
         unit_id: 0,
         x_install: 0,
-        y_install: 0,
-    };
-    jsondata.value.NavSys[index].sensor.push(newSensor);
+        y_install: 0
+    });
 };
 
-// 删除传感器
-const removeSensor = (cardIndex, sensorIndex) => {
-    jsondata.value.NavSys[cardIndex].sensor.splice(sensorIndex, 1);
+const removeCardMagnet = (index) => {
+    jsondata.value.Sensors.Magnet.splice(index, 1);
 };
-
-// 切换传感器类型时的处理
-const onTypeChange = (item) => {
-    // 根据选择的类型重置传感器数组
-    if (item.type === 1) {
-        item.sensor = [{
-            x_limit: 0,
-            thita_limit: 0,
-            deadReckoningDist: 0,
-            highLevel_deadReckoningDist: 0,
-        }];
-    } else if (item.type === 2) {
-        item.sensor = [{
-            type: 1,
-            dir: 0,
-            resolution: 0,
-            canport_id: 0,
-            unit_id: 0,
-            x_install: 0,
-            y_install: 0,
-        }];
-    } else {
-        item.sensor = [{
-            x_install: 0,
-            y_install: 0,
-        }];
-    }
+const addCardQR_Code_Siasun = () => {
+    jsondata.value.Sensors.QR_Code_Siasun.push({
+        name: '请输入名称',
+        canPortID: 0,
+        unitID: 0,
+        canID: 44,
+        type: 0,
+        delayCount: 0,
+        x: 0,
+        y: 0,
+        fAngle: 0,
+        gain: 50,
+        snack: 10,
+        gain2: 50,
+        snack2: 10,
+        syncTime: 12,
+        heartTime: 5,
+        cameraResolution: 1,
+        bEnableTransform: false,
+        fTransformData: 0.0
+    });
+};
+const removeCardQR_Code_Siasun = (index) => {
+    jsondata.value.QR_Code_Siasun.splice(index, 1);
 };
 </script>
 
 <style lang="scss" scoped>
 .button-card {
-    width: 22vw;
+    width: 20vw;
+    /* 每个卡片占宽度的25% */
     padding: 20px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     background: #f9f9f9;
 }
 
+.button-values {
+    display: flex;
+    flex-direction: column;
+    /* 垂直排列输入项 */
+}
+
 .input-group {
     display: flex;
     align-items: center;
+    /* 垂直居中对齐 */
     margin-bottom: 10px;
+    /* 每个输入项之间的间距 */
 }
 
-.sensor-group {
-    margin-top: 10px;
+.input-group label {
+    margin-right: 10px;
+    /* 标签与输入框之间的间距 */
 }
 </style>

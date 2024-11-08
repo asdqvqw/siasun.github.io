@@ -1,1 +1,0 @@
-import{_ as t,o,c as s,a as e}from"./index-1c344ead.js";const c={},n={class:"page-container main-view"},a=e("div",{class:"table-box content-container page-content-box"},[e("iframe",{src:"https://wstool.js.org/",width:"100%",height:"600"})],-1),r=[a];function i(_,d){return o(),s("div",n,r)}const l=t(c,[["render",i]]);export{l as default};
